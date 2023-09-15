@@ -16,6 +16,8 @@ Providing all the necessary information to connect to the data source, adapter c
 Adapters do not have any dependencies on each other and can be used separately. Adapter do not read real data from data source, only metadata.
 
 # odd-collector
+[Image](https://github.com/opendatadiscovery/odd-collector/pkgs/container/odd-collector) | [Configuration examples](odd-collector/config_examples)
+
 Collector to the common data sources, it shares adapters to Databases, BI Tools or ML platforms as MLFlow.
 
 Supported data sources:
@@ -58,6 +60,8 @@ Supported data sources:
 - [Vertica](odd-collector/README.md)
 
 # odd-collector-aws
+[Image](https://github.com/opendatadiscovery/odd-collector/pkgs/container/odd-collector-aws) | [Configuration examples](odd-collector-aws/config_examples)
+
 Collector provides adapter for Amazon cloud services
 
 Supported data sources:
@@ -73,6 +77,8 @@ Supported data sources:
 - [SQS](odd-collector-aws/README.md)
 
 # odd-collector-azure
+[Image](https://github.com/opendatadiscovery/odd-collector/pkgs/container/odd-collector-azure) | [Configuration examples](odd-collector-azure/config_examples)
+
 Collector provides adapter for Microsoft Azure cloud services
 Supported data sources:
 - [Azure SQL](odd-collector-azure/README.md)
@@ -80,6 +86,8 @@ Supported data sources:
 - [PowerBI](odd-collector-azure/README.md)
 
 # odd-collector-gcp
+[Image](https://github.com/opendatadiscovery/odd-collector/pkgs/container/odd-collector-gcp) | [Configuration examples](odd-collector-gcp/config_examples)
+
 Collector provides adapter for Google Cloud services. [Detailed documentation](odd-collector-gcp/README.md).
 
 Supported data sources:
