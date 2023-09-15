@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  odd-platform-database:
+    image: postgres:13.2-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=odd-platform
+      - POSTGRES_PASSWORD=odd-platform-password
+      - POSTGRES_DB=odd-platform
+
+  odd-platform:
+    image: ghcr.io/opendatadiscovery/odd-platform:0.5.3-arm
+    restart: always
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://odd-platform-database:5432/odd-platform
+      - SPRING_DATASOURCE_USERNAME=odd-platform
+      - SPRING_DATASOURCE_PASSWORD=odd-platform-password
+    depends_on:
+      - odd-platform-database
+    ports:
+      - 8080:8080
+
+  odd-collector-gcp:
+    image: ghcr.io/opendatadiscovery/odd-collector-gcp:latest
+    restart: always
+    volumes:
+      - ./config/collector_config.yaml:/app/collector_config.yaml
+      - ./config/key.json:/etc/key.json
+    environment:
+      - PLATFORM_HOST_URL=http://odd-platform:8080
+      - GOOGLE_APPLICATION_CREDENTIALS=/etc/key.json

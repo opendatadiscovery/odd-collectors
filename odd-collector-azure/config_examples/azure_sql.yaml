@@ -1,0 +1,16 @@
+default_pulling_interval: 10
+token: ""
+platform_host_url: http://localhost:8080
+plugins:
+  - type: azure_sql
+    name: azure_sql_adapter
+    database: <database name>
+    server: <server name> # There are 2 options:
+                          # 1. For the cloud it will be `<your_server_name>.database.windows.net`
+                          # 2. For the local usage: `localhost`
+    port: <port>
+    username: <username>
+    password: <password>
+    encrypt: "Expected values: 'yes'|'no'. Default is 'yes' "
+    trust_server_certificate: "Expected values: 'yes'|'no'. Default is 'no' "
+    connection_timeout: "Default value is 30"

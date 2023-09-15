@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  odd-collector-azure:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: odd-collector
+    restart: always
+    environment:
+      - CLIENT_ID=${CLIENT_ID}
+      - CLIENT_SECRET=${CLIENT_SECRET}
+      - USERNAME=${USERNAME}
+      - PASSWORD=${PASSWORD}
+      - DOMAIN=${DOMAIN}
+      - PLATFORM_HOST_URL=${PLATFORM_HOST_URL}

@@ -1,0 +1,12 @@
+default_pulling_interval: 10
+token: ""
+platform_host_url: "http://localhost:8080"
+plugins:
+  - type: gcs
+    name: gcs_adapter
+    project: "OpenDataDiscovery"
+    datasets:
+      - bucket: "odd-bucket-1"
+    parameters: # Optional
+      access_token: "token"
+      credential_token_expiration: "2023-12-31 23:59:59"

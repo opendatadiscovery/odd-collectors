@@ -1,0 +1,69 @@
+FIELD_NAME: (WORD | "1".."9" | "-" | "_")+
+
+NUMBER: ("0" | "1".."9" ("0".."9")*)
+
+SIMPLE_TYPE: "int8"i
+        | "int16"i
+        | "int32"i
+        | "int64"i
+        | "uint8"i
+        | "uint16"i
+        | "uint32"i
+        | "uint64"i
+        | "float"i
+        | "float8"i
+        | "float16"i
+        | "float32"i
+        | "float64"i
+        | "time32"i
+        | "time64"i
+        | "date32"i
+        | "date32[day]"i
+        | "date64"i
+        | "duration"i
+        | "month_day_nano_interval"i
+        | "binary"i
+        | "string"i
+        | "utf8"i
+        | "large_binary"i
+        | "large_string"i
+        | "large_utf8"i 
+        | "decimal128"i
+        | "double"i
+        | "bool"i
+
+varchar_type: "varchar"i ("(" NUMBER ")")*
+decimal_type: "decimal"i ("(" NUMBER "," NUMBER ")")*
+
+type: SIMPLE_TYPE
+    | varchar_type
+    | decimal_type
+    | iterable_type
+    | struct_type
+    | union_type
+    | map_type
+    | list_type
+    | dictionary_type
+    | timestamp_type
+
+field_definition: FIELD_NAME ":" type
+
+parquet_field_definition: FIELD_NAME "=" (type | NUMBER)
+
+iterable_type: ("array"i | "set"i) "<" (type) ">"
+
+struct_type: "struct"i "<" [field_definition ("," field_definition)*]+ ">"
+
+dictionary_type: "dictionary"i "<" [parquet_field_definition ("," parquet_field_definition)*]+ ">"
+
+union_type: "union"i "<" [type ("," type)*] ">"
+
+map_type: "map"i "<" type "," type ">"
+
+list_type: "list"i "<item:" type ">"
+
+timestamp_type: "timestamp"i ["[" WORD "]"]
+
+%import common.WS
+%import common.WORD
+%ignore WS

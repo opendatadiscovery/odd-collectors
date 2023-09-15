@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "odd-collector-gcp"
+version = "0.1.1"
+description = "ODD Collector for GCP"
+license = "Apache-2.0"
+authors = ["Open Data Discovery <pypi@opendatadiscovery.org>"]
+homepage = "https://github.com/opendatadiscovery/odd-collector-gcp"
+repository = "https://github.com/opendatadiscovery/odd-collector-gcp"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+oddrn-generator = "^0.1.92"
+odd-collector-sdk = "^0.3.40"
+google-cloud-bigquery = "^3.1.0"
+google-cloud-storage = "^2.10.0"
+google-cloud-bigtable = "^2.19.0"
+pyarrow = "^10.0.1"
+lark-parser = "^0.12.0"
+deltalake = "^0.9.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.1.0"
+mypy = "^0.910"
+pytest = "^6.2.5"
+pre-commit = "^3.2.2"
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

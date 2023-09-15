@@ -1,0 +1,20 @@
+default_pulling_interval: 10
+token: ""
+platform_host_url: http://localhost:8080
+plugins:
+  - type: blob_storage
+    name: blob_storage_adapter
+    # Use only connection string or account key.
+    connection_string: # get it from the `access keys` tab in your storage account.
+    account_key: # get it from the `access keys` tab in your storage account.
+    account_name: storage account name
+    # These fields expect regular expression.
+    # Examples:
+    # 1. include/exclude files which start with some name: "some_name.*.csv"
+    # 2. include/exclude files which end with some name: ".*some_name.csv"
+    file_filter:
+      include: [ ]
+      exclude: [ ]
+    dataset_config:
+      - container: container name
+        prefix: /

@@ -1,0 +1,11 @@
+default_pulling_interval: 10
+token: ""
+platform_host_url: http://localhost:8080
+plugins:
+  - type: powerbi
+    name: powerbi_adapter
+    client_id: <client_id of registered in AD app>
+    client_secret: <client secret of registered in AD app>
+    username: <email>
+    password: password
+    domain: yourmomain.com

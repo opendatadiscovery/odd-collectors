@@ -1,0 +1,6 @@
+default_pulling_interval: 1
+token: "PVXrO6ENL0Va6lYKuybgt0SoHsTQd0LoLotbZqMi"
+plugins:
+  - type: bigquery_storage
+    name: bigquery_storage
+    project: <YOUR_PROJECT>

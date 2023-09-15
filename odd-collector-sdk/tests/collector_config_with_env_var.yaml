@@ -1,0 +1,8 @@
+default_pulling_interval: 10
+token: ""
+chunk_size: 100
+platform_host_url: "http://localhost:8080"
+plugins:
+  - type: postgres
+    name: test_postgres
+    db_user: !ENV ${DB_USER}

@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "odd-collector-azure"
+version = "0.1.0"
+description = "ODD Collector for Azure"
+license = "Apache-2.0"
+authors = ["Open Data Discovery <pypi@opendatadiscovery.org>"]
+homepage = "https://github.com/opendatadiscovery/odd-collector-azure"
+repository = "https://github.com/opendatadiscovery/odd-collector-azure"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+oddrn-generator = "^0.1.92"
+pyhumps = "3.0.2"
+more-itertools = "8.10.0"
+odd-collector-sdk = "^0.3.42"
+funcy = "2.0"
+pyodbc = "^4.0.35"
+odd-models = "^2.0.24"
+azure-storage-blob = "^12.16.0"
+azure-identity = "^1.13.0"
+pandas = "^2.0.2"
+pyarrow = "10.0.1"
+pyarrowfs-adlgen2 = "^0.2.4"
+adlfs = "^2023.4.0"
+dask = "^2023.6.0"
+lark = "^1.1.5"
+azure-datalake-store = "^0.0.53"
+
+[tool.poetry.group.dev.dependencies]
+isort = "^5.12.0"
+black = "^22.1.0"
+pytest = "^7.2.2"
+pre-commit = "^3.1.1"
+
+[tool.isort]
+profile="black"
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

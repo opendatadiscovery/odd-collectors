@@ -1,0 +1,4 @@
+venv/
+out/
+.idea/
+docker/

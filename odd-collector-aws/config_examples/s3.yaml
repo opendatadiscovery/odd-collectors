@@ -1,0 +1,49 @@
+# S3 collector-config.yaml example
+# All AWS S3 parameters are optional according to default behavior of boto3.
+# If not provided, boto3 will search for credentials in environment variables, ~/.aws/credentials and ~/.aws/config
+
+platform_host_url: http://localhost:8080
+default_pulling_interval: 60 # Pulling interval in minutes. Can be omitted to run collector once
+token: "" # Token that must be retrieved from the platform
+plugins:
+  - type: s3
+    name: s3_adapter
+    aws_secret_access_key: <aws_secret_access_key> # Optional.
+    aws_access_key_id: <aws_access_key_id> # Optional.
+    aws_session_token: <aws_session_token> # Optional. Required if using temporary credentials.
+    aws_region: <aws_region> # Optional.
+    aws_role_arn: <aws_role_arn> # Optional. Required for assuming role with temporary credentials.
+    aws_role_session_name: <aws_role_session_name> # Optional. Required for assuming role with temporary credentials.
+    profile_name: <profile_name> # Optional.
+    filename_filter: # Optional. Default filter allows each file to be ingested to platform.
+      include: [ '.*.parquet' ]
+      exclude: [ 'dev_.*' ]
+    dataset_config:
+      bucket: my_bucket
+      prefix: folder/subfolder/file.csv # Optional. Default is empty string.
+  # When we want to use the folder as a dataset. Very useful for partitioned datasets.
+  - type: s3
+    name: s3_partitioned_adapter
+    aws_secret_access_key: <aws_secret_access_key> # Optional.
+    aws_access_key_id: <aws_access_key_id> # Optional.
+    aws_session_token: <aws_session_token> # Optional. Required if using temporary credentials.
+    aws_region: <aws_region> # Optional.
+    aws_role_arn: <aws_role_arn> # Optional. Required for assuming role with temporary credentials.
+    aws_role_session_name: <aws_role_session_name> # Optional. Required for assuming role with temporary credentials.
+    profile_name: <profile_name> # Optional.
+    dataset_config:
+      bucket: my_bucket
+      prefix: partitioned_data/
+      folder_as_dataset:
+        file_format: parquet # Format of the files in the folder. Can be parquet csv, tsv.
+        flavor: hive # Optional. Default is hive. Can be hive or presto.
+        field_names: ['year', 'month'] # Optional. Must be provided if flavor is other than hive. I.e. structure s3://my_bucket/partitioned_data/year/...
+  # When S3 storage is compatible with AWS S3 API, for example Minio.
+  - type: s3
+    name: s3_minio_adapter
+    endpoint_url: http://localhost:9000
+    aws_secret_access_key: minioadmin
+    aws_access_key_id: minioadmin
+    dataset_config:
+      bucket: my_bucket
+

@@ -1,0 +1,10 @@
+platform_host_url: "http://localhost:8080"
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: sagemaker
+    name: sagemaker_adapter
+    experiments: ['some_experiment_name']
+    aws_secret_access_key: <aws_secret_access_key>
+    aws_access_key_id: <aws_access_key_id>
+    aws_region: <aws_region>

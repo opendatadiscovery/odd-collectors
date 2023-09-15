@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "odd-collector-aws"
+version = "0.1.13"
+description = "ODD Collector for AWS"
+license = "Apache-2.0"
+authors = ["Open Data Discovery <pypi@opendatadiscovery.org>"]
+homepage = "https://github.com/opendatadiscovery/odd-collector-aws"
+repository = "https://github.com/opendatadiscovery/odd-collector-aws"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+oddrn-generator = "^0.1.89"
+python-dotenv = "0.19.0"
+boto3 = "1.18.44"
+pyhumps = "3.0.2"
+pyarrow = "^10.0.1"
+humps = "0.2.2"
+flatdict = "4.0.1"
+odd-collector-sdk = "^0.3.40"
+lark-parser = "^0.12.0"
+deltalake = "^0.9.0"
+more-itertools = "^10.1.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.1.0"
+isort = "^5.12.0"
+pytest = "^7.2.1"
+pre-commit = "^3.2.2"
+
+[tool.black]
+target-version = ['py39']
+preview = true
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile="black"

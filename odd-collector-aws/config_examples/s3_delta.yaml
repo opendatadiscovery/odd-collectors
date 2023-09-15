@@ -1,0 +1,50 @@
+# S3 Delta Lake Adapter
+default_pulling_interval: 10
+token:
+platform_host_url: "http://localhost:8080"
+plugins:
+  - type: s3_delta
+    name: s3_adapter
+    aws_access_key_id:
+    aws_secret_access_key:
+    aws_region:
+    # aws_session_token: # optional if you want to specify the aws session token
+    delta_tables:
+      - bucket: bucket
+        prefix: delta_data # Prefix to DeltaTable or directory where delta tables are stored
+
+# S3 Delta Lake Adapter with Filter
+default_pulling_interval: 10
+token:
+platform_host_url: "http://localhost:8080"
+plugins:
+  - type: s3_delta
+    name: s3_adapter
+    aws_access_key_id:
+    aws_secret_access_key:
+    aws_region:
+    # aws_session_token: # optional if you want to specify the aws session token
+    delta_tables:
+      - bucket: bucket
+        prefix: delta_data
+        filter: # will include only tables with "events" and exclude all tables with "_pii" in the table prefix and name
+          exclude:
+            include: [ "events" ]
+            exclude: [ "_pii" ]
+
+
+
+# Minio S3 Delta Lake Adapter
+default_pulling_interval: 10
+token:
+platform_host_url: "http://localhost:8080"
+plugins:
+  - type: s3_delta
+    name: s3_adapter
+    endpoint_url: http://localhost:9000
+    aws_storage_allow_http: True
+    aws_access_key_id: minioadmin
+    aws_secret_access_key: minioadmin
+    delta_tables:
+      - bucket: bucket
+        prefix: delta_data

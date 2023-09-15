@@ -1,0 +1,19 @@
+# Description: Configuration file for the collector. Find more examples in config_examples folder.
+
+default_pulling_interval: 60
+token: <token>
+platform_host_url: "http://localhost:8080"
+plugins:
+  - type: s3
+    name: s3_adapter
+    # aws_access_key_id: <aws_access_key_id>
+    # aws_secret_access_key: <aws_secret_access_key>
+    # aws_region: <aws_region>
+    # aws_session_token: <aws_session_token>
+    # aws_role_arn: <aws_role_arn>
+    # aws_role_session_name: <aws_role_session_name>
+    # profile_name: <profile_name>
+    # endpoint_url: <endpoint_url>
+    dataset_config:
+      - bucket: <bucket_name>
+        prefix: <optional_prefix>

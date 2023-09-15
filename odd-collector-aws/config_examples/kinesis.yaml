@@ -1,0 +1,10 @@
+platform_host_url: "http://localhost:8080"
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: kinesis
+    name: kinesis_adapter
+    aws_secret_access_key: <aws_secret_access_key>
+    aws_access_key_id: <aws_access_key_id>
+    aws_region: <aws_region>
+    aws_account_id: <aws_account_id>

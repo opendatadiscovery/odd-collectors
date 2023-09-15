@@ -1,0 +1,40 @@
+?start: type
+
+BASIC_TYPE: "string"
+          | "int"
+          | "float"
+          | "double"
+          | "bigint"
+          | "binary"
+          | "boolean"
+          | "date"
+          | "decimal"
+          | "void"
+          | "interval"
+          | "smallint"
+          | "timestamp"
+          | "timestamp_ntz"
+          | "tinyint"
+          | "long"
+
+primitive_type: "PrimitiveType(\"" BASIC_TYPE "\")"
+
+FIELD_NAME: (LETTER | "_") (LETTER | "_" | DIGIT | "-")*
+
+array: "ArrayType" "(" type ", " "contains_null=" BOOL ")"
+
+field: "Field(" FIELD_NAME ", " type ", " "nullable=" BOOL ")"
+
+struct: "StructType([" [field (", " field)*] "])"
+
+map: "MapType(" type ", " type  ", " "value_contains_null=" BOOL ")"
+
+?type: primitive_type
+     | array
+     | struct
+     | map
+
+BOOL: "True" | "False"
+
+%import common.LETTER
+%import common.DIGIT
