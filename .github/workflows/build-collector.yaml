@@ -1,0 +1,58 @@
+name: ODD Collector release
+
+on:
+  workflow_dispatch:
+    inputs:
+      collector-name:
+        description: 'Select service to build'
+        required: true
+        default: 'odd-collector'
+        type: choice
+        options:
+          - odd-collector
+          - odd-collector-aws
+          - odd-collector-gcp
+          - odd-collector-azure
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/${{ inputs.collector-name }}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Run black as linter
+    steps:
+      - uses: actions/checkout@v2
+      - uses: psf/black@stable
+        with:
+          options: "--check --verbose"
+          src: ./${{ inputs.collector-name }}
+          version: "22.3.0"
+  build_and_push:
+    runs-on: ubuntu-latest
+    name: Build and push docker image to GHCR
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.ORG_TOKEN_GHCR }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
