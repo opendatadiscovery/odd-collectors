@@ -1,0 +1,15 @@
+platform_host_url: http://localhost:8080
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: clickhouse
+    name: clickhouse_adapter
+    description: "" # Optional string
+    host: localhost
+    port: 8123
+    database: default
+    user: default
+    password:
+    secure: False
+    verify: True
+    query_limit: 0 # Optional string, default 0
