@@ -47,8 +47,17 @@ class BlobPlugin(Plugin):
             raise ValueError("datasets field is deprecated, use dataset_config instead")
 
 
+class DataFactoryPlugin(Plugin):
+    type: Literal["azure_data_factory"]
+    subscription: str
+    resource_group: str
+    factory: str
+    pipeline_filter: Filter = Filter()
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "powerbi": PowerBiPlugin,
     "azure_sql": AzureSQLPlugin,
     "blob_storage": BlobPlugin,
+    "azure_data_factory": DataFactoryPlugin,
 }

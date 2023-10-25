@@ -1,0 +1,12 @@
+default_pulling_interval: 10
+token: ""
+platform_host_url: http://localhost:8080
+plugins:
+  - type: azure_data_factory
+    name: azure_data_factory_adapter
+    subscription: <azure_subscription_id>
+    resource_group: <resource_group_name>
+    factory: <factory_name>
+    pipeline_filter: # Optional, if not provided all pipelines from the factory will be fetched
+      include: [ patterns_to_include ] # Pipeline name patterns to include
+      exclude: [ patterns_to_exclude ] # Pipeline name patterns to exclude
