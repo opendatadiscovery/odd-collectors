@@ -24,7 +24,7 @@ COMPLEX_METADATA = {
         "nested_field_one": 1,
         "nested_field_two": "string",
         "nested_field_three": [{"foo": "bat"}, {"foo": {}}],
-        "nested_field_four": {"more_nested_field": 1, "more_nested_field_two": {}},
+        "nested_field_four": {"more_nested_field": 1, "more_nested_field_two": {}, "more_nested_field_three": "string"},
         "nested_field_five": {},
     },
 }
@@ -36,11 +36,12 @@ FLATTEN = {
     "nested_meta.nested_field_three": [{"foo": "bat"}, {"foo": {}}],
     "nested_meta.nested_field_four.more_nested_field": 1,
     "nested_meta.nested_field_four.more_nested_field_two": {},
+    "nested_meta.nested_field_four.more_nested_field_three": "string",
     "nested_meta.nested_field_five": {},
 }
 
-ENCODED_METADATA = walk_values(json.dumps, COMPLEX_METADATA)
-FLATTEN_ENCODED_METADATA = walk_values(json.dumps, FLATTEN)
+ENCODED_METADATA = walk_values(lambda x: json.loads(json.dumps(x)), COMPLEX_METADATA)
+FLATTEN_ENCODED_METADATA = walk_values(lambda x: json.loads(json.dumps(x)), FLATTEN)
 
 
 class Entity:

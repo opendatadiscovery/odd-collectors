@@ -60,6 +60,30 @@ class AbstractJob:
                     data_source_oddrn=self._adapter.get_data_source_oddrn(), items=items
                 )
 
+class AsyncGeneratorJob(AbstractJob):
+    async def start(self):
+        with log_execution(self._adapter.config.name):
+            async for del_ in self._get_data_entity_list():
+                await self.send_metadata(metadata=del_)
+
+    async def _split(
+        self, data_entity_lists: Union[DataEntityList, Iterable[DataEntityList]]
+    ) -> Generator[DataEntityList, Any, Any]:
+        async for data_entity_list in data_entity_lists:
+            for index, items in enumerate(
+                chunks(self._chunk_size, data_entity_list.items), start=1
+            ):
+                logger.debug(
+                    f"[{self._adapter.config.name}] Yield batch #{index} with {len(items)} items"
+                )
+                yield DataEntityList(
+                    data_source_oddrn=self._adapter.get_data_source_oddrn(), items=items
+                )
+
+    async def _get_data_entity_list(self) -> Generator[DataEntityList, Any, Any]:
+        data_entity_lists = self._adapter.get_data_entity_list()
+        async for data_entity_list in self._split(data_entity_lists):
+            yield data_entity_list
 
 class AsyncJob(AbstractJob):
     async def start(self):
@@ -89,9 +113,10 @@ class SyncJob(AbstractJob):
 
 def create_job(api: PlatformApi, adapter: Adapter, chunk_size: int) -> AbstractJob:
     if isasyncgenfunction(adapter.get_data_entity_list):
-        raise ValueError("Async generator is not supported.")
+        logger.debug(f"Is an async generator {adapter.config.name=}")
+        return AsyncGeneratorJob(api, adapter, chunk_size)
     if iscoroutinefunction(adapter.get_data_entity_list):
-        logger.debug(f"Is async {adapter.config.name=}")
+        logger.debug(f"Is an async {adapter.config.name=}")
         return AsyncJob(api, adapter, chunk_size)
     else:
         return SyncJob(api, adapter, chunk_size)

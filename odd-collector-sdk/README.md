@@ -1,6 +1,70 @@
+[![PyPI version](https://badge.fury.io/py/odd-collector-sdk.svg)](https://badge.fury.io/py/odd-collector-sdk)
+
 # ODD Collector SDK
-Development kit for ODD Collectors. It describes schemas for adapters and plugins and provides base classes for adapters.
-Each collector must have a config file, must be named as `collector_config.yaml`, a root package and a plugin factory.
+Root project for ODD collectors
+
+### Domain
+* `CollectorConfig`
+
+    _Main config file for collector_
+    ``` python
+    class CollectorConfig(pydantic.BaseSettings):
+        default_pulling_interval: int # pulling interval in minutes
+        token: str                    # token for requests to odd-platform
+        plugins: Any
+        platform_host_url: str
+    ```
+
+* `Collector`
+
+    Args:
+
+    `config_path`: str - path to collector_config.yaml (i.e. `'/collector_config.yaml'`)
+
+    `root_package`: str - root package for adapters which will be loaded (i.e. `'my_collector.adapters'`)
+
+    `plugins_union_type` - Type variable for pydantic model.
+
+* `Plugin`
+
+  Is a config for adapter
+  ```python
+  class Plugin(pydantic.BaseSettings):
+    name: str
+    description: Optional[str] = None
+    namespace: Optional[str] = None
+  ```
+
+  Plugin class inherited from Pydantic's BaseSetting,it means it can take any field, which was skipped in `collector_config.yaml`, from env variables.
+
+  Field `type: Literal["custom_adapter"]`  is obligatory for each plugin, by convention literal **MUST** have same name with adapter package
+
+  Plugins example:
+  ```python
+    # plugins.py
+    class AwsPlugin(Plugin):
+        aws_secret_access_key: str
+        aws_access_key_id: str
+        aws_region: str
+    
+    class S3Plugin(AwsPlugin):
+        type: Literal["s3"]
+        buckets: Optional[List[str]] = []
+
+    class GluePlugin(AwsPlugin):
+        type: Literal["glue"]
+    
+    # For Collector's plugins_union_type argument
+    AvailablePlugin = Annotated[
+        Union[
+            GluePlugin,
+            S3Plugin,
+        ],
+        pydantic.Field(discriminator="type"),
+    ]
+  ```
+* AbstractAdapter
+    Abstract adapter which **MUST** be implemented by generic adapters
 
 ## Collector example
 
@@ -35,85 +99,102 @@ poetry add odd-collector-sdk
 
 
 
-### Adapters folder example
-Each adapter inside adapters folder must have an `adapter.py` file with an `Adapter` class derived from `BaseAdapter`.
-
+### Adapters folder
+Each adapter inside adapters folder must have an `adapter.py` file with an `Adapter` class implementing `AbstractAdapter`
 ```python
     # custom_adapter/adapter.py example
-    from odd_collector_sdk.domain.adapter import BaseAdapter
+    from odd_collector_sdk.domain.adapter import AbstractAdapter
     from odd_models.models import DataEntityList
-    from oddrn_generator import Generator
-    from my_collector.domain.plugins import CustomPlugin
 
-    class Adapter(BaseAdapter):
-        config: CustomPlugin
-        generator: Generator
-        
-        def create_generator(self) -> Generator:
-          return Generator()
-        
+    # 
+    class Adapter(AbstractAdapter):
+        def __init__(self, config: any) -> None:
+            super().__init__()
+
         def get_data_entity_list(self) -> DataEntityList:
-            # Some logic to create DataEntityList
-            return DataEntityList()
+            return DataEntityList(data_source_oddrn="test")
+
+        def get_data_source_oddrn(self) -> str:
+            return "oddrn"
 ```
 
-### Plugins example
-Each plugin is a config file for data source, it can have as parametres to connect to a datasource as additional params as filters. 
-It must be derived `Plugin` class.
-
+### Plugins
+Each plugin must implement `Plugin` class from sdk
 ```python
-# domain/plugins.py
-from typing import Literal
-from odd_collector_sdk.domain.plugin import Plugin
+    # domain/plugins.py
+    from typing import Literal, Union
+    from typing_extensions import Annotated
 
-class CustomPlugin(Plugin):
-    type: Literal["custom_adapter"]
+    import pydantic
+    from odd_collector_sdk.domain.plugin import Plugin
+
+    class CustomPlugin(Plugin):
+        type: Literal["custom_adapter"]
 
 
-class OtherCustomPlugin(Plugin):
-    type: Literal["other_custom_adapter"]
-    field: str
+    class OtherCustomPlugin(Plugin):
+        type: Literal["other_custom_adapter"]
 
-# Needs this type variable for Collector initialization
-PLUGIN_FACTORY = {
-    "custom_adapter": CustomPlugin,
-    "other_custom_adapter": OtherCustomPlugin,
-}
+    # Needs this type variable for Collector initialization
+    AvailablePlugins = Annotated[
+        Union[CustomPlugin, OtherCustomPlugin],
+        pydantic.Field(discriminator="type"),
+    ]
 ```
 
-### collector_config.yaml example
+### collector_config.yaml
+
 ```yaml
-default_pulling_interval: 100 # Minutes to wait between runs of the job, if not set, job will be run only once
-token: "******" # Token to access ODD Platform
-platform_host_url: http://localhost:8080 # URL of ODD Platform instance, i.e. http://localhost:8080
-chunk_size: 250 # Number of records to be sent in one request to the platform
-connection_timeout_seconds: 300 # Seconds to wait for connection to the platform
-max_instances: 1  # maximum number of concurrently running instances allowed
+default_pulling_interval: 10 
+token: "" 
+platform_host_url: "http://localhost:8080" 
 plugins:
   - type: custom_adapter
     name: custom_adapter_name
   - type: other_custom_adapter
     name: other_custom_adapter_name
-    field: some_field_for_other_custom_adapter
+
 ```
 
 ## Usage
 ```python
 # __main__.py
-from pathlib import Path
+
+import asyncio
+import logging
+from os import path
+
 
 from odd_collector_sdk.collector import Collector
-from my_collector.domain.plugin import PLUGIN_FACTORY
 
-COLLECTOR_PACKAGE = __package__
-CONFIG_PATH = Path().cwd() / "collector_config.yaml"
+# Union type of avalable plugins
+from my_collector.domain.plugins import AvailablePlugins
 
-if __name__ == "__main__":
-    collector = Collector(
-        config_path=CONFIG_PATH,
-        root_package=COLLECTOR_PACKAGE,
-        plugin_factory=PLUGIN_FACTORY,
-    )
-    collector.run()
+logging.basicConfig(
+    level=logging.INFO, format="[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+)
+
+try:
+    cur_dirname = path.dirname(path.realpath(__file__))
+    config_path = path.join(cur_dirname, "../collector_config.yaml")
+    root_package = "my_collector.adapters"
+
+    loop = asyncio.get_event_loop()
+
+    collector = Collector(config_path, root_package, AvailablePlugin)
+
+    loop.run_until_complete(collector.register_data_sources())
+
+    collector.start_polling()
+    loop.run_forever()
+except Exception as e:
+    logging.error(e, exc_info=True)
+    loop.stop()
 ```
+
+And run
+```bash
+poetry run python -m my_collector
+```
+
 
