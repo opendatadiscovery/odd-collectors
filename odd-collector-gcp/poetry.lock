@@ -1208,14 +1208,14 @@ files = [
 
 [[package]]
 name = "odd-collector-sdk"
-version = "0.3.40"
+version = "0.3.44"
 description = "ODD Collector"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "odd_collector_sdk-0.3.40-py3-none-any.whl", hash = "sha256:da308c2accbfdb29089cf98dba3d73d796592f5c4dcf4cb9239f689b39481f67"},
-    {file = "odd_collector_sdk-0.3.40.tar.gz", hash = "sha256:453461c5fa92e888324ffce0c48eadd9d8c4cfea4528d18412c5e6d74f4ede2c"},
+    {file = "odd_collector_sdk-0.3.44-py3-none-any.whl", hash = "sha256:06828e2d077d52166c9da83ad16060fd9c9d98dc60b316968d35e1182f238f90"},
+    {file = "odd_collector_sdk-0.3.44.tar.gz", hash = "sha256:1e607ffd35b3cb877b8e072f53c82c73b94bb59ef94422af94b5b2dde2e1cef0"},
 ]
 
 [package.dependencies]
@@ -1256,14 +1256,14 @@ sqlparse = "0.4.2"
 
 [[package]]
 name = "oddrn-generator"
-version = "0.1.92"
+version = "0.1.93"
 description = "Open Data Discovery Resource Name Generator"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "oddrn_generator-0.1.92-py3-none-any.whl", hash = "sha256:a14c4de404397f185bc7554e5a222b164c5b8518fe95cae02a4ba7a8ecaeb33d"},
-    {file = "oddrn_generator-0.1.92.tar.gz", hash = "sha256:aefbd07e7f383e02603093c027001acbeaf2f0b1ee6d96f1cd1a268b6fb597a8"},
+    {file = "oddrn_generator-0.1.93-py3-none-any.whl", hash = "sha256:1eb9ea2481fef775ffe858a3d07e33769ac5c12c09e55857b5dec9dbc4b0634d"},
+    {file = "oddrn_generator-0.1.93.tar.gz", hash = "sha256:c923970ac52e69862132de0a1b1717348bb7cafe9350ae53a6c3bb860ef7a4d4"},
 ]
 
 [package.dependencies]
@@ -2005,4 +2005,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "b56e1e5315cdf58d7fe3e65169e73fc9b80e926872bb67fd9381377aa33b4178"
+content-hash = "72bbedc48461b4a265bcf5726a63f1aaf5d1827192839c2493d097861a6708de"

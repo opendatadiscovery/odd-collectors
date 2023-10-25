@@ -16,6 +16,7 @@ class GcpPlugin(Plugin):
 class BigQueryStoragePlugin(GcpPlugin):
     type: Literal["bigquery_storage"]
     page_size: Optional[int] = 100
+    datasets_filter: Filter = Filter()
 
 
 class BigTablePlugin(GcpPlugin):

@@ -9,8 +9,10 @@ def is_property(parameter: Any) -> bool:
 
 
 def get_properties(instance: Any, excluded_properties=None) -> dict[str, Any]:
-    properties = {}
-    for prop_name, value in getmembers(instance.__class__, is_property):
-        properties[prop_name] = value.fget(instance)
+    properties = {
+        prop_name: value.fget(instance)
+        for prop_name, value in getmembers(instance.__class__, is_property)
+        if value.fget(instance) is not None
+    }
 
     return omit(properties, excluded_properties) if excluded_properties else properties

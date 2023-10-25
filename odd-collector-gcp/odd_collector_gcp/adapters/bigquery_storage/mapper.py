@@ -1,6 +1,22 @@
+import json
+from datetime import datetime
 from functools import reduce
 from operator import iconcat
 
+from google.cloud.bigquery import (
+    AvroOptions,
+    BigtableColumn,
+    BigtableColumnFamily,
+    BigtableOptions,
+    CSVOptions,
+    ExternalConfig,
+    ExternalSourceFormat,
+    GoogleSheetsOptions,
+    HivePartitioningOptions,
+    ParquetOptions,
+    RangePartitioning,
+    TimePartitioning,
+)
 from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models.models import (
     DataEntity,
@@ -18,6 +34,7 @@ from odd_collector_gcp.adapters.bigquery_storage.dto import (
     BigQueryField,
     BigQueryTable,
 )
+from odd_collector_gcp.utils.get_properties import get_properties
 
 BIG_QUERY_STORAGE_TYPE_MAPPING = {
     "STRING": Type.TYPE_STRING,
@@ -78,12 +95,20 @@ class BigQueryStorageMapper:
             field_mapper = FieldMapper(self.oddrn_generator, field)
             processed_ds_fields = field_mapper.dataset_fields
             field_list.extend(processed_ds_fields)
-
         return DataEntity(
             oddrn=self.oddrn_generator.get_oddrn_by_path("tables"),
             name=table.table_id,
             description=table.description,
-            metadata=[extract_metadata("bigquery", table_dto, DefinitionType.DATASET)],
+            metadata=[
+                extract_metadata(
+                    "bigquery",
+                    table_dto,
+                    DefinitionType.DATASET,
+                    flatten=True,
+                    jsonify=True,
+                    json_encoder=BigQueryMetadataEncoder,
+                )
+            ],
             created_at=table.created,
             updated_at=table.modified,
             type=DataEntityType.TABLE,
@@ -157,3 +182,28 @@ class FieldMapper:
             if field.field_type == "RECORD":
                 for f in field.fields:
                     self.map_field(BigQueryField(f), field_entity.oddrn)
+
+
+class BigQueryMetadataEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        if isinstance(
+            obj,
+            (
+                ExternalConfig,
+                ParquetOptions,
+                TimePartitioning,
+                AvroOptions,
+                RangePartitioning,
+                BigtableOptions,
+                BigtableColumnFamily,
+                BigtableColumn,
+                CSVOptions,
+                GoogleSheetsOptions,
+                ExternalSourceFormat,
+                HivePartitioningOptions,
+            ),
+        ):
+            return get_properties(obj)
+        return super().default(obj)
