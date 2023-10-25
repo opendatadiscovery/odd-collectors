@@ -4,6 +4,7 @@ from typing import Union
 
 import psycopg2
 from funcy.seqs import group_by
+from odd_collector_sdk.domain.filter import Filter
 from psycopg2 import sql
 
 from odd_collector.adapters.postgresql.models import (
@@ -11,6 +12,7 @@ from odd_collector.adapters.postgresql.models import (
     EnumTypeLabel,
     PrimaryKey,
     Table,
+    Schema,
 )
 from odd_collector.domain.plugin import PostgreSQLPlugin
 
@@ -35,8 +37,9 @@ class ConnectionParams:
 
 
 class PostgreSQLRepository:
-    def __init__(self, conn_params: ConnectionParams):
+    def __init__(self, conn_params: ConnectionParams, schemas_filter: Filter):
         self.conn_params = conn_params
+        self.schemas_filter = schemas_filter
 
     def __enter__(self):
         self.conn = psycopg2.connect(**asdict(self.conn_params))
@@ -45,11 +48,30 @@ class PostgreSQLRepository:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.conn.close()
 
-    def get_tables(
-        self,
-    ) -> list[Table]:
+    def get_schemas(self) -> list[Schema]:
         with self.conn.cursor() as cur:
-            tables = [Table(*raw) for raw in self.execute(self.tables_query, cur)]
+            schemas = [
+                Schema(*raw)
+                for raw in self.execute(self.schemas_query, cur)
+                if self.schemas_filter.is_allowed(raw[0])
+                and raw[0]
+                not in (
+                    "pg_toast",
+                    "pg_internal",
+                    "catalog_history",
+                    "pg_catalog",
+                    "information_schema",
+                )
+            ]
+        return schemas
+
+    def get_tables(self) -> list[Table]:
+        schemas = [schema.schema_name for schema in self.get_schemas()]
+        schemas_str = ", ".join([f"'{schema}'" for schema in schemas])
+        query = self.tables_query(schemas_str)
+
+        with self.conn.cursor() as cur:
+            tables = [Table(*raw) for raw in self.execute(query, cur)]
             grouped_columns = group_by(attrgetter("attrelid"), self.get_columns())
 
             for table in tables:
@@ -100,8 +122,21 @@ class PostgreSQLRepository:
         """
 
     @property
-    def tables_query(self):
+    def schemas_query(self):
         return """
+           select 
+                n.nspname as schema_name, 
+                pg_catalog.pg_get_userbyid(n.nspowner) as schema_owner,
+                n.oid as oid,
+                pg_catalog.obj_description(n.oid, 'pg_namespace') as description,
+                pg_total_relation_size(n.oid) as total_size_bytes
+            from pg_catalog.pg_namespace n
+            where n.nspname not like 'pg_temp_%'
+            and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema');
+        """
+
+    def tables_query(self, schemas: str):
+        return f"""
             select
                 c.oid
                 , it.table_catalog
@@ -132,7 +167,7 @@ class PostgreSQLRepository:
                     left join information_schema.views iw on iw.table_schema = n.nspname and iw.table_name = c.relname
             where c.relkind in ('r', 'v', 'm')
             and n.nspname not like 'pg_temp_%'
-            and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema')
+            and n.nspname in ({schemas}) 
             order by n.nspname, c.relname
         """
 

@@ -1,25 +1,22 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-
 # odd-collector
-
 ODD Collector is a lightweight service that gathers metadata from all your data sources.
 
-To learn more about collector types and ODD Platform's
-architecture, [read the documentation](https://docs.opendatadiscovery.org/architecture).
+To learn more about collector types and ODD Platform's architecture, [read the documentation](https://docs.opendatadiscovery.org/architecture).
 
 ## Preview:
-
 - [odd-collector](#odd-collector)
-    - [Preview:](#preview)
-    - [Implemented adapters](#implemented-adapters)
-    - [Run locally](#run-locally)
-    - [Docker build](#docker-build)
-    - [M1 building issue](#m1-building-issue)
+  - [Preview:](#preview)
+  - [Implemented adapters](#implemented-adapters)
+  - [Class diagram of adapter class hierarchy](#class-diagram-of-adapter-class-hierarchy)
+  - [Building](#building)
+  - [M1 building issue](#m1-building-issue)
+  - [Docker compose example](#docker-compose-example)
 
 ## Implemented adapters
 
 | Service       | Config example                                                                          |
-|---------------|-----------------------------------------------------------------------------------------|
+| ------------- | --------------------------------------------------------------------------------------- |
 | Cassandra     | [config](config_examples/cassandra.yaml)                                                |
 | ClickHouse    | [config](config_examples/clickhouse.yaml)                                               |
 | Dbt           | [config](config_examples/dbt.yaml)                                                      |
@@ -51,27 +48,25 @@ architecture, [read the documentation](https://docs.opendatadiscovery.org/archit
 | Airbyte       | [config](config_examples/airbyte.yaml)                                                  |
 | SingleStore   | [config](config_examples/singlestore.yaml)                                              |
 | cockroachdb   | [config](config_examples/cockroachdb.yaml)                                              |
-| sqlite        | [config](config_examples/sqlite.yaml)                                                   |
+| sqlite        | [config](config_examples/sqlite.yaml)                                              |
 
-## Run locally
+## Class diagram of adapter class hierarchy
+This may help you to understand which fields you need for each adapter in `collector_config.yaml` and also may be helpful for a new adapter developer.
+![Adapter domain class hierarchy](adapter_domain_classes.png)
 
-To run collector locally firstly we need to activate virtual environment and install dependencies:
+PlantUML code for above diagram: [domain_classes.plantuml](domain_classes.plantuml)
 
-```commandline
-poetry shell
-poetry install
+To regenerate picture, you have 2 options:
+1. Having PlantUML installed locally, do
+```shell
+java -jar plantuml.jar domain_classes.plantuml
 ```
+2. Use PyCharm or other IDE's PlantUML plugin
 
-If all dependencies are installed and collector config was set correctly we can run collector with:
 
-```commandline
-sh start.sh
-```
-
-## Docker build
-
+## Building
 ```bash
-docker build -t odd-collector .
+docker build .
 ```
 
 ## M1 building issue
@@ -83,7 +78,6 @@ docker build -t odd-collector .
 - https://github.com/grpc/grpc/issues/25082
 
 Possible solutions
-
 ```bash
 # NOTE: be aware of versions
 # NOTE: easiest way is to add all export statements to your .bashrc/.zshrc file
@@ -111,3 +105,59 @@ brew install freetds
 export LDFLAGS="-L/opt/homebrew/Cellar/freetds/1.3.17/lib -L/opt/homebrew/Cellar/openssl@1.1/1.1.1t/lib"
 ```
 
+## Docker compose example
+Custom `.env` file for docker-compose.yaml
+```
+LOGLEVEL=DEBUG
+PLATFORM_HOST_URL=http://odd-platform:8080
+POSTGRES_PASSWORD=postgres_password_secret
+```
+
+There are 3 options for config field pass:
+1. Explicitly set it in `collector_config.yaml` file, i.e `database: odd-platform-db`
+2. Use `.env` file or ENV variables
+3. In situation when plugins have same field names, we can  explicitly set ENV variable to `collector_config.yaml`, i.e. `password: !ENV ${POSTGRES_PASSWORD}`
+
+Custom `collector-config.yaml`
+```yaml
+platform_host_url: http://localhost:8080
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: postgresql
+    name: test_postgresql_adapter
+    host: "localhost"
+    port: 5432
+    database: "some_database_name"
+    user: "some_user_name"
+    password: !ENV ${POSTGRES_PASSWORD}
+  - type: mysql
+    name: test_mysql_adapter
+    host: "localhost"
+    port: 3306
+    database: "some_database_name"
+    user: "some_user_name"
+    password: "some_password"
+```
+
+docker-compose.yaml
+```yaml
+version: "3.8"
+services:
+  # --- ODD Platform ---
+  database:
+    ...
+  odd-platform:
+    ...
+
+  odd-collector:
+    image: ghcr.io/opendatadiscovery/odd-collector:latest
+    restart: always
+    volumes:
+      - collector_config.yaml:/app/collector_config.yaml
+    environment:
+      - PLATFORM_HOST_URL=${PLATFORM_HOST_URL}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    depends_on:
+      - odd-platform
+```

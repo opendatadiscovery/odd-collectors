@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import List, Literal, Optional
 
+from odd_collector_sdk.domain.filter import Filter
 from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
 from odd_collector_sdk.types import PluginFactory
 from pydantic import BaseModel, FilePath, SecretStr, validator
@@ -31,6 +32,7 @@ class PostgreSQLPlugin(DatabasePlugin):
     port: int = 5432
     database: str
     password: SecretStr = SecretStr("")
+    schemas_filter: Filter = Filter()
 
 
 class OdbcPlugin(DatabasePlugin):
@@ -122,7 +124,7 @@ class HivePlugin(BasePlugin):
 class ElasticsearchPlugin(WithHost):
     type: Literal["elasticsearch"]
     host: str
-    port: str
+    port: int
     username: str
     password: SecretStr
     verify_certs: Optional[bool] = None
@@ -168,7 +170,7 @@ class Neo4jPlugin(DatabasePlugin):
 class TableauPlugin(BasePlugin):
     type: Literal["tableau"]
     server: str
-    site: str
+    site: Optional[str]
     user: Optional[str]
     password: Optional[SecretStr]
     token_name: Optional[str]
@@ -331,6 +333,18 @@ class CKANPlugin(WithHost, WithPort):
     token: Optional[SecretStr] = None
 
 
+class OpensearchPlugin(WithHost):
+    type: Literal["opensearch"]
+    host: str
+    port: Optional[int] = 443
+    http_compress: Optional[bool] = True
+    use_ssl: Optional[bool] = True
+    username: Optional[str]
+    password: Optional[SecretStr]
+    verify_certs: Optional[bool] = None
+    ca_certs: Optional[str] = None
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -372,4 +386,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "scylladb": ScyllaDBPlugin,
     "duckdb": DuckDBPlugin,
     "ckan": CKANPlugin,
+    "opensearch": OpensearchPlugin,
 }
