@@ -24,7 +24,9 @@ class Adapter(BaseAdapter):
         return create_generator(S3Generator, self.config)
 
     def get_data_entity_list(self) -> DataEntityList:
-        logger.debug(f"Getting data entities for {self.config.dataset_config.bucket} bucket")
+        logger.debug(
+            f"Getting data entities for {self.config.dataset_config.bucket} bucket"
+        )
 
         bucket = self.fs.get_bucket(self.config.dataset_config)
         data_entities = map_bucket(bucket, self.generator)

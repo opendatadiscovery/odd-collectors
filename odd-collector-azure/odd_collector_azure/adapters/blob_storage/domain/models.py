@@ -29,7 +29,6 @@ class File:
         return cls(path=path, base_name=base_name, schema=None, format=file_format)
 
 
-
 @dataclass
 class Folder:
     path: str

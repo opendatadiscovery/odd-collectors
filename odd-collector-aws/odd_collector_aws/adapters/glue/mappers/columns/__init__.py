@@ -60,7 +60,9 @@ def __map_column(
     name = (
         column_name
         if column_name is not None
-        else type_parsed["field_name"] if "field_name" in type_parsed else glue_type
+        else type_parsed["field_name"]
+        if "field_name" in type_parsed
+        else glue_type
     )
 
     resource_name = "keys" if is_key else "values" if is_value else "subcolumns"

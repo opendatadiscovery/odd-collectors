@@ -5,10 +5,9 @@ from typing import Optional, Type
 
 from flatdict import FlatDict
 from funcy import complement, partial, select_values, walk_values
-from odd_models.models import MetadataExtension
-
 from odd_collector_sdk.logger import logger
 from odd_collector_sdk.utils.json_encoder import CustomJSONEncoder
+from odd_models.models import MetadataExtension
 
 prefix = "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/extensions"
 
@@ -67,11 +66,15 @@ def is_none(value) -> bool:
     return value is None
 
 
-def parse_complex_types(value, encoder: Optional[Type[json.JSONEncoder]]) -> Optional[str]:
+def parse_complex_types(
+    value, encoder: Optional[Type[json.JSONEncoder]]
+) -> Optional[str]:
     if isinstance(value, (str, int, float, bool, type(None))):
         return value  # Return primitives as-is
     try:
-        return json.loads(json.dumps(value, cls=encoder or CustomJSONEncoder))  # Deserialize back to Python objects
+        return json.loads(
+            json.dumps(value, cls=encoder or CustomJSONEncoder)
+        )  # Deserialize back to Python objects
     except Exception as error:
         logger.error(f"Could not jsonfy {value=}. {error}.\n SKIP.")
         return None

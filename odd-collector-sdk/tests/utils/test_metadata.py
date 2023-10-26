@@ -3,10 +3,9 @@ import json
 import pytest
 from attr import dataclass
 from funcy import partial, walk_values
+from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models import MetadataExtension
 from pydantic import BaseModel
-
-from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 
 
 @pytest.fixture
@@ -24,7 +23,11 @@ COMPLEX_METADATA = {
         "nested_field_one": 1,
         "nested_field_two": "string",
         "nested_field_three": [{"foo": "bat"}, {"foo": {}}],
-        "nested_field_four": {"more_nested_field": 1, "more_nested_field_two": {}, "more_nested_field_three": "string"},
+        "nested_field_four": {
+            "more_nested_field": 1,
+            "more_nested_field_two": {},
+            "more_nested_field_three": "string",
+        },
         "nested_field_five": {},
     },
 }

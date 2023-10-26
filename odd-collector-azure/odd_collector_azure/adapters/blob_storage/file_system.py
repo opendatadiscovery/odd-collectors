@@ -1,12 +1,12 @@
-from typing import Union, Callable
+from typing import Callable, Union
 
 import pyarrow.dataset as ds
 from adlfs import AzureBlobFileSystem
 from funcy import iffy, lmap
-from pyarrow._fs import FileInfo, FileSelector
-
 from odd_collector_azure.adapters.blob_storage.dataset_config import DatasetConfig
 from odd_collector_azure.domain.plugin import BlobPlugin
+from pyarrow._fs import FileInfo, FileSelector
+
 from .domain.models import Container, File, Folder
 from .logger import logger
 from .utils import file_format
@@ -30,17 +30,22 @@ class FileSystem:
         self.config = config
         self.fs = AzureBlobFileSystem(**params)
 
-    def get_file_info(self, path: str, file_filter: Callable[[str], bool]) -> list[FileInfo]:
+    def get_file_info(
+        self, path: str, file_filter: Callable[[str], bool]
+    ) -> list[FileInfo]:
         """
         Get file info from path.
         @param path: blob path to file or folder
         @return: FileInfo
         """
         file_info = self.fs.ls(FileSelector(base_dir=path).base_dir, detail=True)
-        filtered_file_info = list(filter(
-            lambda obj: obj['type'] == 'directory' or file_filter(obj["name"].rsplit("/", 1)[-1]),
-            file_info
-        ))
+        filtered_file_info = list(
+            filter(
+                lambda obj: obj["type"] == "directory"
+                or file_filter(obj["name"].rsplit("/", 1)[-1]),
+                file_info,
+            )
+        )
         logger.debug(f"Filtered file info: {filtered_file_info}")
         return filtered_file_info
 
@@ -92,17 +97,21 @@ class FileSystem:
         """
         container = Container(self.config.dataset_config.container)
         if self.config.dataset_config.folder_as_dataset:
-            container.objects.append(self.get_folder_as_file(self.config.dataset_config))
+            container.objects.append(
+                self.get_folder_as_file(self.config.dataset_config)
+            )
         else:
             objects = self.list_objects(
                 path=self.config.dataset_config.full_path,
-                file_filter=self.config.file_filter.is_allowed
+                file_filter=self.config.file_filter.is_allowed,
             )
             container.objects.extend(objects)
 
         return container
 
-    def list_objects(self, path: str, file_filter: Callable[[str], bool]) -> list[Union[File, Folder]]:
+    def list_objects(
+        self, path: str, file_filter: Callable[[str], bool]
+    ) -> list[Union[File, Folder]]:
         """
         Recursively get objects for path.
         @param path: blob path
@@ -118,7 +127,7 @@ class FileSystem:
                 ),
                 lambda x: self.get_folder(x["name"], file_filter),
             ),
-            self.get_file_info(path, file_filter)
+            self.get_file_info(path, file_filter),
         )
 
     def get_file(self, path: str, file_name: str = None) -> File:
@@ -150,7 +159,9 @@ class FileSystem:
                 file_format="unknown",
             )
 
-    def get_folder(self, path: str, file_filter: Callable[[str], bool], recursive: bool = True) -> Folder:
+    def get_folder(
+        self, path: str, file_filter: Callable[[str], bool], recursive: bool = True
+    ) -> Folder:
         """
         Get Folder with objects recursively.
         @param path: blob path to

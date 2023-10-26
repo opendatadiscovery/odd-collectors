@@ -83,7 +83,6 @@ class S3Plugin(AwsPlugin):
             raise ValueError("datasets field is deprecated, use dataset_config instead")
 
 
-
 class QuicksightPlugin(AwsPlugin):
     type: Literal["quicksight"]
 

@@ -7,10 +7,9 @@ from timeit import default_timer as timer
 from typing import Any, Generator, Iterable, Union
 
 from funcy import chunks
-from odd_models.models import DataEntityList
-
 from odd_collector_sdk.api.datasource_api import PlatformApi
 from odd_collector_sdk.domain.adapter import Adapter
+from odd_models.models import DataEntityList
 
 from .logger import logger
 
@@ -60,6 +59,7 @@ class AbstractJob:
                     data_source_oddrn=self._adapter.get_data_source_oddrn(), items=items
                 )
 
+
 class AsyncGeneratorJob(AbstractJob):
     async def start(self):
         with log_execution(self._adapter.config.name):
@@ -84,6 +84,7 @@ class AsyncGeneratorJob(AbstractJob):
         data_entity_lists = self._adapter.get_data_entity_list()
         async for data_entity_list in self._split(data_entity_lists):
             yield data_entity_list
+
 
 class AsyncJob(AbstractJob):
     async def start(self):

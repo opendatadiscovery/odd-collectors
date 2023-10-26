@@ -4,6 +4,7 @@ from typing import Any, Dict, List
 
 from funcy import lflatten
 from lark import Lark
+from odd_collector_azure.adapters.blob_storage.blob_generator import BlobGenerator
 from odd_models.models import (
     DataEntity,
     DataEntityType,
@@ -15,7 +16,6 @@ from odd_models.models import (
 from oddrn_generator.utils import escape
 from pyarrow import Schema
 
-from odd_collector_azure.adapters.blob_storage.blob_generator import BlobGenerator
 from .azure_file_type_transformer import AzureFieldTypeTransformer
 
 SCHEMA_FILE_URL = (
@@ -64,7 +64,10 @@ TYPE_MAP: Dict[str, Type] = {
 }
 field_type_transformer = AzureFieldTypeTransformer()
 parser = Lark.open(
-    "grammar/blob_storage_field_type_grammar.lark", rel_to=__file__, parser="lalr", start="type"
+    "grammar/blob_storage_field_type_grammar.lark",
+    rel_to=__file__,
+    parser="lalr",
+    start="type",
 )
 
 

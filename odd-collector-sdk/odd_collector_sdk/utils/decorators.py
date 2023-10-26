@@ -10,6 +10,7 @@ def log_data_entity(call):
     logger.debug(data_entity.json(exclude_none=True))
     return data_entity
 
+
 @decorator
 def write_data_entity_list(call, fname: str):
     data_entities: DataEntityList = call()

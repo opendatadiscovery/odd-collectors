@@ -2,13 +2,13 @@ from typing import Any
 
 from funcy import lflatten
 from lark import Lark
+from odd_collector_azure.adapters.blob_storage.mapper.azure_file_type_transformer import (
+    field_type_transformer,
+)
 from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import AzureBlobStorageGenerator
 from pyarrow import Schema
 
-from odd_collector_azure.adapters.blob_storage.mapper.azure_file_type_transformer import (
-    field_type_transformer,
-)
 from ..logger import logger
 
 TYPE_MAP: dict[str, Type] = {
@@ -51,7 +51,10 @@ TYPE_MAP: dict[str, Type] = {
 }
 
 parser = Lark.open(
-    "grammar/blob_storage_field_type_grammar.lark", rel_to=__file__, parser="lalr", start="type"
+    "grammar/blob_storage_field_type_grammar.lark",
+    rel_to=__file__,
+    parser="lalr",
+    start="type",
 )
 
 
@@ -152,7 +155,9 @@ def map_column(
     return result
 
 
-def map_columns(schema: Schema, generator: AzureBlobStorageGenerator) -> list[DataSetField]:
+def map_columns(
+    schema: Schema, generator: AzureBlobStorageGenerator
+) -> list[DataSetField]:
     columns = [
         map_column(generator, parse(str(field.type)), field.name) for field in schema
     ]

@@ -15,7 +15,7 @@ from .models.table import DTable
 
 
 def handle_values(
-        obj: dict, handler: tuple[str, callable]
+    obj: dict, handler: tuple[str, callable]
 ) -> tuple[str, Optional[any]]:
     key, callback = handler
     return key, silent(callback)(obj.get(key))

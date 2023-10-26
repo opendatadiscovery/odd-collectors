@@ -1,5 +1,6 @@
 from odd_collector_aws.logger import logger
 
+
 def get_version() -> str:
     try:
         from odd_collector_aws.__version__ import VERSION
