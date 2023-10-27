@@ -1,10 +1,9 @@
 from typing import Union
 
 import pyarrow.dataset as ds
+from odd_collector_aws.domain.plugin import S3DeltaPlugin, S3Plugin
 from pyarrow._fs import FileInfo, FileSelector
 from pyarrow.fs import S3FileSystem
-
-from odd_collector_aws.domain.plugin import S3DeltaPlugin, S3Plugin
 
 S3Config = Union[S3Plugin, S3DeltaPlugin]
 

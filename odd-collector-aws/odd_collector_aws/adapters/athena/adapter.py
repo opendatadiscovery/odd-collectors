@@ -3,12 +3,11 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Union
 
 import boto3
 from more_itertools import flatten
+from odd_collector_aws.domain.paginator_config import PaginatorConfig
+from odd_collector_aws.domain.plugin import AthenaPlugin
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import AthenaGenerator
-
-from odd_collector_aws.domain.paginator_config import PaginatorConfig
-from odd_collector_aws.domain.plugin import AthenaPlugin
 
 from .mappers.tables import map_athena_table
 

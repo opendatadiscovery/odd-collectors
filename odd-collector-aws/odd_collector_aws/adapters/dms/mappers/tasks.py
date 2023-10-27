@@ -3,6 +3,10 @@ from datetime import datetime
 from json import loads
 from typing import Any, Dict, List, Type, Union
 
+from odd_collector_aws.adapters.dms import (
+    _METADATA_SCHEMA_URL_PREFIX,
+    _keys_to_include_task,
+)
 from odd_models.models import (
     DataEntity,
     DataEntityType,
@@ -12,11 +16,6 @@ from odd_models.models import (
 )
 from oddrn_generator.generators import DmsGenerator
 from yaml import safe_load
-
-from odd_collector_aws.adapters.dms import (
-    _METADATA_SCHEMA_URL_PREFIX,
-    _keys_to_include_task,
-)
 
 from .endpoints import EndpointEngine, engines_factory
 from .metadata import create_metadata_extension_list

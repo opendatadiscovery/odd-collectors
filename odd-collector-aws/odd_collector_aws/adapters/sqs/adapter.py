@@ -5,10 +5,9 @@ from typing import Any, Dict, List
 import boto3
 import pytz
 from botocore.exceptions import ClientError
+from odd_collector_aws.domain.plugin import SQSPlugin
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList, DataEntityType
-
-from odd_collector_aws.domain.plugin import SQSPlugin
 
 from .sqs_generator import SqsGenerator
 

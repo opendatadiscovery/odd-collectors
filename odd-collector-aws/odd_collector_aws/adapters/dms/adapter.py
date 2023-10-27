@@ -1,12 +1,11 @@
 from typing import Any, Dict, Iterable
 
-from odd_collector_sdk.domain.adapter import AbstractAdapter
-from odd_models.models import DataEntityList
-from oddrn_generator.generators import DmsGenerator
-
 from odd_collector_aws.domain.fetch_paginator import fetch_paginator
 from odd_collector_aws.domain.paginator_config import PaginatorConfig
 from odd_collector_aws.domain.plugin import DmsPlugin
+from odd_collector_sdk.domain.adapter import AbstractAdapter
+from odd_models.models import DataEntityList
+from oddrn_generator.generators import DmsGenerator
 
 from .client import DMSClient
 from .mappers.tasks import map_dms_task

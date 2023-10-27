@@ -2,8 +2,6 @@ import traceback
 from typing import Iterable, Optional, Union
 
 from funcy import lflatten
-from oddrn_generator import S3Generator
-
 from odd_collector_aws.adapters.s3.file_system import FileSystem
 from odd_collector_aws.adapters.sagemaker.domain import (
     Association,
@@ -22,6 +20,7 @@ from odd_collector_aws.aws.aws_client import AwsClient
 from odd_collector_aws.domain.paginator_config import PaginatorConfig
 from odd_collector_aws.domain.plugin import SagemakerPlugin
 from odd_collector_aws.utils.parse_s3_url import parse_s3_url
+from oddrn_generator import S3Generator
 
 
 class SagemakerClient:

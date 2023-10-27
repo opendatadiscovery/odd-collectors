@@ -1,7 +1,6 @@
+from odd_collector_aws.utils.parse_s3_url import parse_s3_url
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import S3Generator
-
-from odd_collector_aws.utils.parse_s3_url import parse_s3_url
 
 from ..models.field import DField
 from ..models.table import DTable

@@ -5,7 +5,6 @@ from pathlib import Path
 import pytest
 from odd_collector_sdk.domain.collector_config_loader import CollectorConfigLoader
 from odd_collector_sdk.errors import LoadConfigError
-
 from tests.plugins.plugins import PLUGIN_FACTORY
 
 

@@ -1,10 +1,9 @@
 import re
 from typing import Union
 
+from odd_collector_aws.adapters.s3.logger import logger
 from pyarrow._csv import ParseOptions
 from pyarrow._dataset import CsvFileFormat
-
-from odd_collector_aws.adapters.s3.logger import logger
 
 
 def file_extension(file_name: str) -> str:

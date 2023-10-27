@@ -3,12 +3,11 @@ from typing import Any, Dict, Iterable
 
 import boto3
 from more_itertools import chunked, flatten
+from odd_collector_aws.domain.paginator_config import PaginatorConfig
+from odd_collector_aws.domain.plugin import GluePlugin
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import GlueGenerator
-
-from odd_collector_aws.domain.paginator_config import PaginatorConfig
-from odd_collector_aws.domain.plugin import GluePlugin
 
 from .mappers.columns import map_column_stats
 from .mappers.jobs import map_glue_job, map_glue_job_run

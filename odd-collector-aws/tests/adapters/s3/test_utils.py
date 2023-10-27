@@ -1,8 +1,7 @@
 import pytest
+from odd_collector_aws.adapters.s3.utils import file_extension, file_format
 from pyarrow._csv import ParseOptions
 from pyarrow._dataset import CsvFileFormat
-
-from odd_collector_aws.adapters.s3.utils import file_extension, file_format
 
 
 def test_file_extension():

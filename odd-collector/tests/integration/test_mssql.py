@@ -4,7 +4,6 @@ from odd_models import DataEntity
 from odd_models.models import DataEntityType
 from pydantic import SecretStr
 from testcontainers.mssql import SqlServerContainer
-
 from tests.integration.helpers import find_by_type
 
 create_user = """

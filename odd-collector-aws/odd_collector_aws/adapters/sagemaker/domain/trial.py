@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from odd_collector_aws.const import METADATA_PREFIX
 from odd_models.models import (
     DataEntity,
     DataEntityGroup,
@@ -7,8 +8,6 @@ from odd_models.models import (
     MetadataExtension,
 )
 from pydantic import AnyUrl
-
-from odd_collector_aws.const import METADATA_PREFIX
 
 from .base_sagemaker_entity import BaseSagemakerEntity
 from .trial_component import TrialComponent

@@ -2,9 +2,6 @@ import logging
 import traceback
 from typing import Any, Optional, Union
 
-from odd_models.models import DataEntity
-from oddrn_generator.generators import S3Generator, SagemakerGenerator
-
 from odd_collector_aws.adapters.sagemaker.domain.artifact import (
     Artifact,
     DataAsset,
@@ -19,6 +16,8 @@ from odd_collector_aws.adapters.sagemaker.domain.trial_component import (
     add_output,
 )
 from odd_collector_aws.errors import MappingError
+from odd_models.models import DataEntity
+from oddrn_generator.generators import S3Generator, SagemakerGenerator
 
 
 # TODO: Flyweight pattern
