@@ -1,0 +1,48 @@
+name: ODD Collector test image build
+
+on:
+  workflow_dispatch:
+    inputs:
+      collector-name:
+        description: 'Select service to build'
+        required: true
+        default: 'odd-collector'
+        type: choice
+        options:
+          - odd-collector
+          - odd-collector-aws
+          - odd-collector-gcp
+          - odd-collector-azure
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/${{ inputs.collector-name }}
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    name: Build and push docker image to GHCR
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.ORG_TOKEN_GHCR }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:test
+          labels: ${{ steps.meta.outputs.labels }}
