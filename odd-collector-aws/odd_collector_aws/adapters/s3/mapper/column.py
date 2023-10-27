@@ -2,13 +2,12 @@ from typing import Any
 
 from funcy import lflatten
 from lark import Lark
-from odd_models.models import DataSetField, DataSetFieldType, Type
-from oddrn_generator import S3Generator
-from pyarrow import Schema
-
 from odd_collector_aws.adapters.s3.mapper.s3_field_type_transformer import (
     field_type_transformer,
 )
+from odd_models.models import DataSetField, DataSetFieldType, Type
+from oddrn_generator import S3Generator
+from pyarrow import Schema
 
 from ..logger import logger
 

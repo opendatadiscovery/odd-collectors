@@ -1,9 +1,8 @@
 from collections import deque
 
+from odd_collector_aws.adapters.s3.domain.models import Bucket, File, Folder
 from odd_models import DataEntity, DataEntityGroup, DataEntityType, DataSet
 from oddrn_generator import S3Generator
-
-from odd_collector_aws.adapters.s3.domain.models import Bucket, File, Folder
 
 from .column import map_columns
 

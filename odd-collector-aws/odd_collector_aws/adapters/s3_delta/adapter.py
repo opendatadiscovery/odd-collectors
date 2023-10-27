@@ -1,12 +1,11 @@
 from typing import Union
 
 from funcy import lmap, mapcat, partial
+from odd_collector_aws.domain.plugin import S3DeltaPlugin
+from odd_collector_aws.utils.create_generator import create_generator
 from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models.models import DataEntityList
 from oddrn_generator.generators import Generator, S3Generator
-
-from odd_collector_aws.domain.plugin import S3DeltaPlugin
-from odd_collector_aws.utils.create_generator import create_generator
 
 from .client import DeltaClient
 from .logger import logger

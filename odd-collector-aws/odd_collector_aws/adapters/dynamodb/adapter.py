@@ -2,6 +2,8 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, Iterable, List, Union
 
 import boto3
+from odd_collector_aws.domain.paginator_config import PaginatorConfig
+from odd_collector_aws.domain.plugin import DynamoDbPlugin
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import (
     DataEntity,
@@ -12,9 +14,6 @@ from odd_models.models import (
     DataSetFieldType,
 )
 from oddrn_generator import DynamodbGenerator
-
-from odd_collector_aws.domain.paginator_config import PaginatorConfig
-from odd_collector_aws.domain.plugin import DynamoDbPlugin
 
 from .metadata import MetadataExtractor
 

@@ -2,12 +2,11 @@ import logging
 from typing import Type, TypeVar, cast
 
 from botocore.exceptions import ClientError
-from oddrn_generator import Generator
-from oddrn_generator.generators import S3CustomGenerator, S3Generator
-
 from odd_collector_aws.aws.aws_client import Aws
 from odd_collector_aws.domain.plugin import AwsPlugin, S3Plugin
 from odd_collector_aws.errors import AccountIdError
+from oddrn_generator import Generator
+from oddrn_generator.generators import S3CustomGenerator, S3Generator
 
 T = TypeVar("T", bound=Generator)
 

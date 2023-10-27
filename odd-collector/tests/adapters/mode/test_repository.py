@@ -7,7 +7,6 @@ from odd_collector.adapters.mode.domain.report import Report
 from odd_collector.adapters.mode.repository import ModeRepository
 from odd_collector.domain.plugin import ModePlugin
 from odd_models.models import DataEntityType
-
 from tests.adapters.mode.mock_rest_client import TestRestClient
 
 

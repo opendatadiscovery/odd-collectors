@@ -5,7 +5,6 @@ from odd_collector.adapters.mysql.adapter import Adapter
 from odd_collector.domain.plugin import MySQLPlugin
 from pydantic import SecretStr
 from testcontainers.mysql import MySqlContainer
-
 from tests.integration.helpers import find_by_name, find_by_type
 
 

@@ -1,12 +1,11 @@
 from typing import Iterable, Union
 
-from odd_collector_sdk.domain.adapter import BaseAdapter
-from odd_models.models import DataEntityList
-from oddrn_generator.generators import Generator, S3Generator
-
 from odd_collector_aws.domain.plugin import S3Plugin
 from odd_collector_aws.logger import logger
 from odd_collector_aws.utils.create_generator import create_generator
+from odd_collector_sdk.domain.adapter import BaseAdapter
+from odd_models.models import DataEntityList
+from oddrn_generator.generators import Generator, S3Generator
 
 from .file_system import FileSystem
 from .mapper.bucket import map_bucket

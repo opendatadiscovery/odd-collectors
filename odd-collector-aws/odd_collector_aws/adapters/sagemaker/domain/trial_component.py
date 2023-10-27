@@ -1,14 +1,6 @@
 from datetime import datetime
 from typing import Any, Optional, Union
 
-from odd_models.models import (
-    DataEntity,
-    DataEntityType,
-    DataTransformer,
-    MetadataExtension,
-)
-from oddrn_generator import SagemakerGenerator
-
 from odd_collector_aws.adapters.sagemaker.domain.base_sagemaker_entity import (
     BaseSagemakerEntity,
 )
@@ -16,6 +8,13 @@ from odd_collector_aws.adapters.sagemaker.domain.source import Source
 from odd_collector_aws.adapters.sagemaker.utils.parse_job_name import parse_job_name
 from odd_collector_aws.const import METADATA_PREFIX
 from odd_collector_aws.utils import flatdict
+from odd_models.models import (
+    DataEntity,
+    DataEntityType,
+    DataTransformer,
+    MetadataExtension,
+)
+from oddrn_generator import SagemakerGenerator
 
 
 class UserInfo(BaseSagemakerEntity):

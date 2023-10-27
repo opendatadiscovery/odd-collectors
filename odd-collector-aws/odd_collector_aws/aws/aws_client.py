@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 import boto3
 from botocore.client import BaseClient
-
 from odd_collector_aws.domain.plugin import AwsPlugin
 from odd_collector_aws.logger import logger
 

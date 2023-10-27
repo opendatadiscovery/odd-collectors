@@ -4,7 +4,6 @@ from typing import Any, Iterable, Optional
 
 from deltalake import DeltaTable
 from funcy import complement, isnone, last, partial, select_values, silent, walk
-
 from odd_collector_aws.domain.plugin import DeltaTableConfig, S3DeltaPlugin
 from odd_collector_aws.filesystem.pyarrow_fs import FileSystem
 

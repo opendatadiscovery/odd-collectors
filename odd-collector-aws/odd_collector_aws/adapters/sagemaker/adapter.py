@@ -1,12 +1,11 @@
 from funcy import lmapcat
-from odd_collector_sdk.domain.adapter import AbstractAdapter
-from odd_models.models import DataEntityList
-from oddrn_generator.generators import S3Generator, SagemakerGenerator
-
 from odd_collector_aws.adapters.sagemaker.experiment_mapper import ExperimentMapper
 from odd_collector_aws.adapters.sagemaker.sagemaker_client import SagemakerClient
 from odd_collector_aws.domain.plugin import SagemakerPlugin
 from odd_collector_aws.utils.create_generator import create_generator
+from odd_collector_sdk.domain.adapter import AbstractAdapter
+from odd_models.models import DataEntityList
+from oddrn_generator.generators import S3Generator, SagemakerGenerator
 
 
 class Adapter(AbstractAdapter):

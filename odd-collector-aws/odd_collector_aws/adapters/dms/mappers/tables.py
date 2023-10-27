@@ -3,7 +3,6 @@ from json import loads
 from typing import Any, Dict, List
 
 import requests
-
 from odd_collector_aws.adapters.dms.mappers.endpoints import EndpointEngine
 
 
