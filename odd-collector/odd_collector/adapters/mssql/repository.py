@@ -4,9 +4,8 @@ from typing import Any, Iterable
 
 import pymssql
 from funcy import group_by
-from pydantic import SecretStr
-
 from odd_collector.domain.plugin import MSSQLPlugin
+from pydantic import SecretStr
 
 from .logger import logger
 from .models import Column, Table, View, ViewDependency

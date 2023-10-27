@@ -3,14 +3,13 @@ from typing import List, Optional, Type
 
 import pytest
 from funcy import filter, first, lfilter
-from odd_models.models import DataEntity, DataEntityType
-from pydantic import SecretStr
-
 from odd_collector.adapters.snowflake.adapter import Adapter
 from odd_collector.adapters.snowflake.client import SnowflakeClientBase
 from odd_collector.adapters.snowflake.domain import Column, Connection, Table, View
 from odd_collector.adapters.snowflake.domain.pipe import RawPipe, RawStage
 from odd_collector.domain.plugin import SnowflakePlugin
+from odd_models.models import DataEntity, DataEntityType
+from pydantic import SecretStr
 
 DATABASE_NAME = "TEST_DB"
 SCHEMA = "PUBLIC"

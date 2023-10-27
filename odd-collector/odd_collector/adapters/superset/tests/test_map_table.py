@@ -1,10 +1,9 @@
 import pytest
-from odd_models.models import DataEntityType
-from oddrn_generator.generators import SupersetGenerator
-
 from odd_collector.adapters.superset.domain.column import Column
 from odd_collector.adapters.superset.domain.dataset import Dataset
 from odd_collector.adapters.superset.mappers.datasets import map_table
+from odd_models.models import DataEntityType
+from oddrn_generator.generators import SupersetGenerator
 
 
 @pytest.fixture

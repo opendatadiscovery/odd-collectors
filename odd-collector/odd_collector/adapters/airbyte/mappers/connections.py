@@ -1,5 +1,6 @@
 from typing import Any
 
+from odd_collector.helpers.flatdict import FlatDict
 from odd_models.models import (
     DataEntity,
     DataEntityType,
@@ -7,8 +8,6 @@ from odd_models.models import (
     MetadataExtension,
 )
 from oddrn_generator import AirbyteGenerator
-
-from odd_collector.helpers.flatdict import FlatDict
 
 from ..logger import logger
 

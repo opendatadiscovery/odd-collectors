@@ -1,11 +1,10 @@
 from typing import List, Optional, Tuple, Type
 
+from odd_collector.domain.plugin import SnowflakePlugin
 from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_collector_sdk.errors import MappingDataError
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import Generator, SnowflakeGenerator
-
-from odd_collector.domain.plugin import SnowflakePlugin
 
 from .client import SnowflakeClient, SnowflakeClientBase
 from .domain import Pipe, Table, View

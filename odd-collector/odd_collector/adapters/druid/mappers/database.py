@@ -1,8 +1,7 @@
 from typing import List
 
-from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
-
 from odd_collector.adapters.druid.generator import DruidGenerator
+from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
 
 
 def to_data_entity_group(

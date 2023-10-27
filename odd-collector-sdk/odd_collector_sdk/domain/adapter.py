@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Union
 
+from odd_collector_sdk.domain.plugin import Config
 from odd_models.models import DataEntityList
 from oddrn_generator import Generator
-
-from odd_collector_sdk.domain.plugin import Config
 
 
 class AbstractAdapter(ABC):

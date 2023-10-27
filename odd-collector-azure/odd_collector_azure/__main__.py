@@ -1,8 +1,7 @@
 from pathlib import Path
 
-from odd_collector_sdk.collector import Collector
-
 from odd_collector_azure.domain.plugin import PLUGIN_FACTORY
+from odd_collector_sdk.collector import Collector
 
 COLLECTOR_PACKAGE = __package__
 CONFIG_PATH = Path().cwd() / "collector_config.yaml"

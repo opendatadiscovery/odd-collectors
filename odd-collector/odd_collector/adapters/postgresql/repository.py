@@ -4,17 +4,16 @@ from typing import Union
 
 import psycopg2
 from funcy.seqs import group_by
-from odd_collector_sdk.domain.filter import Filter
-from psycopg2 import sql
-
 from odd_collector.adapters.postgresql.models import (
     Column,
     EnumTypeLabel,
     PrimaryKey,
-    Table,
     Schema,
+    Table,
 )
 from odd_collector.domain.plugin import PostgreSQLPlugin
+from odd_collector_sdk.domain.filter import Filter
+from psycopg2 import sql
 
 
 @dataclass(frozen=True)

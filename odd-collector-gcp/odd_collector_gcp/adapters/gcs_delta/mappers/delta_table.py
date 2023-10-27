@@ -1,9 +1,8 @@
+from odd_collector_gcp.utils.parse_gcs_url import parse_gcs_url
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import GCSGenerator
 
-from odd_collector_gcp.utils.parse_gcs_url import parse_gcs_url
 from ..models.field import DField
-
 from ..models.table import DTable
 from .field import map_field
 from .metadata import map_metadata

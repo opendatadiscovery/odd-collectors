@@ -1,9 +1,8 @@
 from copy import deepcopy
 
+from odd_collector.helpers.bytes_to_str import convert_bytes_to_str
 from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import OdbcGenerator
-
-from odd_collector.helpers.bytes_to_str import convert_bytes_to_str
 
 from ..domain import Column
 from .metadata import map_metadata

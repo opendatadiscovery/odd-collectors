@@ -17,6 +17,12 @@ from google.cloud.bigquery import (
     RangePartitioning,
     TimePartitioning,
 )
+from odd_collector_gcp.adapters.bigquery_storage.dto import (
+    BigQueryDataset,
+    BigQueryField,
+    BigQueryTable,
+)
+from odd_collector_gcp.utils.get_properties import get_properties
 from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models.models import (
     DataEntity,
@@ -28,13 +34,6 @@ from odd_models.models import (
     Type,
 )
 from oddrn_generator import BigQueryStorageGenerator
-
-from odd_collector_gcp.adapters.bigquery_storage.dto import (
-    BigQueryDataset,
-    BigQueryField,
-    BigQueryTable,
-)
-from odd_collector_gcp.utils.get_properties import get_properties
 
 BIG_QUERY_STORAGE_TYPE_MAPPING = {
     "STRING": Type.TYPE_STRING,

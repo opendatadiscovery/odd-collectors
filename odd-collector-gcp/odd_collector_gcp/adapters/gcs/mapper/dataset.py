@@ -1,21 +1,15 @@
 import re
 from typing import Any, Dict
+
 from funcy import lflatten
 from lark import Lark
-from odd_models.models import (
-    DataEntity,
-    DataEntityType,
-    DataSet,
-    DataSetField,
-    Type,
-)
+from odd_models.models import DataEntity, DataEntityType, DataSet, DataSetField, Type
 from oddrn_generator.generators import GCSGenerator
 from oddrn_generator.utils import escape
 from pyarrow import Schema
 
-from .column import map_column
 from ..logger import logger
-
+from .column import map_column
 from .gcs_field_type_transformer import GCSFieldTypeTransformer
 
 SCHEMA_FILE_URL = (

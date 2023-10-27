@@ -1,10 +1,9 @@
 from typing import Type
 from urllib.parse import urlparse
 
+from odd_collector.domain.plugin import ModePlugin
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntityList
-
-from odd_collector.domain.plugin import ModePlugin
 
 from .generator import ModeGenerator
 from .logger import logger

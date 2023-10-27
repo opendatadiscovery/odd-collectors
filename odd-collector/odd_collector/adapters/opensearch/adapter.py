@@ -2,11 +2,10 @@ from typing import Optional
 from urllib.parse import urlparse
 
 from funcy import get_in, get_lax
+from odd_collector.domain.plugin import ElasticsearchPlugin
 from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import ElasticSearchGenerator, Generator
-
-from odd_collector.domain.plugin import ElasticsearchPlugin
 
 from .client import Client
 from .logger import logger

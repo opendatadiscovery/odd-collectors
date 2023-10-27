@@ -3,7 +3,6 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 
 from mlflow.entities.model_registry import ModelVersion as MLFlowModelVersion
-
 from odd_collector.helpers.datetime_from_ms import datetime_from_milliseconds
 
 

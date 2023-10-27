@@ -1,11 +1,10 @@
 from collections import deque
 
 from funcy import lpluck_attr
+from odd_collector_azure.adapters.azure_data_factory.domain import ADFActivity
 from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models import DataEntity, DataEntityGroup, DataEntityType, DataTransformer
 from oddrn_generator import AzureDataFactoryGenerator
-
-from odd_collector_azure.adapters.azure_data_factory.domain import ADFActivity
 
 from ..utils import ADFMetadataEncoder
 

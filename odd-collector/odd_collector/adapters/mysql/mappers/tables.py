@@ -1,10 +1,9 @@
 from copy import deepcopy
 
+from odd_collector.models import Table
 from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import MysqlGenerator
-
-from odd_collector.models import Table
 
 from ..logger import logger
 from .columns import map_column

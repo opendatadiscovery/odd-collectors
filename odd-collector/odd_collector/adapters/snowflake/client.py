@@ -5,12 +5,11 @@ from collections import defaultdict
 from typing import Callable, Dict, List, Type, Union
 
 from funcy import lsplit
+from odd_collector.domain.plugin import SnowflakePlugin
+from odd_collector.helpers import LowerKeyDict
 from odd_collector_sdk.errors import DataSourceError
 from snowflake import connector
 from snowflake.connector.cursor import DictCursor
-
-from odd_collector.domain.plugin import SnowflakePlugin
-from odd_collector.helpers import LowerKeyDict
 
 from .domain import Column, Pipe, RawPipe, RawStage, Table, View
 from .logger import logger

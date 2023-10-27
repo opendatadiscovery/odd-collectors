@@ -1,11 +1,10 @@
 from typing import List, Type, Union
 
+from odd_collector.domain.plugin import PrestoPlugin, TrinoPlugin
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator.generators import PrestoGenerator, TrinoGenerator
 from pandas import DataFrame
-
-from odd_collector.domain.plugin import PrestoPlugin, TrinoPlugin
 
 from .mappers.catalogs import map_catalog
 from .mappers.models import ColumnMetadata, TableMetadata

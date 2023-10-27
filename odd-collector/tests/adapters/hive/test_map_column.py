@@ -1,7 +1,5 @@
 import unittest
 
-from oddrn_generator import HiveGenerator
-
 from odd_collector.adapters.hive.mappers.column import map_column
 from odd_collector.adapters.hive.models.column import Column
 from odd_collector.adapters.hive.models.column_types import (
@@ -9,6 +7,7 @@ from odd_collector.adapters.hive.models.column_types import (
     PrimitiveColumnType,
     StructColumnType,
 )
+from oddrn_generator import HiveGenerator
 
 
 class TestFieldTypeParser(unittest.TestCase):

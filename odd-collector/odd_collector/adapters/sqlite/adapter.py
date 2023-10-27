@@ -1,9 +1,8 @@
 from funcy import concat, lpluck_attr
+from odd_collector.domain.plugin import SQLitePlugin
 from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models.models import DataEntityList
 from oddrn_generator import SQLiteGenerator
-
-from odd_collector.domain.plugin import SQLitePlugin
 
 from .mappers.database import map_database
 from .mappers.table import map_table

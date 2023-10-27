@@ -8,13 +8,12 @@ from cassandra.auth import PlainTextAuthProvider
 from cassandra.cluster import EXEC_PROFILE_DEFAULT, Cluster, ExecutionProfile
 from cassandra.query import tuple_factory
 from cassandra.util import OrderedMapSerializedKey, SortedSet
-from odd_collector_sdk.errors import DataSourceConnectionError
-
 from odd_collector.adapters.cassandra.mappers.models import (
     ColumnMetadata,
     TableMetadata,
     ViewMetadata,
 )
+from odd_collector_sdk.errors import DataSourceConnectionError
 
 TABLE_METADATA_QUERY: str = """
     SELECT * FROM system_schema.tables 

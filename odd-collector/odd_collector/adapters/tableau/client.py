@@ -1,11 +1,10 @@
 from typing import Any, Union
 
 import tableauserverclient as TSC
-from odd_collector_sdk.errors import DataSourceAuthorizationError, DataSourceError
-from tableauserverclient import PersonalAccessTokenAuth, TableauAuth
-
 from odd_collector.adapters.tableau.domain.table import Table
 from odd_collector.domain.plugin import TableauPlugin
+from odd_collector_sdk.errors import DataSourceAuthorizationError, DataSourceError
+from tableauserverclient import PersonalAccessTokenAuth, TableauAuth
 
 from .domain.database import ConnectionParams, EmbeddedDatabase, ExternalDatabase
 from .domain.sheet import Sheet

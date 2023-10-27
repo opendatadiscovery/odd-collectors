@@ -1,9 +1,8 @@
 from funcy import lpluck_attr
+from odd_collector.adapters.postgresql.models import Schema
 from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models import DataEntity, DataEntityGroup, DataEntityType
 from oddrn_generator import PostgresqlGenerator
-
-from odd_collector.adapters.postgresql.models import Schema
 
 
 def map_schema(

@@ -2,10 +2,9 @@ from typing import Dict, Type
 from urllib.parse import urlparse
 
 from funcy import lconcat, lpluck_attr
+from odd_collector.domain.plugin import MlflowPlugin
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
-
-from odd_collector.domain.plugin import MlflowPlugin
 
 from .client import Client, MlflowClientBase
 from .generator import MlFlowGenerator

@@ -1,6 +1,4 @@
 import pytest
-from odd_models.models import DataEntityType
-
 from odd_collector.adapters.mode.adapter import Adapter
 from odd_collector.adapters.mode.domain.collection import Collection
 from odd_collector.adapters.mode.domain.datasource import DataSource
@@ -8,6 +6,8 @@ from odd_collector.adapters.mode.domain.query import Query
 from odd_collector.adapters.mode.domain.report import Report
 from odd_collector.adapters.mode.repository import ModeRepository
 from odd_collector.domain.plugin import ModePlugin
+from odd_models.models import DataEntityType
+
 from tests.adapters.mode.mock_rest_client import TestRestClient
 
 

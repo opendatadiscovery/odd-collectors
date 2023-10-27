@@ -1,11 +1,10 @@
 from typing import List
 from urllib import parse
 
+from odd_collector.domain.plugin import MetabasePlugin
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator.generators import MetabaseGenerator
-
-from odd_collector.domain.plugin import MetabasePlugin
 
 from .client import MetabaseClient
 from .mappers.card import map_card

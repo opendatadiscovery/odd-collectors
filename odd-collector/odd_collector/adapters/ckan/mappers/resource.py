@@ -1,9 +1,8 @@
-from odd_collector_sdk.utils.metadata import extract_metadata, DefinitionType
-from odd_models import DataEntity, DataEntityType, DataSet
-from oddrn_generator import CKANGenerator
-
 from odd_collector.adapters.ckan.mappers.field import map_field
 from odd_collector.adapters.ckan.mappers.models import Resource, ResourceField
+from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
+from odd_models import DataEntity, DataEntityType, DataSet
+from oddrn_generator import CKANGenerator
 
 
 def map_resource(

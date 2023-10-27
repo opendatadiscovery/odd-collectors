@@ -1,7 +1,6 @@
 from dataclasses import asdict, dataclass, field
 
 from funcy import omit
-
 from odd_collector.adapters.mssql.models.column import Column
 from odd_collector.helpers.bytes_to_str import convert_bytes_to_str_in_dict
 

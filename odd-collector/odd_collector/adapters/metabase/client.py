@@ -5,9 +5,8 @@ from typing import Any, Dict, List, Type, TypeVar
 
 from aiohttp import ClientSession
 from funcy import group_by, lmap, lpluck, lpluck_attr
-from odd_collector_sdk.errors import DataSourceAuthorizationError
-
 from odd_collector.domain.plugin import MetabasePlugin
+from odd_collector_sdk.errors import DataSourceAuthorizationError
 
 from .domain import Card, Collection, Dashboard, Table
 from .logger import logger

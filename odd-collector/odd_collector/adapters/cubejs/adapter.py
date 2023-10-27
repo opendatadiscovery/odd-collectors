@@ -1,10 +1,9 @@
 from typing import Type
 
-from odd_collector_sdk.domain.adapter import AbstractAdapter
-from odd_models.models import DataEntityList
-
 from odd_collector.domain.plugin import CubeJSPlugin
 from odd_collector.domain.predefined_data_source import create_predefined_datasource
+from odd_collector_sdk.domain.adapter import AbstractAdapter
+from odd_models.models import DataEntityList
 
 from .generator import CubeJsGenerator
 from .logger import logger

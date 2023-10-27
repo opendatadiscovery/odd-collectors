@@ -2,12 +2,11 @@ from typing import Type
 from urllib.parse import urlparse
 
 from funcy import partial, walk_values
+from odd_collector.domain.plugin import SupersetPlugin
 from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models.models import DataEntityList
 from oddrn_generator import Generator
 from oddrn_generator.generators import SupersetGenerator
-
-from odd_collector.domain.plugin import SupersetPlugin
 
 from .client import SupersetClient
 from .domain.dataset import create_dataset_oddrn

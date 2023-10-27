@@ -1,9 +1,6 @@
 from typing import Dict, List
 
 import pytest
-from odd_models.models import DataEntity, DataEntityType
-from pydantic import SecretStr
-
 from odd_collector.adapters.tableau.adapter import Adapter, tables_ids_to_load
 from odd_collector.adapters.tableau.client import TableauBaseClient
 from odd_collector.adapters.tableau.domain.column import Column
@@ -14,6 +11,8 @@ from odd_collector.adapters.tableau.domain.table import (
     Table,
 )
 from odd_collector.domain.plugin import TableauPlugin
+from odd_models.models import DataEntity, DataEntityType
+from pydantic import SecretStr
 
 
 class TableauTestClient(TableauBaseClient):

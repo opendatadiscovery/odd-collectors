@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Iterable
 
 from duckdb import DuckDBPyConnection, connect
-
 from odd_collector.adapters.duckdb.mappers.models import DuckDBColumn, DuckDBTable
 
 

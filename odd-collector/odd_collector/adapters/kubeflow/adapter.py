@@ -1,11 +1,10 @@
 from itertools import chain
 from typing import List
 
+from odd_collector.domain.plugin import KubeflowPlugin
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity
 from oddrn_generator import KubeflowGenerator
-
-from odd_collector.domain.plugin import KubeflowPlugin
 
 from .api import ApiGetter
 from .mappers.pipelines import map_pipelines

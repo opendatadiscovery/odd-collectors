@@ -1,6 +1,8 @@
 from typing import Union
-from odd_collector_gcp.domain.plugin import GCSPlugin
+
 from odd_collector_gcp.domain.dataset_config import DatasetConfig
+from odd_collector_gcp.domain.plugin import GCSPlugin
+
 from ...filesystem.pyarrow_fs import FileSystem as PyarrowFs
 from .domain.models import Bucket, File, Folder
 from .logger import logger

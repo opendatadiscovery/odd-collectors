@@ -2,7 +2,6 @@ import contextlib
 from abc import ABC, abstractmethod
 
 import psycopg2
-
 from odd_collector.domain.plugin import RedshiftPlugin
 
 

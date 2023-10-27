@@ -1,6 +1,5 @@
-from odd_models.models import DataConsumer, DataEntity, DataEntityType
-
 from odd_collector.domain.predefined_data_source import PredefinedDataSource
+from odd_models.models import DataConsumer, DataEntity, DataEntityType
 
 from ..domain.cube import Cube
 from ..generator import CubeJsGenerator

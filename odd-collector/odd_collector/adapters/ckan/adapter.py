@@ -2,15 +2,14 @@ from collections import defaultdict
 
 from odd_collector.domain.plugin import CKANPlugin
 from odd_collector_sdk.domain.adapter import AsyncAbstractAdapter
-from odd_collector_sdk.errors import MappingDataError, DataSourceError
+from odd_collector_sdk.errors import DataSourceError, MappingDataError
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import CKANGenerator
 
-
 from .client import CKANRestClient
+from .mappers.dataset import map_dataset
 from .mappers.group import map_group
 from .mappers.organization import map_organization
-from .mappers.dataset import map_dataset
 from .mappers.resource import map_resource
 from .utils import group_dataset_oddrns
 
@@ -37,7 +36,6 @@ class Adapter(AsyncAbstractAdapter):
                 datasets_entities_tmp: list[DataEntity] = []
                 datasets = await self.client.get_datasets(organization.id)
                 for dataset in datasets:
-
                     resources_entities_tmp = []
                     self.oddrn_generator.set_oddrn_paths(
                         organizations=organization.name,

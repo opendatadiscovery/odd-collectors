@@ -2,10 +2,9 @@ from typing import Any, Dict, List
 from urllib.parse import parse_qs, urlparse
 
 from aiohttp import ClientSession
-from odd_models.models import DataEntity
-
 from odd_collector_azure.azure.azure_client import AzureClient, RequestArgs
 from odd_collector_azure.domain.plugin import PowerBiPlugin
+from odd_models.models import DataEntity
 
 from .domain.dashboard import Dashboard
 from .domain.dataset import Dataset

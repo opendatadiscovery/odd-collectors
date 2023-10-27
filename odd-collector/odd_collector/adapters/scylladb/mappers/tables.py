@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import Dict, List
 
-from odd_collector_sdk.utils.metadata import extract_metadata, DefinitionType
+from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import ScyllaDBGenerator
 

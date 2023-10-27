@@ -1,12 +1,11 @@
 from typing import List
 
-from odd_models.models import DataEntity, DataEntityType, DataSet
-
 from odd_collector.adapters.druid.domain.column import Column
 from odd_collector.adapters.druid.domain.column_stats import ColumnStats
 from odd_collector.adapters.druid.domain.table import Table
 from odd_collector.adapters.druid.generator import DruidGenerator
 from odd_collector.adapters.druid.mappers.columns import column_to_data_set_field
+from odd_models.models import DataEntity, DataEntityType, DataSet
 
 
 def table_to_data_entity(

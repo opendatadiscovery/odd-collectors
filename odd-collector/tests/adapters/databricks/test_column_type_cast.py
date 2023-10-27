@@ -1,7 +1,5 @@
 from unittest import TestCase
 
-from odd_models.models import Type
-
 from odd_collector.adapters.databricks.grammar_parser.parser import (
     parser,
     traverse_tree,
@@ -10,6 +8,7 @@ from odd_collector.adapters.databricks.mappers.column import (
     get_logical_type,
     get_odd_type,
 )
+from odd_models.models import Type
 
 
 class TestCastTypes(TestCase):

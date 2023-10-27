@@ -1,12 +1,11 @@
 from collections import defaultdict
 
+from odd_collector.adapters.postgresql.models import Table
+from odd_collector.domain.plugin import PostgreSQLPlugin
 from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models import DataEntity
 from odd_models.models import DataEntityList
 from oddrn_generator import PostgresqlGenerator
-
-from odd_collector.adapters.postgresql.models import Table
-from odd_collector.domain.plugin import PostgreSQLPlugin
 
 from .logger import logger
 from .mappers.database import map_database

@@ -1,6 +1,5 @@
-from odd_models.models import Type
-
 from odd_collector.adapters.hive.models.column_types import ColumnType
+from odd_models.models import Type
 
 TYPES_HIVE_TO_ODD = {
     "int": Type.TYPE_INTEGER,

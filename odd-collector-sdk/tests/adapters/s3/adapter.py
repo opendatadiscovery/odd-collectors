@@ -1,7 +1,7 @@
+from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models.models import DataEntityList
 from oddrn_generator import Generator
 
-from odd_collector_sdk.domain.adapter import BaseAdapter
 from tests.generator import TestGenerator
 
 

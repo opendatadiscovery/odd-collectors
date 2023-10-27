@@ -1,7 +1,6 @@
 from typing import Optional
 
 from elasticsearch import Elasticsearch
-
 from odd_collector.domain.plugin import ElasticsearchPlugin
 
 

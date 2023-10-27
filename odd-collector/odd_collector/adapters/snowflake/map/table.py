@@ -1,9 +1,8 @@
 from copy import deepcopy
 
+from odd_collector.adapters.snowflake.domain import Table
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import SnowflakeGenerator
-
-from odd_collector.adapters.snowflake.domain import Table
 
 from ..helpers import transform_datetime
 from .column import map_columns

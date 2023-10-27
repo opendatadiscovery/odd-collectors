@@ -1,7 +1,6 @@
-from typing_extensions import Literal
-
 from odd_collector_sdk.domain.plugin import Plugin
 from odd_collector_sdk.types import PluginFactory
+from typing_extensions import Literal
 
 
 class TestGluePlugin(Plugin):

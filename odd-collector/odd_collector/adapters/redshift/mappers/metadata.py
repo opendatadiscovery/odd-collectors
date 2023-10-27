@@ -1,10 +1,6 @@
 from dataclasses import asdict, dataclass, field
 
 from funcy import omit
-from odd_collector_sdk.utils.metadata import HasMetadata
-from odd_models.models import MetadataExtension
-from sqllineage.runner import LineageRunner
-
 from odd_collector.adapters.redshift.mappers.models import (
     MetadataColumnBase,
     MetadataColumnExternal,
@@ -19,6 +15,9 @@ from odd_collector.adapters.redshift.mappers.models import (
     MetadataTableRedshift,
     RedshiftAdapterMetadata,
 )
+from odd_collector_sdk.utils.metadata import HasMetadata
+from odd_models.models import MetadataExtension
+from sqllineage.runner import LineageRunner
 
 from ..logger import logger
 from . import _schema_excluded_keys

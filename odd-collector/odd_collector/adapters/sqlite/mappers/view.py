@@ -1,8 +1,7 @@
+from odd_collector.domain.utils import extract_transformer_data
 from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import SQLiteGenerator
-
-from odd_collector.domain.utils import extract_transformer_data
 
 from ..domain import View
 from .column import map_column

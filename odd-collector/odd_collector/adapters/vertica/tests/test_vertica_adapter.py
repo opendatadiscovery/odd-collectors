@@ -3,9 +3,8 @@ from typing import List
 
 import pytest
 from dateutil.tz import tzoffset
-from odd_models.models import DataEntityType
-
 from odd_collector.domain.plugin import VerticaPlugin
+from odd_models.models import DataEntityType
 
 from ..adapter import Adapter
 from ..domain.column import Column

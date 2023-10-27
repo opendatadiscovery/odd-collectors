@@ -4,9 +4,8 @@ from typing import Any, Dict, Iterable, List
 import oracledb
 import sqlalchemy as db
 from funcy import lmap
-from sqlalchemy.util import FacadeDict
-
 from odd_collector.domain.plugin import OraclePlugin
+from sqlalchemy.util import FacadeDict
 
 from ..domain import Column, Dependency, DependencyType, Table, View
 from .base_repository import Repository

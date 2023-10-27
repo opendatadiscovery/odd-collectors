@@ -1,5 +1,6 @@
 from typing import Dict, List, Type
 
+from odd_collector.adapters.superset.domain.database import Database
 from oddrn_generator.utils.external_generators import (
     ExternalDbSettings,
     ExternalGeneratorBuilder,
@@ -10,8 +11,6 @@ from oddrn_generator.utils.external_generators import (
     ExternalSnowflakeGenerator,
     ExternalTrinoGenerator,
 )
-
-from odd_collector.adapters.superset.domain.database import Database
 
 
 class SupersetExternalGeneratorBuilder(ExternalGeneratorBuilder):

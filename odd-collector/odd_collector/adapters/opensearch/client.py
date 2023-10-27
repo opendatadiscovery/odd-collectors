@@ -1,8 +1,7 @@
 from typing import Optional
 
-from opensearchpy import OpenSearch
-
 from odd_collector.domain.plugin import OpensearchPlugin
+from opensearchpy import OpenSearch
 
 
 class Client:

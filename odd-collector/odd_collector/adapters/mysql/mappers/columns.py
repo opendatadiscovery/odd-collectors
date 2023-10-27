@@ -1,8 +1,7 @@
+from odd_collector.models import Column
 from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import MysqlGenerator
-
-from odd_collector.models import Column
 
 TYPES_SQL_TO_ODD: dict[str, Type] = {
     "tinyint": Type.TYPE_INTEGER,

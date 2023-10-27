@@ -1,8 +1,8 @@
 import pyarrow.dataset as ds
-from pyarrow._fs import FileInfo, FileSelector
-from pyarrow.fs import GcsFileSystem
 from odd_collector_gcp.adapters.gcs.domain.parameters import GCSAdapterParams
 from odd_collector_gcp.domain.plugin import GCSPlugin
+from pyarrow._fs import FileInfo, FileSelector
+from pyarrow.fs import GcsFileSystem
 
 GCSConfig = GCSPlugin
 

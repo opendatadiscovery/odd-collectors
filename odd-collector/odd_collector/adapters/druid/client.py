@@ -3,14 +3,13 @@ from abc import ABC, abstractmethod
 from typing import List
 
 from aiohttp import ClientSession
-from odd_collector_sdk.errors import DataSourceError
-
 from odd_collector.adapters.druid.domain.column import Column
 from odd_collector.adapters.druid.domain.column_stats import ColumnStats
 from odd_collector.adapters.druid.domain.column_type import ColumnType
 from odd_collector.adapters.druid.domain.table import Table
 from odd_collector.adapters.druid.logger import logger
 from odd_collector.domain.plugin import DruidPlugin
+from odd_collector_sdk.errors import DataSourceError
 
 
 class DruidBaseClient(ABC):

@@ -1,10 +1,9 @@
 import re
 from typing import Union
 
+from odd_collector_azure.adapters.blob_storage.logger import logger
 from pyarrow._csv import ParseOptions
 from pyarrow._dataset import CsvFileFormat
-
-from odd_collector_azure.adapters.blob_storage.logger import logger
 
 
 def file_extension(file_name: str) -> str:

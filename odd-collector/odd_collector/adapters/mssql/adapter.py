@@ -1,11 +1,10 @@
 from collections import defaultdict
 
 from funcy import lpluck_attr
+from odd_collector.domain.plugin import MSSQLPlugin
 from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models.models import DataEntityList
 from oddrn_generator import Generator, MssqlGenerator
-
-from odd_collector.domain.plugin import MSSQLPlugin
 
 from .mappers.database import map_database
 from .mappers.schemas import map_schemas

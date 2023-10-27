@@ -1,13 +1,13 @@
 from collections import deque
 
-from odd_models import DataEntity, DataEntityGroup, DataEntityType, DataSet
-from oddrn_generator import AzureBlobStorageGenerator
-
 from odd_collector_azure.adapters.blob_storage.domain.models import (
     Container,
     File,
     Folder,
 )
+from odd_models import DataEntity, DataEntityGroup, DataEntityType, DataSet
+from oddrn_generator import AzureBlobStorageGenerator
+
 from .column import map_columns
 
 
@@ -73,7 +73,6 @@ def map_folder(
 def map_container(
     container: Container, generator: AzureBlobStorageGenerator
 ) -> deque[DataEntity]:
-
     res = deque()
     data_entity = DataEntity(
         oddrn=container.name,

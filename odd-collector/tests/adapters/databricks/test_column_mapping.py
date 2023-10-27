@@ -1,10 +1,9 @@
 from unittest import TestCase
 
-from odd_models.models import Type
-from oddrn_generator import DatabricksUnityCatalogGenerator
-
 from odd_collector.adapters.databricks.mappers.column import build_dataset_field
 from odd_collector.adapters.databricks.mappers.models import DatabricksColumn
+from odd_models.models import Type
+from oddrn_generator import DatabricksUnityCatalogGenerator
 
 
 class TestColumnMapping(TestCase):

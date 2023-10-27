@@ -7,10 +7,9 @@ from google.cloud.bigquery import (
     TimePartitioning,
     TimePartitioningType,
 )
+from odd_collector_gcp.adapters.bigquery_storage.mapper import BigQueryMetadataEncoder
 from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from pydantic import BaseModel
-
-from odd_collector_gcp.adapters.bigquery_storage.mapper import BigQueryMetadataEncoder
 
 
 @pytest.fixture

@@ -1,11 +1,11 @@
 import odd_models
 import pytest
 import sqlalchemy
+from odd_collector.adapters.postgresql.adapter import Adapter
+from odd_collector.domain.plugin import PostgreSQLPlugin
 from pydantic import SecretStr
 from testcontainers.postgres import PostgresContainer
 
-from odd_collector.adapters.postgresql.adapter import Adapter
-from odd_collector.domain.plugin import PostgreSQLPlugin
 from tests.integration.helpers import find_by_name, find_by_type
 
 

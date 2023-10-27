@@ -1,14 +1,12 @@
 from funcy import lmap, mapcat, partial
+from odd_collector_gcp.domain.plugin import GCSDeltaPlugin
 from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models.models import DataEntityList
 from oddrn_generator.generators import GCSGenerator
 
-from odd_collector_gcp.domain.plugin import GCSDeltaPlugin
-
 from .client import DeltaClient
 from .logger import logger
 from .mappers.delta_table import map_delta_table
-
 
 # TODO: Add labels to the DataEntities
 

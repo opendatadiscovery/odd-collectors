@@ -1,9 +1,8 @@
 from funcy import lpluck_attr
+from odd_collector.domain.plugin import MySQLPlugin
 from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models.models import DataEntityList
 from oddrn_generator import Generator, MysqlGenerator
-
-from odd_collector.domain.plugin import MySQLPlugin
 
 from .mappers.database import map_database
 from .mappers.tables import map_tables

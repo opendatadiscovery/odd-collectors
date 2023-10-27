@@ -1,8 +1,5 @@
 from dataclasses import dataclass
 
-from odd_models.models import DataSetField, DataSetFieldType, Type
-from oddrn_generator import HiveGenerator
-
 from odd_collector.adapters.hive.logger import logger
 from odd_collector.adapters.hive.mappers.columm_type import map_column_type
 from odd_collector.adapters.hive.models.column import Column
@@ -14,6 +11,8 @@ from odd_collector.adapters.hive.models.column_types import (
     StructColumnType,
     UnionColumnType,
 )
+from odd_models.models import DataSetField, DataSetFieldType, Type
+from oddrn_generator import HiveGenerator
 
 from .statistics import map_statistic
 

@@ -1,13 +1,12 @@
 from copy import deepcopy
 from typing import List
 
-from odd_collector_sdk.utils.metadata import extract_metadata, DefinitionType
+from odd_collector.adapters.scylladb.mappers.columns import map_column
+from odd_collector.adapters.scylladb.mappers.models import ColumnMetadata, ViewMetadata
+from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models.models import DataEntity, DataEntityType, DataSet, DataTransformer
 from odd_models.utils import SqlParser
 from oddrn_generator import ScyllaDBGenerator
-
-from odd_collector.adapters.scylladb.mappers.columns import map_column
-from odd_collector.adapters.scylladb.mappers.models import ViewMetadata, ColumnMetadata
 
 
 def map_views(

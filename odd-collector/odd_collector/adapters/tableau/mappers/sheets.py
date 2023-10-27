@@ -3,10 +3,9 @@ from functools import partial
 from typing import Optional
 
 import pytz
+from odd_collector.adapters.tableau.logger import log_entity
 from odd_collector_sdk.errors import MappingDataError
 from odd_models.models import DataConsumer, DataEntity, DataEntityType
-
-from odd_collector.adapters.tableau.logger import log_entity
 
 from ..domain.sheet import Sheet
 from . import DATA_CONSUMER_EXCLUDED_KEYS, DATA_CONSUMER_SCHEMA, TABLEAU_DATETIME_FORMAT

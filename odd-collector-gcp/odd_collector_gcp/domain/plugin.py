@@ -1,12 +1,11 @@
 from typing import Literal, Optional
 
+from odd_collector_gcp.adapters.gcs.domain.parameters import GCSAdapterParams
+from odd_collector_gcp.domain.dataset_config import DatasetConfig
 from odd_collector_sdk.domain.filter import Filter
 from odd_collector_sdk.domain.plugin import Plugin
 from odd_collector_sdk.types import PluginFactory
 from pydantic import BaseModel, Field
-
-from odd_collector_gcp.adapters.gcs.domain.parameters import GCSAdapterParams
-from odd_collector_gcp.domain.dataset_config import DatasetConfig
 
 
 class GcpPlugin(Plugin):

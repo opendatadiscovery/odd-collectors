@@ -1,8 +1,7 @@
+from odd_collector_azure.adapters.azure_data_factory.domain import ADFActivityRun
 from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models import DataEntity, DataEntityType, DataTransformerRun
 from oddrn_generator import AzureDataFactoryGenerator
-
-from odd_collector_azure.adapters.azure_data_factory.domain import ADFActivityRun
 
 from ..utils import ADFMetadataEncoder
 

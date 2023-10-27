@@ -1,9 +1,8 @@
 from typing import Any, Dict, List, Set
 
 from funcy import omit, select_values
-from odd_models.models import MetadataExtension
-
 from odd_collector.adapters.tableau.logger import logger
+from odd_models.models import MetadataExtension
 
 
 def not_empty(value):

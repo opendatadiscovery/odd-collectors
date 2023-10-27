@@ -4,7 +4,6 @@ from typing import Any, Dict, Optional
 
 import aiohttp
 from funcy import lmap
-
 from odd_collector.domain.plugin import SupersetPlugin
 from odd_collector.domain.rest_client.client import RequestArgs, RestClient
 

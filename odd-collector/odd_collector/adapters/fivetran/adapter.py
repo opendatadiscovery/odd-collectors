@@ -1,8 +1,7 @@
+from odd_collector.domain.plugin import FivetranPlugin
 from odd_collector_sdk.domain.adapter import AsyncAbstractAdapter
 from odd_models.models import DataEntityList
 from oddrn_generator import FivetranGenerator
-
-from odd_collector.domain.plugin import FivetranPlugin
 
 from .helpers import DatasetGenerator
 from .mappers.transformers import map_transformers

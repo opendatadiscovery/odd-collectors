@@ -1,13 +1,12 @@
 import pytest
 from clickhouse_driver import Client
 from funcy import lfilter
+from odd_collector.adapters.clickhouse.adapter import Adapter
+from odd_collector.domain.plugin import ClickhousePlugin
 from odd_models import DataEntity
 from odd_models.models import DataEntityList, DataEntityType
 from pydantic import SecretStr
 from testcontainers.clickhouse import ClickHouseContainer
-
-from odd_collector.adapters.clickhouse.adapter import Adapter
-from odd_collector.domain.plugin import ClickhousePlugin
 
 
 def find_by_type(

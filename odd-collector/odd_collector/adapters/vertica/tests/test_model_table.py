@@ -1,10 +1,9 @@
 import pytest
-from oddrn_generator import VerticaGenerator
-
 from odd_collector.adapters.vertica.domain.table import Table
 from odd_collector.adapters.vertica.tests.test_vertica_adapter import (
     VerticaTestRepository,
 )
+from oddrn_generator import VerticaGenerator
 
 
 @pytest.fixture()

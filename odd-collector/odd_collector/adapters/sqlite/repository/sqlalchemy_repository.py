@@ -2,9 +2,8 @@ from typing import Any, Dict, Iterable, List
 
 import sqlalchemy as db
 from funcy import lmap
-from sqlalchemy.util import FacadeDict
-
 from odd_collector.domain.plugin import SQLitePlugin
+from sqlalchemy.util import FacadeDict
 
 from ..domain import Column, Table, View
 from .base_repository import Repository

@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 
-from odd_collector_sdk.errors import MappingDataError
-
 from odd_collector.adapters.druid.domain.column_stats import ColumnStats
+from odd_collector_sdk.errors import MappingDataError
 
 
 @dataclass

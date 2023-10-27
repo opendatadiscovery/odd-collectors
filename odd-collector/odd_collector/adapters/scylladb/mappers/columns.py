@@ -1,11 +1,11 @@
 from typing import Union
 
-from odd_collector_sdk.utils.metadata import extract_metadata, DefinitionType
+from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import CassandraGenerator
 
-from .models import ColumnMetadata
 from ...cassandra.mappers.types import TYPES_CASSANDRA_TO_ODD
+from .models import ColumnMetadata
 
 
 def map_column(

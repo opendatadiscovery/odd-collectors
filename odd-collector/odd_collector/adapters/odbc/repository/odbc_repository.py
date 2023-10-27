@@ -4,16 +4,15 @@ from typing import Iterable, Optional, Type, TypeVar
 
 import pyodbc
 from funcy import zipdict
-from odd_collector_sdk.errors import DataSourceError
-from pydantic import SecretStr
-from pyodbc import Cursor
-
 from odd_collector.adapters.odbc.domain import BaseTable, Table, View
 from odd_collector.adapters.odbc.domain.column import Column
 from odd_collector.adapters.odbc.logger import logger
 from odd_collector.adapters.odbc.repository.repository_base import RepositoryBase
 from odd_collector.domain.plugin import OdbcPlugin
 from odd_collector.helpers.logging_exception import logging_exception
+from odd_collector_sdk.errors import DataSourceError
+from pydantic import SecretStr
+from pyodbc import Cursor
 
 T = TypeVar("T", bound=BaseTable)
 

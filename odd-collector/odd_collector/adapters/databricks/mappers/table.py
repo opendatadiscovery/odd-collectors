@@ -1,10 +1,9 @@
 from typing import Any
 
+from odd_collector.helpers.datetime_from_ms import datetime_from_milliseconds
 from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import DatabricksUnityCatalogGenerator
-
-from odd_collector.helpers.datetime_from_ms import datetime_from_milliseconds
 
 from .column import map_column
 from .models import DatabricksColumn, DatabricksTable

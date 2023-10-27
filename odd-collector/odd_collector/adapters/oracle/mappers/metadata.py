@@ -1,9 +1,8 @@
 from functools import singledispatch
 from typing import Union
 
-from odd_models.models import MetadataExtension
-
 from odd_collector.adapters.oracle.domain import Column, Table, View
+from odd_models.models import MetadataExtension
 
 data_set_metadata_schema_url: str = (
     "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/"

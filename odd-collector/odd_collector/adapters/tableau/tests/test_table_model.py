@@ -1,7 +1,6 @@
 import pytest
-from oddrn_generator import TableauGenerator
-
 from odd_collector.adapters.tableau.domain.table import BigqueryTable, EmbeddedTable
+from oddrn_generator import TableauGenerator
 
 
 @pytest.fixture

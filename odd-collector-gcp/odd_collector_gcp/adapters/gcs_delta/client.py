@@ -3,15 +3,14 @@ from typing import Any, Iterable, Optional
 
 from deltalake import DeltaTable
 from funcy import last, partial, silent, walk
-
 from odd_collector_gcp.domain.plugin import DeltaTableConfig, GCSDeltaPlugin
 from odd_collector_gcp.filesystem.pyarrow_fs import FileSystem
-from ..gcs.domain.parameters import GCSAdapterParams
 
 from ...utils.dates import add_utc_timezone, from_ms
+from ...utils.remove_gcs_protocol import remove_protocol
+from ..gcs.domain.parameters import GCSAdapterParams
 from .logger import logger
 from .models.table import DTable
-from ...utils.remove_gcs_protocol import remove_protocol
 
 
 def handle_values(

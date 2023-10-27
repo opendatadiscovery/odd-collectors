@@ -2,9 +2,8 @@ from dataclasses import dataclass
 from typing import Any
 
 from google.cloud.bigquery import Dataset, SchemaField, Table
-from odd_collector_sdk.utils.metadata import HasMetadata
-
 from odd_collector_gcp.utils.get_properties import get_properties
+from odd_collector_sdk.utils.metadata import HasMetadata
 
 
 class MetadataMixin:

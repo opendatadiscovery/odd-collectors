@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from mlflow.entities import Experiment as MLFlowExperiment
-
 from odd_collector.helpers.datetime_from_ms import datetime_from_milliseconds
 
 from .run import Run

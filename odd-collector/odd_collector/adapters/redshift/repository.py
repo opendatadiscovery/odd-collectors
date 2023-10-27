@@ -1,10 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any, Optional, Union
 
-from psycopg2 import sql
-from psycopg2.extensions import AsIs
-from psycopg2.sql import Composed
-
 from odd_collector.adapters.redshift.connector import RedshiftConnector
 from odd_collector.adapters.redshift.logger import logger
 from odd_collector.adapters.redshift.mappers.metadata import (
@@ -13,6 +9,9 @@ from odd_collector.adapters.redshift.mappers.metadata import (
     MetadataTables,
 )
 from odd_collector.domain.plugin import RedshiftPlugin
+from psycopg2 import sql
+from psycopg2.extensions import AsIs
+from psycopg2.sql import Composed
 
 
 class AbstractRepository(ABC):

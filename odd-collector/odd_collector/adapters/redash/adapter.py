@@ -1,11 +1,10 @@
 from typing import Dict, List, Type
 
+from odd_collector.domain.plugin import RedashPlugin
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import RedashGenerator
 from oddrn_generator.utils.external_generators import ExternalGeneratorMappingError
-
-from odd_collector.domain.plugin import RedashPlugin
 
 from .client import RedashClient
 from .domain.datasource import DataSource

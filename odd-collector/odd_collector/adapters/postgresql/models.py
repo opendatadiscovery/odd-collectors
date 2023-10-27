@@ -1,10 +1,11 @@
 from dataclasses import dataclass, field
 from typing import Any
+
 from funcy import omit
+from odd_collector_sdk.utils.metadata import HasMetadata
 from sql_metadata import Parser
 
 from .logger import logger
-from odd_collector_sdk.utils.metadata import HasMetadata
 
 
 @dataclass

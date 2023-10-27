@@ -1,17 +1,16 @@
 from typing import List
 
-from odd_collector_sdk.domain.adapter import BaseAdapter
-from odd_models.models import DataEntityList
 from google.cloud import bigtable
-from oddrn_generator import BigTableGenerator
-
 from odd_collector_gcp.adapters.bigtable.mapper import BigTableMapper
 from odd_collector_gcp.adapters.bigtable.models import (
+    BigTableColumn,
     BigTableInstance,
     BigTableTable,
-    BigTableColumn,
 )
 from odd_collector_gcp.domain.plugin import BigTablePlugin
+from odd_collector_sdk.domain.adapter import BaseAdapter
+from odd_models.models import DataEntityList
+from oddrn_generator import BigTableGenerator
 
 
 class Adapter(BaseAdapter):

@@ -1,12 +1,11 @@
 from typing import Type
 from urllib.parse import urlparse
 
+from odd_collector.adapters.tableau.domain.table import EmbeddedTable
+from odd_collector.domain.plugin import TableauPlugin
 from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models.models import DataEntityList
 from oddrn_generator import Generator, TableauGenerator
-
-from odd_collector.adapters.tableau.domain.table import EmbeddedTable
-from odd_collector.domain.plugin import TableauPlugin
 
 from .client import TableauClient
 from .logger import logger

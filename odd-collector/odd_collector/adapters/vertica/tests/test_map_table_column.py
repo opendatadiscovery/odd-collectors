@@ -1,7 +1,4 @@
 import pytest
-from odd_models.models import DataEntityType
-from oddrn_generator import VerticaGenerator
-
 from odd_collector.adapters.vertica.domain.column import Column
 from odd_collector.adapters.vertica.domain.table import Table
 from odd_collector.adapters.vertica.mapper.columns import map_column
@@ -10,6 +7,8 @@ from odd_collector.adapters.vertica.mapper.types import TYPES_SQL_TO_ODD
 from odd_collector.adapters.vertica.tests.test_vertica_adapter import (
     VerticaTestRepository,
 )
+from odd_models.models import DataEntityType
+from oddrn_generator import VerticaGenerator
 
 
 @pytest.fixture()

@@ -2,10 +2,9 @@ import contextlib
 from abc import ABC, abstractmethod
 
 import psycopg2
-from odd_collector_sdk.errors import DataSourceConnectionError, DataSourceError
-
 from odd_collector.adapters.cockroachdb.logger import logger
 from odd_collector.domain.plugin import CockroachDBPlugin
+from odd_collector_sdk.errors import DataSourceConnectionError, DataSourceError
 
 
 class AbstractConnector(ABC):  # TODO: Create one abstract connector for all adapters

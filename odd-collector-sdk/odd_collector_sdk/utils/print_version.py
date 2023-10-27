@@ -1,10 +1,9 @@
 import traceback
 from importlib.metadata import version
 
-from prettytable import PrettyTable
-
 import odd_collector_sdk as sdk
 from odd_collector_sdk.logger import logger
+from prettytable import PrettyTable
 
 
 def print_versions(*pkg_names: str):

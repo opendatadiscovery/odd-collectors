@@ -1,8 +1,7 @@
 from typing import NamedTuple, Optional
 
-from pydantic import BaseModel
-
 from odd_collector.domain.utils import AnotherSqlParser
+from pydantic import BaseModel
 
 from .entity import Connectable
 

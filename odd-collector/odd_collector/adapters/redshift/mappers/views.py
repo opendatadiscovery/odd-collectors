@@ -2,12 +2,11 @@ from functools import partial
 
 import pytz
 from funcy import lmap
+from odd_collector.adapters.redshift.mappers.columns import map_column
+from odd_collector.adapters.redshift.mappers.metadata import MetadataTable
 from odd_models import DataEntity, DataEntityType, DataSet
 from odd_models.models import DataTransformer
 from oddrn_generator import RedshiftGenerator
-
-from odd_collector.adapters.redshift.mappers.columns import map_column
-from odd_collector.adapters.redshift.mappers.metadata import MetadataTable
 
 
 def map_view(generator: RedshiftGenerator, view: MetadataTable) -> DataEntity:

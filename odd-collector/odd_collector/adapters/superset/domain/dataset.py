@@ -1,11 +1,10 @@
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
+from odd_collector.adapters.superset.domain.column import Column
 from odd_models.models import MetadataExtension
 from oddrn_generator import PostgresqlGenerator, SQLiteGenerator
 from sqlalchemy.engine.url import make_url
-
-from odd_collector.adapters.superset.domain.column import Column
 
 from ..logger import logger
 from .database import Database

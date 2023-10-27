@@ -1,8 +1,7 @@
 from funcy import lmap, partial, silent
+from odd_collector.logger import logger
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import PostgresqlGenerator
-
-from odd_collector.logger import logger
 
 from ..models import Table
 from .columns import map_column

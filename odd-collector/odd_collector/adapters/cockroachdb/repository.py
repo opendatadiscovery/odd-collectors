@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Union
 
-from psycopg2 import sql
-
 from odd_collector.adapters.cockroachdb.connectors import CockroachDbSQLConnector
 from odd_collector.adapters.cockroachdb.logger import logger
+from psycopg2 import sql
 
 
 class AbstractRepository(ABC):

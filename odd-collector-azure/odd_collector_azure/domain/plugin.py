@@ -1,11 +1,10 @@
 from typing import Literal, Optional
 
+from odd_collector_azure.adapters.blob_storage.dataset_config import DatasetConfig
 from odd_collector_sdk.domain.filter import Filter
 from odd_collector_sdk.domain.plugin import Plugin
 from odd_collector_sdk.types import PluginFactory
 from pydantic import SecretStr, validator
-
-from odd_collector_azure.adapters.blob_storage.dataset_config import DatasetConfig
 
 
 class AzurePlugin(Plugin):

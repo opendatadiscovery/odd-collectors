@@ -2,7 +2,6 @@ from typing import Any, Dict, List
 from urllib.parse import urlparse
 
 from aiohttp import ClientSession
-
 from odd_collector.domain.plugin import RedashPlugin
 from odd_collector.domain.rest_client.client import RequestArgs, RestClient
 

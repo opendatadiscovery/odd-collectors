@@ -1,10 +1,9 @@
 from typing import List
 
+from odd_collector.domain.plugin import CockroachDBPlugin
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import PostgresqlGenerator
-
-from odd_collector.domain.plugin import CockroachDBPlugin
 
 from .mappers.tables import map_table
 from .repository import CockroachDbSQLRepository

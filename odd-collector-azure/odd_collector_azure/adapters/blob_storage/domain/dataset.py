@@ -1,13 +1,12 @@
 from typing import Dict, Union
 
 import pyarrow.dataset as ds
-from oddrn_generator import AzureBlobStorageGenerator
-from pyarrow._csv import ParseOptions
-from pyarrow._dataset import CsvFileFormat, FileFormat
-
 from odd_collector_azure.adapters.blob_storage.mapper.dataset import map_dataset
 from odd_collector_azure.adapters.blob_storage.parse_azure_url import parse_azure_url
 from odd_collector_azure.adapters.blob_storage.to_data_entity import ToDataEntity
+from oddrn_generator import AzureBlobStorageGenerator
+from pyarrow._csv import ParseOptions
+from pyarrow._dataset import CsvFileFormat, FileFormat
 
 
 class InvalidFileFormatWarning(Exception):

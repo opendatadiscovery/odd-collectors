@@ -6,9 +6,8 @@ implements https://github.com/opendatadiscovery/opendatadiscovery-specification/
 
 from typing import Any
 
-from odd_collector_sdk.domain.adapter import AbstractAdapter
-
 from odd_collector.adapters.odd_adapter.client import BaseClient, Client
+from odd_collector_sdk.domain.adapter import AbstractAdapter
 
 
 class Adapter(AbstractAdapter):

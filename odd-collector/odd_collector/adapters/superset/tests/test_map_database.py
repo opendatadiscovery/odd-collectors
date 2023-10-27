@@ -1,10 +1,9 @@
 from typing import Dict
 
 import pytest
-from oddrn_generator.generators import SupersetGenerator
-
 from odd_collector.adapters.superset.domain.dataset import Dataset
 from odd_collector.adapters.superset.mappers.databases import map_database
+from oddrn_generator.generators import SupersetGenerator
 
 from .raw_data import datasets_nodes
 

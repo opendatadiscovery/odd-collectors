@@ -1,10 +1,9 @@
 from datetime import datetime
 
-from odd_models.models import DataEntityType
-
 from odd_collector.adapters.metabase.domain import Card
 from odd_collector.adapters.metabase.generator import MetabaseGenerator
 from odd_collector.adapters.metabase.mappers.card import map_card
+from odd_models.models import DataEntityType
 
 
 def test_map_card():

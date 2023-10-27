@@ -5,7 +5,6 @@ from typing import Any, Dict, List, Optional
 from funcy import lpluck_attr
 from mlflow.entities.run import Run as MLfLowRun
 from mlflow.entities.run import RunData, RunInfo
-
 from odd_collector.adapters.mlflow.generator import MlFlowGenerator
 from odd_collector.helpers.datetime_from_ms import datetime_from_milliseconds
 from odd_collector.helpers.flatdict import FlatDict

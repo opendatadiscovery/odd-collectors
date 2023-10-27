@@ -1,5 +1,5 @@
 from funcy import lpluck_attr
-from odd_models import DataEntity, DataEntityType, DataEntityGroup
+from odd_models import DataEntity, DataEntityGroup, DataEntityType
 from oddrn_generator import RedshiftGenerator
 
 

@@ -1,11 +1,10 @@
 from typing import Type
 
+from odd_collector.domain.plugin import OdbcPlugin
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_collector_sdk.errors import MappingDataError
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import OdbcGenerator
-
-from odd_collector.domain.plugin import OdbcPlugin
 
 from .mappers.database import map_database
 from .mappers.tables import map_base_table

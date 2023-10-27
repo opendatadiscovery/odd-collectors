@@ -2,7 +2,6 @@ import io
 import os
 
 import pytest
-
 from odd_collector_sdk.utils.yaml_parser import ParserError, parse_yaml
 
 

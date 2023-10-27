@@ -1,10 +1,11 @@
-import aiohttp
-from odd_collector_sdk.errors import DataSourceError
-from odd_collector.domain.plugin import CKANPlugin
-from .logger import logger
 from asyncio import gather
 
-from .mappers.models import Organization, Dataset, Group, ResourceField
+import aiohttp
+from odd_collector.domain.plugin import CKANPlugin
+from odd_collector_sdk.errors import DataSourceError
+
+from .logger import logger
+from .mappers.models import Dataset, Group, Organization, ResourceField
 
 
 class CKANRestClient:

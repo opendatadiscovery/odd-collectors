@@ -1,5 +1,6 @@
 from typing import Dict, List, Type
 
+from odd_collector.adapters.redash.domain.datasource import DataSource
 from oddrn_generator.utils.external_generators import (
     ExternalDbSettings,
     ExternalGeneratorBuilder,
@@ -8,8 +9,6 @@ from oddrn_generator.utils.external_generators import (
     ExternalPostgresGenerator,
     ExternalSnowflakeGenerator,
 )
-
-from odd_collector.adapters.redash.domain.datasource import DataSource
 
 
 class RedashExternalGeneratorBuilder(ExternalGeneratorBuilder):

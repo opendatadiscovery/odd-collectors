@@ -2,23 +2,21 @@ import datetime
 from typing import List
 
 from funcy import lmapcat
+from odd_collector_gcp.adapters.bigtable.models import (
+    BigTableColumn,
+    BigTableInstance,
+    BigTableTable,
+)
 from odd_models.models import (
     DataEntity,
-    DataEntityType,
     DataEntityGroup,
+    DataEntityType,
     DataSet,
     DataSetField,
     DataSetFieldType,
     Type,
 )
 from oddrn_generator import BigTableGenerator
-
-from odd_collector_gcp.adapters.bigtable.models import (
-    BigTableInstance,
-    BigTableTable,
-    BigTableColumn,
-)
-
 
 TYPE_MAPPING = {
     str: Type.TYPE_STRING,

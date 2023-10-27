@@ -4,11 +4,10 @@ from copy import deepcopy
 from typing import List
 
 import sqlparse
+from odd_collector.adapters.snowflake.domain import Pipe
 from odd_models.models import DataEntity, DataEntityType, DataTransformer
 from oddrn_generator import SnowflakeGenerator
 from oddrn_generator.generators import S3Generator
-
-from odd_collector.adapters.snowflake.domain import Pipe
 
 from .view import _map_connection
 

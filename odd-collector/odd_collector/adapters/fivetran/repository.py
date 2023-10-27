@@ -3,7 +3,6 @@ from typing import Any, Dict
 from urllib.parse import urljoin
 
 import aiohttp
-
 from odd_collector.adapters.fivetran.domain.connector import ConnectorMetadata
 from odd_collector.adapters.fivetran.domain.destination import DestinationMetadata
 

@@ -1,8 +1,7 @@
-from odd_models.models import DataEntityType
-
 from odd_collector.adapters.metabase.domain import Collection
 from odd_collector.adapters.metabase.generator import MetabaseGenerator
 from odd_collector.adapters.metabase.mappers.collection import map_collection
+from odd_models.models import DataEntityType
 
 
 def test_collection():

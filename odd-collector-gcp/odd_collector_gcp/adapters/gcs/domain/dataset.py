@@ -1,14 +1,13 @@
 from typing import Dict, Union
 
 import pyarrow.dataset as ds
-from oddrn_generator.generators import GCSGenerator
-from pyarrow._csv import ParseOptions
-from pyarrow._dataset import CsvFileFormat, FileFormat
-
 from odd_collector_gcp.adapters.gcs.mapper.dataset import map_dataset
 from odd_collector_gcp.domain.to_data_entity import ToDataEntity
 from odd_collector_gcp.errors import InvalidFileFormatWarning
 from odd_collector_gcp.utils.parse_gcs_url import parse_gcs_url
+from oddrn_generator.generators import GCSGenerator
+from pyarrow._csv import ParseOptions
+from pyarrow._dataset import CsvFileFormat, FileFormat
 
 
 def get_dataset_class(file_path: str):

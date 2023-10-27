@@ -1,9 +1,8 @@
 from typing import Dict, List
 
+from odd_collector_azure.adapters.powerbi.domain.dashboard import Dashboard
 from odd_models.models import DataConsumer, DataEntity, DataEntityType
 from oddrn_generator.generators import PowerBiGenerator
-
-from odd_collector_azure.adapters.powerbi.domain.dashboard import Dashboard
 
 
 def map_dashboard(

@@ -1,13 +1,12 @@
 from typing import List
 
-from odd_collector_sdk.errors import MappingDataError
-from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet
-from oddrn_generator import PostgresqlGenerator
-
 from odd_collector.adapters.cockroachdb.config import (
     _data_set_metadata_excluded_keys,
     _data_set_metadata_schema_url,
 )
+from odd_collector_sdk.errors import MappingDataError
+from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet
+from oddrn_generator import PostgresqlGenerator
 
 from .columns import map_column
 from .metadata import append_metadata_extension

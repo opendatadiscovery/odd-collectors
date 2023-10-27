@@ -6,11 +6,11 @@ from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import ScyllaDBGenerator
 
+from ...domain.plugin import ScyllaDBPlugin
 from .mappers.keyspaces import map_keyspace
 from .mappers.tables import map_tables
 from .mappers.views import map_views
 from .repository import ScyllaDBRepository
-from ...domain.plugin import ScyllaDBPlugin
 
 
 class Adapter(BaseAdapter):

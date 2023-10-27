@@ -1,7 +1,7 @@
-from odd_collector_sdk.utils.metadata import extract_metadata, DefinitionType
+from odd_collector.adapters.ckan.mappers.models import Group
+from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
 from oddrn_generator import CKANGenerator
-from odd_collector.adapters.ckan.mappers.models import Group
 
 
 def map_group(

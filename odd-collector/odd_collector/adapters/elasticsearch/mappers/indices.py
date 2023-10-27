@@ -1,8 +1,7 @@
-from odd_models.models import DataEntity, DataEntityType, DataSet
-from oddrn_generator import ElasticSearchGenerator
-
 from odd_collector.adapters.elasticsearch.mappers.fields import map_field
 from odd_collector.adapters.elasticsearch.mappers.metadata import extract_index_metadata
+from odd_models.models import DataEntity, DataEntityType, DataSet
+from oddrn_generator import ElasticSearchGenerator
 
 
 def map_index(

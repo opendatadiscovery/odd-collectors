@@ -1,10 +1,9 @@
 from funcy import lcat, lpluck_attr
+from odd_collector.adapters.hive.models.view import View
+from odd_collector.domain.plugin import HivePlugin
 from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models.models import DataEntityList
 from oddrn_generator import HiveGenerator
-
-from odd_collector.adapters.hive.models.view import View
-from odd_collector.domain.plugin import HivePlugin
 
 from .client import HiveClient
 from .logger import logger

@@ -1,7 +1,7 @@
 from typing import Union
 
 from deltalake import Field
-from deltalake._internal import PrimitiveType, ArrayType, MapType, StructType
+from deltalake._internal import ArrayType, MapType, PrimitiveType, StructType
 
 
 class DField:

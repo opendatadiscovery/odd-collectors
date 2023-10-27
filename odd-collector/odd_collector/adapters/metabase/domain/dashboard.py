@@ -1,9 +1,8 @@
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel
-
 from odd_collector.adapters.metabase.domain import Card, Creator
+from pydantic import BaseModel
 
 keys_to_exclude = {"id", "creator", "last-edit-info"}
 

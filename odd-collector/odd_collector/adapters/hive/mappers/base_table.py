@@ -1,9 +1,8 @@
+from odd_collector.adapters.hive.mappers.table import map_table
+from odd_collector.adapters.hive.mappers.view import map_view
 from odd_collector_sdk.errors import MappingDataError
 from odd_models.models import DataEntity
 from oddrn_generator import HiveGenerator
-
-from odd_collector.adapters.hive.mappers.table import map_table
-from odd_collector.adapters.hive.mappers.view import map_view
 
 from ..models.base_table import BaseTable
 from ..models.table import Table

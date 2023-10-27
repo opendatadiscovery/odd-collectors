@@ -1,11 +1,10 @@
+from odd_collector_azure.domain.plugin import DataFactoryPlugin
 from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_collector_sdk.errors import DataSourceError, MappingDataError
 from odd_models import DataEntity
 from odd_models.models import DataEntityList
 from oddrn_generator import AzureDataFactoryGenerator
 from oddrn_generator.generators import Generator
-
-from odd_collector_azure.domain.plugin import DataFactoryPlugin
 
 from .client import DataFactoryClient
 from .domain import ADFActivity, ADFDataFlow

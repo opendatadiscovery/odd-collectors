@@ -1,11 +1,10 @@
 from google.cloud import bigquery
-from odd_collector_sdk.domain.adapter import BaseAdapter
-from odd_models.models import DataEntityList
-from oddrn_generator.generators import BigQueryStorageGenerator
-
 from odd_collector_gcp.adapters.bigquery_storage.dto import BigQueryDataset
 from odd_collector_gcp.adapters.bigquery_storage.mapper import BigQueryStorageMapper
 from odd_collector_gcp.domain.plugin import BigQueryStoragePlugin
+from odd_collector_sdk.domain.adapter import BaseAdapter
+from odd_models.models import DataEntityList
+from oddrn_generator.generators import BigQueryStorageGenerator
 
 
 class Adapter(BaseAdapter):

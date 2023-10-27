@@ -5,7 +5,6 @@ from acouchbase.cluster import AsyncCluster, Cluster
 from couchbase.auth import PasswordAuthenticator
 from couchbase.exceptions import InternalServerFailureException
 from couchbase.options import ClusterOptions
-
 from odd_collector.adapters.couchbase.models import Collection
 from odd_collector.domain.plugin import CouchbasePlugin
 

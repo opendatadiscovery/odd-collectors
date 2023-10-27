@@ -1,5 +1,4 @@
 from lark import Token, Transformer
-
 from odd_collector.adapters.hive.models.column_types import (
     ArrayColumnType,
     ColumnType,

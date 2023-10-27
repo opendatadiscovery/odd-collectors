@@ -1,14 +1,13 @@
 from typing import List, Type
 
 from funcy import lpluck_attr
-from odd_collector_sdk.domain.adapter import AbstractAdapter
-from odd_models.models import DataEntity, DataEntityList
-
 from odd_collector.adapters.druid.client import DruidBaseClient, DruidClient
 from odd_collector.adapters.druid.generator import DruidGenerator
 from odd_collector.adapters.druid.mappers.database import to_data_entity_group
 from odd_collector.adapters.druid.mappers.tables import table_to_data_entity
 from odd_collector.domain.plugin import DruidPlugin
+from odd_collector_sdk.domain.adapter import AbstractAdapter
+from odd_models.models import DataEntity, DataEntityList
 
 
 class Adapter(AbstractAdapter):

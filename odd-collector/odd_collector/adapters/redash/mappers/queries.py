@@ -1,13 +1,12 @@
 from typing import List
 
+from odd_collector.domain.utils import AnotherSqlParser
 from odd_models.models import DataEntity, DataEntityType, DataSet, DataTransformer
 from oddrn_generator import RedashGenerator
 from oddrn_generator.utils.external_generators import (
     DeepLvlGenerator,
     ExternalDbGenerator,
 )
-
-from odd_collector.domain.utils import AnotherSqlParser
 
 from ..domain.query import Query
 

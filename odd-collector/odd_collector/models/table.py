@@ -2,10 +2,9 @@ import dataclasses
 import traceback
 from typing import Any, Optional
 
+from odd_collector.helpers.datetime import Datetime
 from odd_collector_sdk.utils.metadata import HasMetadata
 from sql_metadata import Parser
-
-from odd_collector.helpers.datetime import Datetime
 
 from ..logger import logger
 from .column import Column

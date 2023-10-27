@@ -1,8 +1,7 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field
-
 from odd_collector.adapters.metabase.domain import Database
+from pydantic import BaseModel, Field
 
 
 class Table(BaseModel):

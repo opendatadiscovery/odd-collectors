@@ -3,8 +3,8 @@ from datetime import datetime
 from functools import cached_property
 from typing import Any
 
-from odd_collector_sdk.utils.metadata import HasMetadata
 from odd_collector.adapters.ckan.utils import get_metadata
+from odd_collector_sdk.utils.metadata import HasMetadata
 
 
 @dataclass

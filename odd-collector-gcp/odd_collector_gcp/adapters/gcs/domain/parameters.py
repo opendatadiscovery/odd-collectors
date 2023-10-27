@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
-from typing import Union, Mapping
+from typing import Mapping, Union
+
 from pyarrow import KeyValueMetadata
 from pydantic import BaseModel
 

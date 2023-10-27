@@ -4,10 +4,9 @@ from datetime import datetime
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.datafactory import DataFactoryManagementClient
 from azure.mgmt.datafactory.models import PipelineResource
+from odd_collector_azure.domain.plugin import DataFactoryPlugin
 from odd_collector_sdk.domain.filter import Filter
 from odd_collector_sdk.errors import DataSourceError
-
-from odd_collector_azure.domain.plugin import DataFactoryPlugin
 
 from .domain import (
     ADFActivityRun,

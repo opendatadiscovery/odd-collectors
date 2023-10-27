@@ -2,9 +2,8 @@ import traceback
 from dataclasses import dataclass
 from typing import Optional
 
-from sql_metadata.parser import Parser
-
 from odd_collector.adapters.hive.logger import logger
+from sql_metadata.parser import Parser
 
 from .table import Table
 

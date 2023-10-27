@@ -1,10 +1,9 @@
 import pytest
-from odd_models.models import DataEntityType
-from oddrn_generator import TableauGenerator
-
 from odd_collector.adapters.tableau.domain.column import Column
 from odd_collector.adapters.tableau.domain.table import Table
 from odd_collector.adapters.tableau.mappers.tables import map_table
+from odd_models.models import DataEntityType
+from oddrn_generator import TableauGenerator
 
 
 @pytest.fixture

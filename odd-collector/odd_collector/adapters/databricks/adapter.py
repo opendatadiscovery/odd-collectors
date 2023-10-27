@@ -2,12 +2,11 @@ import asyncio
 from collections import defaultdict
 
 from funcy import group_by
+from odd_collector.domain.plugin import DatabricksPlugin
 from odd_collector_sdk.domain.adapter import AsyncAbstractAdapter
 from odd_collector_sdk.errors import MappingDataError
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import DatabricksUnityCatalogGenerator
-
-from odd_collector.domain.plugin import DatabricksPlugin
 
 from .client import DatabricksRestClient
 from .mappers.catalog import map_catalog

@@ -9,13 +9,12 @@ from typing import List, Optional, Union
 
 import tzlocal
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from odd_models.models import DataSource, DataSourceList
-
 from odd_collector_sdk.domain.adapter import Adapter
 from odd_collector_sdk.job import create_job
 from odd_collector_sdk.logger import logger
 from odd_collector_sdk.shutdown import shutdown, shutdown_by
 from odd_collector_sdk.types import PluginFactory
+from odd_models.models import DataSource, DataSourceList
 
 from .api.datasource_api import PlatformApi
 from .api.http_client import HttpClient

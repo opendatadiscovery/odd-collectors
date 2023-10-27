@@ -1,12 +1,11 @@
 from dataclasses import asdict, astuple
 from typing import NamedTuple, Union
 
-from odd_models.models import MetadataExtension
-
 from odd_collector.adapters.cassandra.mappers.models import (
     ColumnMetadata,
     TableMetadata,
 )
+from odd_models.models import MetadataExtension
 
 
 def get_metadata_extension(

@@ -1,7 +1,6 @@
 from typing import Any
 
 from aiohttp import ClientSession, ClientTimeout, TCPConnector
-
 from odd_collector_sdk.errors import PlatformApiError
 
 

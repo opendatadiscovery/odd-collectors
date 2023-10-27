@@ -1,10 +1,9 @@
 import pytest
+from odd_collector.adapters.presto.mappers.models import TableMetadata
+from odd_collector.adapters.presto.mappers.tables import map_table
 from odd_models.models import DataEntityType, Type
 from oddrn_generator.generators import PrestoGenerator
 from pandas import DataFrame
-
-from odd_collector.adapters.presto.mappers.models import TableMetadata
-from odd_collector.adapters.presto.mappers.tables import map_table
 
 from .raw_data import nested_nodes, tables_nodes
 

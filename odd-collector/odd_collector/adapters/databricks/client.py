@@ -1,7 +1,6 @@
 import aiohttp
-from odd_collector_sdk.errors import DataSourceError
-
 from odd_collector.domain.plugin import DatabricksPlugin
+from odd_collector_sdk.errors import DataSourceError
 
 from .logger import logger
 

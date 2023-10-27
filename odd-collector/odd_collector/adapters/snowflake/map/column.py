@@ -1,10 +1,9 @@
 from copy import deepcopy
 from typing import Dict, List
 
+from odd_collector.adapters.snowflake.domain import Column
 from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import SnowflakeGenerator
-
-from odd_collector.adapters.snowflake.domain import Column
 
 from .entity_type_path_key import EntityTypePathKey
 

@@ -2,14 +2,13 @@ from dataclasses import asdict, dataclass
 from typing import Optional
 
 import mysql.connector
-from odd_collector_sdk.errors import DataSourceConnectionError
-from odd_collector_sdk.logger import logger
-
 from odd_collector.domain.plugin import MySQLPlugin
 from odd_collector.helpers.bytes_to_str import convert_bytes_to_str
 from odd_collector.helpers.datetime import Datetime
 from odd_collector.helpers.lower_key_dict import LowerKeyDict
 from odd_collector.models import Column, Table
+from odd_collector_sdk.errors import DataSourceConnectionError
+from odd_collector_sdk.logger import logger
 
 
 @dataclass(frozen=True)
