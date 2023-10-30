@@ -1,9 +1,7 @@
 name: Build and publish PyPI artifact
 
 on:
-  push:
-    branches:
-      - "main"
+  workflow_dispatch:
 
 jobs:
   build_and_publish_package:
