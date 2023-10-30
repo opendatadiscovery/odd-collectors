@@ -30,8 +30,7 @@ jobs:
       - name: Run the automated tests
         run: |
           poetry install -C odd-collector-sdk
-          poetry shell -C odd-collector-sdk
-          pytest odd-collector-sdk -v
+          poetry run pytest odd-collector-sdk -v
 
       - name: Patch package version
         run: |
