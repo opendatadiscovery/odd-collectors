@@ -1,0 +1,58 @@
+name: Build and publish PyPI artifact
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  build_and_publish_package:
+    name: Build and publish the PyPi package
+    runs-on: ubuntu-latest
+    concurrency: publishing
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: 'odd-collector-sdk'
+
+      - name: Set up python
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9.16'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          poetry-version: 1.3.2
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Run the automated tests
+        run: |
+          poetry install
+          poetry run pytest -v
+
+      - name: Patch package version
+        run: |
+          poetry version patch
+          echo "VERSION = \"$(poetry version -s)\"" > odd_collector_sdk/__version__.py
+
+
+      - name: Run Dockerfile to build and publish package into PyPI
+        run: |
+          docker build . -t ignored \
+            --build-arg PYPI_USERNAME=${{ secrets.PYPI_USERNAME }} \
+            --build-arg PYPI_PASSWORD=${{ secrets.PYPI_PASSWORD }}
+
+      - name: Update repository with up-to-date and version
+        run: |
+          git config --global user.email "opendatadiscovery-bot@provectus.com"
+          git config --global user.name "OpenDataDiscovery Bot"
+          if [ -n "$(git status --porcelain)" ]
+          then
+            git add .
+            git commit -m "Bump package version"
+            git push origin main
+          fi
