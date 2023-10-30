@@ -23,14 +23,14 @@ jobs:
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
-          poetry-version: 1.3.2
+          version: 1.3.2
           virtualenvs-create: true
           virtualenvs-in-project: true
 
       - name: Run the automated tests
         run: |
           poetry install -C odd-collector-sdk
-          poetry run pytest odd-collector-sdk -v
+          pytest odd-collector-sdk -v
 
       - name: Patch package version
         run: |
