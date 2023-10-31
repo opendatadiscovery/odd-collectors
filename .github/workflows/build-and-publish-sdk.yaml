@@ -20,28 +20,29 @@ jobs:
         with:
           python-version: '3.9.16'
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
+      - name: Run image
+        uses: abatilo/actions-poetry@v2
         with:
-          version: 1.3.2
-          virtualenvs-create: true
-          virtualenvs-in-project: true
+          poetry-version: '1.3.2'
 
-      - name: Run the automated tests
-        run: |
-          poetry install -C odd-collector-sdk
-          source $(poetry env info --path)/bin/activate
-          pytest odd-collector-sdk -v
+      - name: Install dependencies
+        working-directory: odd-collector-sdk
+        run: poetry install
+
+      - name: Run tests
+        working-directory: odd-collector-sdk
+        run: poetry run pytest .
 
       - name: Patch package version
+        working-directory: odd-collector-sdk
         run: |
-          poetry version patch -C odd-collector-sdk
-          echo "VERSION = \"$(poetry version -s)\"" > odd-collector-sdk/odd_collector_sdk/__version__.py
-
+          poetry version patch
+          echo "VERSION = \"$(poetry version -s)\"" > odd_collector_sdk/__version__.py
 
       - name: Run Dockerfile to build and publish package into PyPI
+        working-directory: odd-collector-sdk
         run: |
-          docker build -f odd-collector-sdk/Dockerfile . -t ignored \
+          docker build -f Dockerfile . -t ignored \
             --build-arg PYPI_USERNAME=${{ secrets.PYPI_USERNAME }} \
             --build-arg PYPI_PASSWORD=${{ secrets.PYPI_PASSWORD }}
 
