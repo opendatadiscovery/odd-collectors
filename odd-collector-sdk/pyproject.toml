@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "odd-collector-sdk"
-version = "0.3.45"
+version = "0.3.46"
 description = "ODD Collector"
 license = "Apache-2.0"
 readme = "README.md"
