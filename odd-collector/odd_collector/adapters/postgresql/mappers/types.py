@@ -62,6 +62,7 @@ TYPES_SQL_TO_ODD: Dict[str, Type] = {
     "character varying": Type.TYPE_STRING,  # VARCHAROID
     "bytea": Type.TYPE_BINARY,
     "ARRAY": Type.TYPE_LIST,  # view information_schema.columns recheck
+    "vector": Type.TYPE_VECTOR,  # vector from pgvector extension
 }
 
 TABLE_TYPES_SQL_TO_ODD: Dict[str, DataEntityType] = {
