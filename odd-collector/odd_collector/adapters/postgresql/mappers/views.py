@@ -1,12 +1,12 @@
 from funcy import lmap, partial, silent
-from odd_models import Type, DataEntity, DataEntityType, DataSet
+from odd_models import DataEntity, DataEntityType, DataSet
 from odd_models.models import DataTransformer
 from oddrn_generator import PostgresqlGenerator
 
 from ..models import Table
 from .columns import map_column
 from .metadata import get_table_metadata
-from .types import TYPES_SQL_TO_ODD
+from .utils import data_entity_has_vector_column
 
 
 def map_view(generator: PostgresqlGenerator, view: Table):
@@ -16,11 +16,10 @@ def map_view(generator: PostgresqlGenerator, view: Table):
     map_view_column = partial(map_column, generator=generator, path="views")
 
     # If view contains vector column we consider it as a vector store, otherwise - ordinary view
-    data_entity_type = DataEntityType.VIEW
-    for c in view.columns:
-        if TYPES_SQL_TO_ODD.get(c.data_type) == Type.TYPE_VECTOR:
-            data_entity_type = DataEntityType.VECTOR_STORE
-            break
+    data_entity_type = (
+        DataEntityType.VECTOR_STORE if data_entity_has_vector_column(view)
+        else DataEntityType.TABLE
+    )
 
     return DataEntity(
         oddrn=generator.get_oddrn_by_path("views"),
