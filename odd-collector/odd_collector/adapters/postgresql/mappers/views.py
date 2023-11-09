@@ -18,7 +18,7 @@ def map_view(generator: PostgresqlGenerator, view: Table):
     # If view contains vector column we consider it as a vector store, otherwise - an ordinary view
     data_entity_type = (
         DataEntityType.VECTOR_STORE if has_vector_column(view.columns)
-        else DataEntityType.TABLE
+        else DataEntityType.VIEW
     )
 
     return DataEntity(
