@@ -5,6 +5,12 @@ from odd_collector.adapters.postgresql.mappers.tables import Table
 from odd_collector.adapters.postgresql.mappers.columns import Column
 
 
+def get_enriched_with_columns_table(table: Table, columns: list[Column]) -> Table:
+    enriched_table = table
+    enriched_table.columns.extend(columns)
+    return enriched_table
+
+
 @pytest.fixture(scope="module")
 def postgresql_generator():
     config = {
@@ -73,7 +79,7 @@ def vector_column():
 
 
 @pytest.fixture(scope="module")
-def table_without_vector_column(int4_id_column, varchar_column):
+def table(int4_id_column, varchar_column):
     return Table(
         oid=16520,
         table_catalog='test',
@@ -104,38 +110,12 @@ def table_without_vector_column(int4_id_column, varchar_column):
 
 
 @pytest.fixture(scope="module")
-def table_with_vector_column(int4_id_column, varchar_column, vector_column):
-    return Table(
-        oid=16520,
-        table_catalog='test',
-        table_schema='test',
-        table_name='test',
-        table_type='r',
-        self_referencing_column_name=None,
-        reference_generation=None,
-        user_defined_type_catalog=None,
-        user_defined_type_schema=None,
-        user_defined_type_name=None,
-        is_insertable_into='YES',
-        is_typed='NO',
-        commit_action=None,
-        view_definition=None,
-        view_check_option=None,
-        view_is_updatable=None,
-        view_is_insertable_into=None,
-        view_is_trigger_updatable=None,
-        view_is_trigger_deletable=None,
-        view_is_trigger_insertable_into=None,
-        table_owner='postgres',
-        table_rows=100,
-        description=None,
-        columns=[int4_id_column, varchar_column, vector_column, ],
-        primary_keys=[]
-    )
+def table_with_vector_column(table, vector_column):
+    return get_enriched_with_columns_table(table, [vector_column, ])
 
 
 @pytest.fixture(scope="module")
-def view_without_vector_column(int4_id_column, varchar_column):
+def view(int4_id_column, varchar_column):
     return Table(
         oid=16528,
         table_catalog='test',
@@ -166,38 +146,12 @@ def view_without_vector_column(int4_id_column, varchar_column):
 
 
 @pytest.fixture(scope="module")
-def view_with_vector_column(int4_id_column, varchar_column, vector_column):
-    return Table(
-        oid=16528,
-        table_catalog='test',
-        table_schema='test',
-        table_name='test',
-        table_type='v',
-        self_referencing_column_name=None,
-        reference_generation=None,
-        user_defined_type_catalog=None,
-        user_defined_type_schema=None,
-        user_defined_type_name=None,
-        is_insertable_into='YES',
-        is_typed='NO',
-        commit_action=None,
-        view_definition='SELECT * FROM test.test;',
-        view_check_option='NONE',
-        view_is_updatable='YES',
-        view_is_insertable_into='YES',
-        view_is_trigger_updatable='NO',
-        view_is_trigger_deletable='NO',
-        view_is_trigger_insertable_into='NO',
-        table_owner='postgres',
-        table_rows=100,
-        description=None,
-        columns=[int4_id_column, varchar_column, vector_column, ],
-        primary_keys=[]
-    )
+def view_with_vector_column(view, vector_column):
+    return get_enriched_with_columns_table(view, [vector_column, ])
 
 
 @pytest.fixture(scope="module")
-def materialized_view_without_vector_column(int4_id_column, varchar_column):
+def materialized_view(int4_id_column, varchar_column):
     return Table(
         oid=16532,
         table_catalog=None,
@@ -228,31 +182,5 @@ def materialized_view_without_vector_column(int4_id_column, varchar_column):
 
 
 @pytest.fixture(scope="module")
-def materialized_view_with_vector_column(int4_id_column, varchar_column, vector_column):
-    return Table(
-        oid=16532,
-        table_catalog=None,
-        table_schema='test',
-        table_name='test',
-        table_type='m',
-        self_referencing_column_name=None,
-        reference_generation=None,
-        user_defined_type_catalog=None,
-        user_defined_type_schema=None,
-        user_defined_type_name=None,
-        is_insertable_into=None,
-        is_typed=None,
-        commit_action=None,
-        view_definition='SELECT * FROM test.test;',
-        view_check_option=None,
-        view_is_updatable=None,
-        view_is_insertable_into=None,
-        view_is_trigger_updatable=None,
-        view_is_trigger_deletable=None,
-        view_is_trigger_insertable_into=None,
-        table_owner='postgres',
-        table_rows=100,
-        description=None,
-        columns=[int4_id_column, varchar_column, vector_column, ],
-        primary_keys=[]
-    )
+def materialized_view_with_vector_column(materialized_view, vector_column):
+    return get_enriched_with_columns_table(materialized_view, [vector_column, ])

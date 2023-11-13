@@ -5,7 +5,7 @@ import odd_models
 @pytest.mark.parametrize(
     "table_fixture, expected_data_entity_type",
     [
-        ("table_without_vector_column", odd_models.DataEntityType.TABLE),
+        ("table", odd_models.DataEntityType.TABLE),
         ("table_with_vector_column", odd_models.DataEntityType.VECTOR_STORE),
     ]
 )

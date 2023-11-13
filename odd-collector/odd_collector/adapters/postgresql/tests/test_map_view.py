@@ -5,9 +5,9 @@ import odd_models
 @pytest.mark.parametrize(
     "view_fixture, expected_data_entity_type",
     [
-        ("view_without_vector_column", odd_models.DataEntityType.VIEW),
+        ("view", odd_models.DataEntityType.VIEW),
         ("view_with_vector_column", odd_models.DataEntityType.VECTOR_STORE),
-        ("materialized_view_without_vector_column", odd_models.DataEntityType.VIEW),
+        ("materialized_view", odd_models.DataEntityType.VIEW),
         ("materialized_view_with_vector_column", odd_models.DataEntityType.VECTOR_STORE),
     ]
 )
