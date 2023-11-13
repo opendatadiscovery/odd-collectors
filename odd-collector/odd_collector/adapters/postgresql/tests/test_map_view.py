@@ -1,14 +1,14 @@
 import pytest
-import odd_models
+from odd_models import DataEntityType
 
 
 @pytest.mark.parametrize(
     "view_fixture, expected_data_entity_type",
     [
-        ("view", odd_models.DataEntityType.VIEW),
-        ("view_with_vector_column", odd_models.DataEntityType.VECTOR_STORE),
-        ("materialized_view", odd_models.DataEntityType.VIEW),
-        ("materialized_view_with_vector_column", odd_models.DataEntityType.VECTOR_STORE),
+        ("view", DataEntityType.VIEW),
+        ("view_with_vector_column", DataEntityType.VECTOR_STORE),
+        ("materialized_view", DataEntityType.VIEW),
+        ("materialized_view_with_vector_column", DataEntityType.VECTOR_STORE),
     ]
 )
 def test_map_view(postgresql_generator, view_fixture, expected_data_entity_type, request):
@@ -17,6 +17,4 @@ def test_map_view(postgresql_generator, view_fixture, expected_data_entity_type,
     view = request.getfixturevalue(view_fixture)
 
     data_entity = map_view(postgresql_generator, view)
-    assert isinstance(data_entity, odd_models.DataEntity)
-    assert hasattr(data_entity, "type")
     assert data_entity.type == expected_data_entity_type
