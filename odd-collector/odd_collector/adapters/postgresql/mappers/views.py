@@ -6,6 +6,7 @@ from oddrn_generator import PostgresqlGenerator
 from ..models import Table
 from .columns import map_column
 from .metadata import get_table_metadata
+from .utils import has_vector_column
 
 
 def map_view(generator: PostgresqlGenerator, view: Table):
@@ -14,10 +15,16 @@ def map_view(generator: PostgresqlGenerator, view: Table):
     )
     map_view_column = partial(map_column, generator=generator, path="views")
 
+    # If view contains vector column we consider it as a vector store, otherwise - an ordinary view
+    data_entity_type = (
+        DataEntityType.VECTOR_STORE if has_vector_column(view.columns)
+        else DataEntityType.VIEW
+    )
+
     return DataEntity(
         oddrn=generator.get_oddrn_by_path("views"),
         name=view.table_name,
-        type=DataEntityType.VIEW,
+        type=data_entity_type,
         owner=view.table_owner,
         description=view.description,
         metadata=[get_table_metadata(entity=view)],

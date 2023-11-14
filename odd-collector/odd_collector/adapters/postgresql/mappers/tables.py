@@ -7,18 +7,25 @@ from ..models import Table
 from .columns import map_column
 from .metadata import get_table_metadata
 from .views import map_view
+from .utils import has_vector_column
 
 
 def map_table(generator: PostgresqlGenerator, table: Table):
     generator.set_oddrn_paths(
         **{"schemas": table.table_schema, "tables": table.table_name}
     )
-
     map_table_column = partial(map_column, generator=generator, path="tables")
+
+    # If table contains vector column we consider it as a vector store, otherwise - an ordinary table
+    data_entity_type = (
+        DataEntityType.VECTOR_STORE if has_vector_column(table.columns)
+        else DataEntityType.TABLE
+    )
+
     return DataEntity(
         oddrn=generator.get_oddrn_by_path("tables"),
         name=table.table_name,
-        type=DataEntityType.TABLE,
+        type=data_entity_type,
         owner=table.table_owner,
         description=table.description,
         metadata=[get_table_metadata(entity=table)],

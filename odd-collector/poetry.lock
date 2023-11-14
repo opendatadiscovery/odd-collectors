@@ -3146,13 +3146,13 @@ tqdm = ">=4.64.1,<5.0.0"
 
 [[package]]
 name = "odd-models"
-version = "2.0.33"
+version = "2.0.34"
 description = "Open Data Discovery Models"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "odd_models-2.0.33-py3-none-any.whl", hash = "sha256:0dc3404d7942e6f9a284bf72664b983f3639bd7df9269a54e098862b71adb17a"},
-    {file = "odd_models-2.0.33.tar.gz", hash = "sha256:d492563f5ebaea1e49b7757d945d63bf2ff042538208fb11f5daea4e84ffad38"},
+    {file = "odd_models-2.0.34-py3-none-any.whl", hash = "sha256:4501c01297467c45895ccd1939538923da8d7763e96722039e07eec5226d6f5c"},
+    {file = "odd_models-2.0.34.tar.gz", hash = "sha256:0b2f0df4601a3da63ae35c6e9a887fff6321ce0c8f49d396763b7893f1326d0c"},
 ]
 
 [package.dependencies]
@@ -5864,4 +5864,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "676c27fe3a047c6a8e46dcc4917ba5f6ff602c814b4535b094c78686ca903023"
+content-hash = "c424b2781a4191787ce8eb7e9b4067ccb5f8d101c987733452d65b2628559de8"

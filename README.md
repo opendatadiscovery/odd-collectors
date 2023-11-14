@@ -18,7 +18,7 @@ Adapters do not have any dependencies on each other and can be used separately. 
 # odd-collector
 [Image](https://github.com/opendatadiscovery/odd-collector/pkgs/container/odd-collector) | [Configuration examples](odd-collector/config_examples)
 
-Collector to the common data sources, it shares adapters to Databases, BI Tools or ML platforms as MLFlow.
+Collector to the common data sources, it shares adapters to Databases, Vector Stores (pgvector PostgreSQL extension), BI Tools or ML platforms as MLFlow.
 
 Supported data sources:
 - [Airbyte](odd-collector/README.md)
