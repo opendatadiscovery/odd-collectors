@@ -21,7 +21,9 @@ def find_by_name(data_entity_list: DataEntityList, name: str) -> DataEntity:
     )
 
 
-def find_dataset_field_by_name(dataset_field_list: list[DataSetField], name: str) -> DataSetField:
+def find_dataset_field_by_name(
+    dataset_field_list: list[DataSetField], name: str
+) -> DataSetField:
     return next(
         filter(
             lambda dataset_field: dataset_field.name.lower() == name.lower(),

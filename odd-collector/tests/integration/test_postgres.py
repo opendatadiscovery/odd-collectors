@@ -1,12 +1,15 @@
 import odd_models
 import pytest
 import sqlalchemy
-from pydantic import SecretStr
-from testcontainers.postgres import PostgresContainer
-
 from odd_collector.adapters.postgresql.adapter import Adapter
 from odd_collector.domain.plugin import PostgreSQLPlugin
-from tests.integration.helpers import find_by_name, find_by_type, find_dataset_field_by_name
+from pydantic import SecretStr
+from testcontainers.postgres import PostgresContainer
+from tests.integration.helpers import (
+    find_by_name,
+    find_by_type,
+    find_dataset_field_by_name,
+)
 
 
 def create_primary_schema(connection: sqlalchemy.engine.Connection):
@@ -101,8 +104,11 @@ def create_vector_store_schema(connection: sqlalchemy.engine.Connection):
     """
 
     for q in (
-        init_pgvector_extension, create_schema,
-        create_vector_store_table, create_vector_store_view, create_vector_store_materialized_view
+        init_pgvector_extension,
+        create_schema,
+        create_vector_store_table,
+        create_vector_store_view,
+        create_vector_store_materialized_view,
     ):
         connection.exec_driver_sql(q)
 
@@ -147,8 +153,17 @@ def test_data_base_service(data_entity_list: odd_models.DataEntityList):
     other_schema = find_by_name(data_entity_list, "other_schema")
     vector_store_schema = find_by_name(data_entity_list, "vector_store_schema")
 
-    all_db_services = [database, public_schema, other_schema, vector_store_schema, ]
-    only_schemas = [public_schema, other_schema, vector_store_schema, ]
+    all_db_services = [
+        database,
+        public_schema,
+        other_schema,
+        vector_store_schema,
+    ]
+    only_schemas = [
+        public_schema,
+        other_schema,
+        vector_store_schema,
+    ]
 
     for db_service in all_db_services:
         assert db_service is not None
@@ -308,11 +323,17 @@ def test_vector_store_schema(data_entity_list: odd_models.DataEntityList):
 
     vector_store_table = find_by_name(data_entity_list, "vector_store_table")
     vector_store_view = find_by_name(data_entity_list, "vector_store_view")
-    vector_store_materialized_view = find_by_name(data_entity_list, "vector_store_materialized_view")
+    vector_store_materialized_view = find_by_name(
+        data_entity_list, "vector_store_materialized_view"
+    )
 
     assert len(vector_store_schema.data_entity_group.entities_list) == 3
 
-    for data_entity in [vector_store_table, vector_store_view, vector_store_materialized_view]:
+    for data_entity in [
+        vector_store_table,
+        vector_store_view,
+        vector_store_materialized_view,
+    ]:
         assert data_entity is not None
         assert data_entity.oddrn in vector_store_schema.data_entity_group.entities_list
 
@@ -327,7 +348,9 @@ def test_vector_store_table(data_entity_list: odd_models.DataEntityList):
     assert len(vector_store_table.dataset.field_list) == 4
 
     # TODO: checked only column with new data type, maybe worth to be populated on others
-    vector_column = find_dataset_field_by_name(vector_store_table.dataset.field_list, "embedding")
+    vector_column = find_dataset_field_by_name(
+        vector_store_table.dataset.field_list, "embedding"
+    )
     assert vector_column is not None
     assert vector_column.type.type == odd_models.Type.TYPE_VECTOR
 
@@ -349,13 +372,17 @@ def test_vector_store_view(data_entity_list: odd_models.DataEntityList):
     assert vector_store_table.oddrn in vector_store_view.data_transformer.inputs
 
     # TODO: checked only column with new data type, maybe worth to be populated on others
-    vector_column = find_dataset_field_by_name(vector_store_view.dataset.field_list, "embedding")
+    vector_column = find_dataset_field_by_name(
+        vector_store_view.dataset.field_list, "embedding"
+    )
     assert vector_column is not None
     assert vector_column.type.type == odd_models.Type.TYPE_VECTOR
 
 
 def test_vector_store_materialized_view(data_entity_list: odd_models.DataEntityList):
-    vector_store_materialized_view = find_by_name(data_entity_list, "vector_store_materialized_view")
+    vector_store_materialized_view = find_by_name(
+        data_entity_list, "vector_store_materialized_view"
+    )
     assert vector_store_materialized_view is not None
     assert isinstance(vector_store_materialized_view, odd_models.DataEntity)
     assert vector_store_materialized_view.type == odd_models.DataEntityType.VECTOR_STORE
@@ -368,7 +395,10 @@ def test_vector_store_materialized_view(data_entity_list: odd_models.DataEntityL
     assert len(vector_store_materialized_view.data_transformer.inputs) == 1
 
     vector_store_table = find_by_name(data_entity_list, "vector_store_table")
-    assert vector_store_table.oddrn in vector_store_materialized_view.data_transformer.inputs
+    assert (
+        vector_store_table.oddrn
+        in vector_store_materialized_view.data_transformer.inputs
+    )
 
     # TODO: checked only column with new data type, maybe worth to be populated on others
     vector_column = find_dataset_field_by_name(

@@ -6,8 +6,8 @@ from oddrn_generator import PostgresqlGenerator
 from ..models import Table
 from .columns import map_column
 from .metadata import get_table_metadata
-from .views import map_view
 from .utils import has_vector_column
+from .views import map_view
 
 
 def map_table(generator: PostgresqlGenerator, table: Table):
@@ -18,7 +18,8 @@ def map_table(generator: PostgresqlGenerator, table: Table):
 
     # If table contains vector column we consider it as a vector store, otherwise - an ordinary table
     data_entity_type = (
-        DataEntityType.VECTOR_STORE if has_vector_column(table.columns)
+        DataEntityType.VECTOR_STORE
+        if has_vector_column(table.columns)
         else DataEntityType.TABLE
     )
 
