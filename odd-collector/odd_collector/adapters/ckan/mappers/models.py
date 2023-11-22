@@ -17,6 +17,10 @@ class CKANObject(HasMetadata):
         return self.data["name"]
 
     @property
+    def file_format(self) -> str:
+        return self.data["format"]
+
+    @property
     def description(self) -> str:
         return self.data["description"]
 

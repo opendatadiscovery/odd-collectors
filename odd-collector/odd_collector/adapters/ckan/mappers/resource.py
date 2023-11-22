@@ -7,12 +7,14 @@ from oddrn_generator import CKANGenerator
 
 def map_resource(
     oddrn_generator: CKANGenerator,
+    organization_name: str,
     resource: Resource,
     fields: list[ResourceField],
 ) -> DataEntity:
+    resource_name = resource.name if resource.name else f"CKAN_{organization_name}_{resource.id}"
     return DataEntity(
-        oddrn=oddrn_generator.get_oddrn_by_path("resources", resource.name),
-        name=resource.name,
+        oddrn=oddrn_generator.get_oddrn_by_path("resources", resource.id),
+        name=resource_name,
         type=DataEntityType.FILE,
         metadata=[extract_metadata("ckan", resource, DefinitionType.DATASET_FIELD)],
         dataset=DataSet(
