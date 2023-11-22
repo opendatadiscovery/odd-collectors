@@ -1,9 +1,13 @@
-default_pulling_interval: 60 # in minutes. If not specified, collector will pull data once.
-platform_host_url: http://localhost:8080
-token: ""
+default_pulling_interval: 60    # in minutes. If not specified, collector will pull data once.
+platform_host_url: http://localhost:8080    # odd platform host url
+token: ""    # collector token
 plugins:
-  - type: ckan
+  - type: ckan    # adapter type (must be ckan)
     name: ckan_adapter
-    host: localhost
-    port: 8443
-    token: token
+    host: localhost    # host of ckan supported website
+    port: 1234
+    ckan_endpoint: ""    # if ckan api is available directly after host specify "" or /
+                         # example: www.open_website.com/api/action/package_search
+                         # if ckan api is available after custom endpoint specify "/additional/endpoint"
+                         # example: www.open_website.com/additional/endpoint/api/action/package_search
+    token: ""    # CKAN API auth tokern. Optional. Some API functions may require authorization
