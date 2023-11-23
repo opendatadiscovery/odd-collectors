@@ -50,7 +50,12 @@ class Adapter(AsyncAbstractAdapter):
                     for resource in dataset.resources:
                         fields = await self.client.get_resource_fields(resource.id)
                         resources_entities_tmp.append(
-                            map_resource(self.oddrn_generator, organization.name, resource, fields)
+                            map_resource(
+                                self.oddrn_generator,
+                                organization.name,
+                                resource,
+                                fields,
+                            )
                         )
 
                     datasets_entities_tmp.append(
