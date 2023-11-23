@@ -52,7 +52,7 @@ class CKANRestClient:
         ) as session:
             try:
                 async with session.post(url, json=payload) as resp:
-                    if resp.status != 200:
+                    if resp.status not in list(range(200, 300)):
                         logger.debug(
                             f"POST request for {url} with payload={payload} has not been successful "
                             f"with a response status code = {resp.status}"
@@ -70,7 +70,7 @@ class CKANRestClient:
                     f"Error during getting data from host {self.__host}: {e}"
                 ) from e
 
-    async def _pagination_request(self, url: str, params: dict) -> list:
+    async def _pagination_request(self, url: str, params: dict) -> list[dict]:
         """
         Custom pagination function for getting all the datasets from request on specified url
         with given query parameters.
@@ -80,19 +80,13 @@ class CKANRestClient:
         """
         pagination_interval = params["rows"]
 
-        extra_quit_count = 0
         result = []
-        while True:
-            extra_quit_count += 1
-
+        for _ in range(200):    # Limit the number of iterations to 200
             resp = await self._get_request(url, params)
             result.extend(resp["result"]["results"])
             if resp["result"]["count"] == len(result):
                 break
             params["start"] += pagination_interval
-
-            if extra_quit_count == 200:
-                break
         return result
 
     async def get_organizations(self) -> list[Organization]:
