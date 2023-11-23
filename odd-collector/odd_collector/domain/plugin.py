@@ -329,6 +329,7 @@ class DuckDBPlugin(BasePlugin):
 
 class CKANPlugin(WithHost, WithPort):
     type: Literal["ckan"]
+    ckan_endpoint: str = ""
     token: Optional[SecretStr] = None
 
 

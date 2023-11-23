@@ -50,7 +50,7 @@ class Adapter(AsyncAbstractAdapter):
                     for resource in dataset.resources:
                         fields = await self.client.get_resource_fields(resource.id)
                         resources_entities_tmp.append(
-                            map_resource(self.oddrn_generator, resource, fields)
+                            map_resource(self.oddrn_generator, organization.name, resource, fields)
                         )
 
                     datasets_entities_tmp.append(
@@ -83,10 +83,14 @@ class Adapter(AsyncAbstractAdapter):
 
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
+            # Assumption: items unpacking order is essential, first unpack initial entities
+            # than those that are being grouped into them.
+            # Reason: read_bufsize argument of ClientSession (aiohttp library)
+            # Our case: resources grouped into datasets, datasets into organizations. So org -> ds -> res order.
             items=[
-                *resources_entities,
-                *datasets_entities,
-                *organization_entities,
                 *groups_entities,
+                *organization_entities,
+                *datasets_entities,
+                *resources_entities,
             ],
         )
