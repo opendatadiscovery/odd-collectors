@@ -81,7 +81,7 @@ class CKANRestClient:
         pagination_interval = params["rows"]
 
         result = []
-        for _ in range(200):    # Limit the number of iterations to 200
+        for _ in range(200):  # Limit the number of iterations to 200
             resp = await self._get_request(url, params)
             result.extend(resp["result"]["results"])
             if resp["result"]["count"] == len(result):
@@ -120,11 +120,7 @@ class CKANRestClient:
 
     async def get_datasets(self, organization_id: str) -> list[Dataset]:
         url = f"{self._ckan_endpoint}/api/action/package_search"
-        stable_params = {
-            "q": f"owner_org:{organization_id}",
-            "rows": 1000,
-            "start": 0
-        }
+        stable_params = {"q": f"owner_org:{organization_id}", "rows": 1000, "start": 0}
         try:
             params = {**stable_params, "include_private": "True"}
             resp = await self._pagination_request(url, params)
