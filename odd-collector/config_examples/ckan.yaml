@@ -10,4 +10,4 @@ plugins:
                          # example: www.open_website.com/api/action/package_search
                          # if ckan api is available after custom endpoint specify "/additional/endpoint"
                          # example: www.open_website.com/additional/endpoint/api/action/package_search
-    token: ""    # CKAN API auth tokern. Optional. Some API functions may require authorization
+    token: ""    # CKAN API auth token. Optional. Some API functions may require authorization
