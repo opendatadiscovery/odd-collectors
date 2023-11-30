@@ -8,11 +8,11 @@ from odd_collector.adapters.ckan.client import CKANRestClient
 @pytest.mark.parametrize(
     "config, endpoint, expected_endpoint",
     [
-        ("ckan_adapter_config", "", ""),
-        ("ckan_adapter_config", "/", ""),
-        ("ckan_adapter_config", "/ckan-endpoint", "/ckan-endpoint"),
-        ("ckan_adapter_config", "/ckan-endpoint/", "/ckan-endpoint"),
-        ("ckan_adapter_config", "ckan-endpoint/", "/ckan-endpoint"),
+        ("create_ckan_adapter_config", "", ""),
+        ("create_ckan_adapter_config", "/", ""),
+        ("create_ckan_adapter_config", "/ckan-endpoint", "/ckan-endpoint"),
+        ("create_ckan_adapter_config", "/ckan-endpoint/", "/ckan-endpoint"),
+        ("create_ckan_adapter_config", "ckan-endpoint/", "/ckan-endpoint"),
     ],
 )
 def test_ckan_rest_client_endpoint(config, endpoint, expected_endpoint, request):
@@ -31,8 +31,8 @@ def test_ckan_rest_client_endpoint(config, endpoint, expected_endpoint, request)
         ({"success": True}, True),
     ],
 )
-def test_is_response_successful(ckan_adapter_config, response, expected_result):
-    ckan_rest_client = CKANRestClient(ckan_adapter_config("/ckan-endpoint"))
+def test_is_response_successful(create_ckan_adapter_config, response, expected_result):
+    ckan_rest_client = CKANRestClient(create_ckan_adapter_config("/ckan-endpoint"))
 
     assert ckan_rest_client.is_response_successful(response) == expected_result
 
@@ -46,16 +46,16 @@ def test_is_response_successful(ckan_adapter_config, response, expected_result):
     ],
 )
 async def test_pagination_request(
-    ckan_adapter_config,
-    valid_pagination_request_result,
+    create_ckan_adapter_config,
+    create_valid_pagination_request_response,
     request_params,
     expected_result,
 ):
-    ckan_rest_client = CKANRestClient(ckan_adapter_config("/ckan-endpoint"))
+    ckan_rest_client = CKANRestClient(create_ckan_adapter_config("/ckan-endpoint"))
 
     count_number, rows_number = request_params
     ckan_rest_client._get_request = AsyncMock(
-        return_value=valid_pagination_request_result(
+        return_value=create_valid_pagination_request_response(
             count_number=count_number, rows_number=rows_number
         )
     )
@@ -81,7 +81,7 @@ async def test_pagination_request(
     ],
 )
 async def test_client_post_request(
-    ckan_adapter_config, aiohttp_payload_status, expected_result
+    create_ckan_adapter_config, aiohttp_payload_status, expected_result
 ):
     responses = aioresponses()
 
@@ -91,7 +91,7 @@ async def test_client_post_request(
         payload, status = aiohttp_payload_status
         responses.post(test_url, payload=payload, status=status)
 
-        ckan_rest_client = CKANRestClient(ckan_adapter_config("/ckan-endpoint"))
+        ckan_rest_client = CKANRestClient(create_ckan_adapter_config("/ckan-endpoint"))
         result = await ckan_rest_client._post_request(url=test_url, payload={})
 
         assert result == expected_result

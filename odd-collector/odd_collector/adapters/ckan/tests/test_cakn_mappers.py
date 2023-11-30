@@ -9,7 +9,7 @@ import pytest
     ],
 )
 def test_map_resource(
-    ckan_generator, models_resource, resource_name, expected_entity_name
+    ckan_generator, create_resource, resource_name, expected_entity_name
 ):
     from odd_collector.adapters.ckan.mappers.resource import map_resource
 
@@ -18,7 +18,7 @@ def test_map_resource(
         organizations=organization_name, datasets=dataset_name
     )
 
-    resource = models_resource(name=resource_name)
+    resource = create_resource(name=resource_name)
     resource_data_entity = map_resource(ckan_generator, organization_name, resource, [])
 
     assert resource_data_entity.name == expected_entity_name

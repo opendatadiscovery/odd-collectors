@@ -4159,22 +4159,6 @@ tomli = {version = ">=1.0.0", markers = "python_version < \"3.11\""}
 testing = ["argcomplete", "attrs (>=19.2.0)", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
 
 [[package]]
-name = "pytest-aioresponses"
-version = "0.2.0"
-description = "py.test integration for aioresponses"
-optional = false
-python-versions = ">=3.6,<4.0"
-files = [
-    {file = "pytest-aioresponses-0.2.0.tar.gz", hash = "sha256:61cced206857cb4e7aab10b61600527f505c358d046e7d3ad3ae09455d02d937"},
-    {file = "pytest_aioresponses-0.2.0-py3-none-any.whl", hash = "sha256:1a78d1eb76e1bffe7adc83a1bad0d48c373b41289367ae1f5e7ec0fceb60a04d"},
-]
-
-[package.dependencies]
-aioresponses = ">=0.7.1,<0.8.0"
-pytest = ">=3.5.0"
-pytest-asyncio = ">=0.14.0"
-
-[[package]]
 name = "pytest-asyncio"
 version = "0.21.1"
 description = "Pytest support for asyncio"
@@ -5894,4 +5878,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "dcc0b1c6427e6e3639b9554778f17e3877018bbcaee6978d2c23c0319d4cfb28"
+content-hash = "020625d4869b452b46903de33345103c40c07ac1ca14b54e3095b1b85a436796"

@@ -11,7 +11,7 @@ from odd_collector.adapters.ckan.mappers.models import (
 
 
 @pytest.fixture
-def ckan_adapter_config(request):
+def create_ckan_adapter_config(request):
     def _create_config(endpoint="/ckan-endpoint"):
         return CKANPlugin(
             type="ckan",
@@ -26,13 +26,13 @@ def ckan_adapter_config(request):
 
 
 @pytest.fixture
-def ckan_generator(ckan_adapter_config):
-    return CKANGenerator(host_settings=ckan_adapter_config().name)
+def ckan_generator(create_ckan_adapter_config):
+    return CKANGenerator(host_settings=create_ckan_adapter_config().name)
 
 
 @pytest.fixture
-def valid_pagination_request_result(request):
-    def _create_request(
+def create_valid_pagination_request_response(request):
+    def _create_response(
         count_number: int = 15, rows_number: int = 5, success: bool = True
     ):
         results = [{"author": f"test{num}"} for num in range(rows_number)]
@@ -48,11 +48,11 @@ def valid_pagination_request_result(request):
             },
         }
 
-    return _create_request
+    return _create_response
 
 
 @pytest.fixture
-def models_group(request):
+def create_group(request):
     def _create_group(name=None):
         return Group(
             data={
@@ -120,7 +120,7 @@ def models_group(request):
 
 
 @pytest.fixture
-def models_organization(request):
+def create_organization(request):
     def _create_organization(name=None):
         return Organization(
             data={
@@ -156,7 +156,7 @@ def models_organization(request):
 
 
 @pytest.fixture
-def models_dataset(request):
+def create_dataset(request):
     def _create_dataset(name=None):
         return Dataset(
             data={
@@ -259,7 +259,7 @@ def models_dataset(request):
 
 
 @pytest.fixture
-def models_resource(request):
+def create_resource(request):
     def _create_resource(name=None):
         return Resource(
             data={

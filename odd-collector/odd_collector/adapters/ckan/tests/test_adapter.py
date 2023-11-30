@@ -6,20 +6,19 @@ from odd_collector.adapters.ckan.adapter import Adapter
 
 @pytest.mark.asyncio
 async def test_get_data_entity_list_order(
-    ckan_adapter_config,
-    models_group,
-    models_organization,
-    models_dataset,
-    models_resource,
+    create_ckan_adapter_config,
+    create_group,
+    create_organization,
+    create_dataset,
 ):
-    adapter = Adapter(config=ckan_adapter_config())
+    adapter = Adapter(config=create_ckan_adapter_config())
 
     group_name, organization_name = "test group name", "test organization name"
     dataset_name, resource_name = "test dataset name", "test resource name"
 
     adapter.client.get_organizations = AsyncMock(
         return_value=[
-            models_organization(name=organization_name),
+            create_organization(name=organization_name),
         ]
     )
     adapter.client.get_groups = AsyncMock(
@@ -29,12 +28,12 @@ async def test_get_data_entity_list_order(
     )
     adapter.client.get_datasets = AsyncMock(
         return_value=[
-            models_dataset(name=dataset_name),
+            create_dataset(name=dataset_name),
         ]
     )
     adapter.client.get_resource_fields = AsyncMock(return_value=[])
     adapter.client.get_group_details = AsyncMock(
-        return_value=models_group(name=group_name)
+        return_value=create_group(name=group_name)
     )
 
     result = await adapter.get_data_entity_list()
