@@ -78,6 +78,8 @@ class CKANRestClient:
         the start index of result response and "rows" specifies how much entites we will get
         once per request.
         """
+        # TODO: make default values for params["rows"] and ["start"].
+        #  Like pagination_interval = params.get(params["rows"], 1000)
         pagination_interval = params["rows"]
 
         result = []
