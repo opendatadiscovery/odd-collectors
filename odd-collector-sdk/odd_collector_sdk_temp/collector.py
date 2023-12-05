@@ -2,10 +2,13 @@ import asyncio
 import logging
 import signal
 import traceback
+import json
+from importlib import import_module
 from asyncio import AbstractEventLoop
 from datetime import datetime
 from pathlib import Path
 from typing import List, Optional, Union
+from configparser import ConfigParser
 
 import tzlocal
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -30,7 +33,7 @@ class Collector:
     """All ODD collectors should use that class to run.
 
     Attributes:
-        config_path: Path| str
+        collector_config_path: Path| str
             Path to "collector_config.yaml" file
         root_package: str
             Package name for derived collector
@@ -41,7 +44,7 @@ class Collector:
 
     Example:
         >>> collector = Collector(
-            config_path=Path().cwd() / "collector_config.yaml",
+            collector_config_path=Path().cwd() / "collector_config.yaml",
             root_package="odd_collector",
             plugin_factory=PLUGIN_FACTORY,
         )
@@ -53,14 +56,30 @@ class Collector:
 
     def __init__(
         self,
-        config_path: Union[str, Path],
+        secrets_config: ConfigParser,
+        collector_config_path: Union[str, Path],
         root_package: str,
         plugin_factory: PluginFactory,
         plugins_package: str = "adapters",
     ) -> None:
         print_collector_packages_info(root_package)
-        self.config = load_config(config_path, plugin_factory)
 
+        # Unpack secrets_config.cfg
+        secrets_backend = secrets_config.get("secrets", "backend")
+        secrets_backend_kwargs = json.loads(secrets_config.get("secrets", "backend_kwargs"))
+
+        # Dynamically import the backend class
+        secrets_backend_module, secrets_backend_class_name = secrets_backend.rsplit(".", 1)
+        try:
+            secrets_backend_module = import_module(secrets_backend_module)
+            secrets_backend_class = getattr(secrets_backend_module, secrets_backend_class_name)
+        except ImportError as e:
+            error_message = f"Could not import '{secrets_backend}'"
+            raise ImportError(error_message) from e
+
+        collector_config = secrets_backend_class(collector_config_path, plugin_factory).get_collector_config()
+
+        self.config = collector_config
         self._adapters = load_adapters(
             f"{root_package}.{plugins_package}", self.config.plugins
         )
