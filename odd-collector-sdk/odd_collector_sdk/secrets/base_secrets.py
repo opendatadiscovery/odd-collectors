@@ -17,14 +17,14 @@ class BaseSecretsBackend(ABC):
         """
         return f"{path_prefix}{sep}{secret_id}"
 
-    @abstractmethod
-    def get_collector_config(self) -> str | None:
-        """
-        Retrieve from Secrets Backend a string value representing the Connection object.
-
-        If the client your secrets backend uses already returns a python dict, you should override
-        ``get_connection`` instead.
-
-        :param conn_id: connection id
-        """
-        raise NotImplementedError
+    # @abstractmethod
+    # def get_collector_config(self) -> str | None:
+    #     """
+    #     Retrieve from Secrets Backend a string value representing the Connection object.
+    #
+    #     If the client your secrets backend uses already returns a python dict, you should override
+    #     ``get_connection`` instead.
+    #
+    #     :param conn_id: connection id
+    #     """
+    #     raise NotImplementedError

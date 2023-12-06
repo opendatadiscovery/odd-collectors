@@ -25,6 +25,7 @@ from .domain.collector_config import load_config
 from .errors import PlatformApiError
 from .load_adapter import load_adapters
 from .utils.print_version import print_collector_packages_info
+from .utils.create_collector_config import generate_config
 
 logging.getLogger("apscheduler.scheduler").setLevel(logging.ERROR)
 
@@ -77,7 +78,11 @@ class Collector:
             error_message = f"Could not import '{secrets_backend}'"
             raise ImportError(error_message) from e
 
-        collector_config = secrets_backend_class(collector_config_path, plugin_factory).get_collector_config()
+        secrets_backend_class_instance = secrets_backend_class(**secrets_backend_kwargs)
+        connection_settings = secrets_backend_class_instance.get_platform_connection_settings()
+        plugins_settings = secrets_backend_class_instance.get_plugins_settings()
+
+        collector_config = generate_config(connection_settings, plugins_settings, plugin_factory)
 
         self.config = collector_config
         self._adapters = load_adapters(
