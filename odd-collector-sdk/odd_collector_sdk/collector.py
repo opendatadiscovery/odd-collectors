@@ -25,7 +25,11 @@ from .domain.collector_config import load_config
 from .errors import PlatformApiError
 from .load_adapter import load_adapters
 from .utils.print_version import print_collector_packages_info
-from .utils.create_collector_config import generate_config
+from .utils.collector_config_parse import (
+    read_config_yaml,
+    unpack_config_logical_sections,
+    generate_collector_config,
+)
 
 logging.getLogger("apscheduler.scheduler").setLevel(logging.ERROR)
 
@@ -34,7 +38,7 @@ class Collector:
     """All ODD collectors should use that class to run.
 
     Attributes:
-        collector_config_path: Path| str
+        config_path: Path| str
             Path to "collector_config.yaml" file
         root_package: str
             Package name for derived collector
@@ -45,7 +49,7 @@ class Collector:
 
     Example:
         >>> collector = Collector(
-            collector_config_path=Path().cwd() / "collector_config.yaml",
+            config_path="/absolute/path/to/collector_config.yaml",
             root_package="odd_collector",
             plugin_factory=PLUGIN_FACTORY,
         )
@@ -57,32 +61,44 @@ class Collector:
 
     def __init__(
         self,
-        secrets_config: ConfigParser,
-        collector_config_path: Union[str, Path],
+        config_path: Union[str, Path],
         root_package: str,
         plugin_factory: PluginFactory,
         plugins_package: str = "adapters",
     ) -> None:
         print_collector_packages_info(root_package)
 
-        # Unpack secrets_config.cfg
-        secrets_backend = secrets_config.get("secrets", "backend")
-        secrets_backend_kwargs = json.loads(secrets_config.get("secrets", "backend_kwargs"))
+        # Parse collector_config.yaml
+        parsed_config = read_config_yaml(config_path)
+        (
+            secrets_info,
+            local_connection_settings,
+            local_plugins_settings,
+        ) = unpack_config_logical_sections(parsed_config)
 
-        # Dynamically import the backend class
-        secrets_backend_module, secrets_backend_class_name = secrets_backend.rsplit(".", 1)
+        secrets_backend = secrets_info["secrets_backend"]
+        secrets_backend_kwargs = secrets_info["secrets_backend_kwargs"]
+
+        # Dynamically import the secrets backend class
+        secrets_backend_module, secrets_backend_class_name = secrets_backend.rsplit(
+            ".", 1
+        )
         try:
             secrets_backend_module = import_module(secrets_backend_module)
-            secrets_backend_class = getattr(secrets_backend_module, secrets_backend_class_name)
+            secrets_backend_class = getattr(
+                secrets_backend_module, secrets_backend_class_name
+            )
         except ImportError as e:
             error_message = f"Could not import '{secrets_backend}'"
             raise ImportError(error_message) from e
 
-        secrets_backend_class_instance = secrets_backend_class(**secrets_backend_kwargs)
-        connection_settings = secrets_backend_class_instance.get_platform_connection_settings()
-        plugins_settings = secrets_backend_class_instance.get_plugins_settings()
+        # secrets_backend_class_instance = secrets_backend_class(**secrets_backend_kwargs)
+        # connection_settings = secrets_backend_class_instance.get_platform_connection_settings()
+        # plugins_settings = secrets_backend_class_instance.get_plugins_settings()
 
-        collector_config = generate_config(connection_settings, plugins_settings, plugin_factory)
+        collector_config = generate_collector_config(
+            local_connection_settings, local_plugins_settings, plugin_factory
+        )
 
         self.config = collector_config
         self._adapters = load_adapters(

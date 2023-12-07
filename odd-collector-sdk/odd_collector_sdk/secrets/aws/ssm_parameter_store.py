@@ -5,10 +5,7 @@ from ...domain.collector_config import CollectorConfig
 
 
 class SSMParameterStoreSecretsBackend(BaseSecretsBackend):
-    def __init__(
-        self,
-        region_name: str = "us-east-1"
-    ) -> None:
+    def __init__(self, region_name: str = "us-east-1", **kwargs) -> None:
         super().__init__()
         self.ssm_client = boto3.client("ssm", region_name=region_name)
 
@@ -22,10 +19,7 @@ class SSMParameterStoreSecretsBackend(BaseSecretsBackend):
         - secret_type: The type of the secret (default is 'SecureString').
         """
         self.ssm_client.put_parameter(
-            Name=name,
-            Value=value,
-            Type=secret_type,
-            Overwrite=True
+            Name=name, Value=value, Type=secret_type, Overwrite=True
         )
 
     def get_secret(self, name, decrypt=True):
@@ -39,10 +33,7 @@ class SSMParameterStoreSecretsBackend(BaseSecretsBackend):
         Returns:
         - The value of the secret.
         """
-        response = self.ssm_client.get_parameter(
-            Name=name,
-            WithDecryption=decrypt
-        )
+        response = self.ssm_client.get_parameter(Name=name, WithDecryption=decrypt)
         return response["Parameter"]["Value"]
 
     def get_collector_config(self) -> CollectorConfig:
