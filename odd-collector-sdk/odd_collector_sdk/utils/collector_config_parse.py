@@ -13,10 +13,10 @@ def read_config_yaml(collector_config_path: Union[str, Path]) -> dict:
     Read and parse a collector configuration .yaml file.
 
     Args:
-        collector_config_path (Union[str, Path]): an absolute path to the collector configuration file.
+        collector_config_path: an absolute path to the collector configuration file.
 
     Returns:
-        dict: Parsed configuration as a dictionary.
+        Parsed configuration as a dictionary.
     """
     try:
         config_path = Path(collector_config_path).resolve()
@@ -38,11 +38,11 @@ def unpack_config_logical_sections(
     Unpack information into a logical sections from a parsed configuration.
 
     Parameters:
-        parsed_config (dict): Parsed configuration as a dictionary.
+        parsed_config: Parsed configuration as a dictionary.
 
     Returns:
-        tuple[dict, dict, list[dict]]: A tuple containing information about secrets backend and kwargs,
-            platform connection settings, and plugins.
+        A tuple containing information about secrets backend and kwargs,
+        collector settings, and plugins.
     """
     plugins = parsed_config.pop("plugins", [])
     secrets_info = {
@@ -53,24 +53,24 @@ def unpack_config_logical_sections(
 
 
 def generate_collector_config(
-    platform_connection_settings: dict,
+    collector_settings: dict,
     plugins: list[dict],
     plugin_factory: PluginFactory,
 ) -> CollectorConfig:
     """
-    Generate a CollectorConfig object from unparsed collector configuration (platform connection
+    Generate a CollectorConfig object from unparsed collector configuration (collector
     settings and information about all plugins).
 
     Parameters:
-        platform_connection_settings (dict): Platform connection settings.
-        plugins (list[dict]): List of plugin configurations.
-        plugin_factory (PluginFactory): Factory for choosing adapters for different plugin types.
+        collector_settings: platform connection settings.
+        plugins: list of plugin configurations.
+        plugin_factory: factory for choosing adapters for different plugin types.
 
     Returns:
-        CollectorConfig: custom objecet representing config structure.
+        Custom objecet representing config structure.
     """
     config_dict = {
-        **platform_connection_settings,
+        **collector_settings,
         "plugins": [
             plugin_factory[plugin["type"]].parse_obj(plugin) for plugin in plugins
         ],

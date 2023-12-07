@@ -1,40 +1,77 @@
 import boto3
 
-from ..base_secrets import BaseSecretsBackend
-from ...domain.collector_config import CollectorConfig
+from odd_collector_sdk.logger import logger
+from odd_collector_sdk.secrets.base_secrets import BaseSecretsBackend
 
 
 class SSMParameterStoreSecretsBackend(BaseSecretsBackend):
-    def __init__(self, region_name: str = "us-east-1", **kwargs) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__()
-        self.ssm_client = boto3.client("ssm", region_name=region_name)
-
-    def store_secret(self, name, value, secret_type="SecureString"):
-        """
-        Store a secret in AWS Systems Manager Parameter Store.
-
-        Parameters:
-        - name: The name of the parameter.
-        - value: The value of the secret.
-        - secret_type: The type of the secret (default is 'SecureString').
-        """
-        self.ssm_client.put_parameter(
-            Name=name, Value=value, Type=secret_type, Overwrite=True
+        self.region_name = kwargs.get("region_name", "us-east-1")
+        self.collector_id = kwargs.get("collector_id", "")
+        self.config_prefix = kwargs.get("config_prefix", "/odd/collector_config")
+        self.collector_settings_section_prefix = kwargs.get(
+            "collector_settings_section_prefix", "/collector_settings"
         )
+        self.plugins_section_prefix = kwargs.get("plugins_section_prefix", "/plugins")
+        self.ssm_client = boto3.client("ssm", region_name=self.region_name)
 
-    def get_secret(self, name, decrypt=True):
+    @staticmethod
+    def _ensure_leading_slash(secret_name: str) -> str:
         """
-        Retrieve a secret from AWS Systems Manager Parameter Store.
+        In AWS SSM Parameter Store leading "/" is a mandatory naming convention.
+        Function ensures path starts with "/", and can be applied for validation of path sections.
 
         Parameters:
-        - name: The name of the parameter.
-        - decrypt: Whether to decrypt the secret if it's encrypted (default is True).
+            secret_name: secret parameter name.
+        """
+        return secret_name if secret_name.startswith("/") else f"/{secret_name}"
+
+    @property
+    def base_secret_prefix(self) -> str:
+        config_prefix = self._ensure_leading_slash(self.config_prefix)
+        collector_id = self._ensure_leading_slash(self.collector_id ) if self.collector_id else ""
+        return f"{config_prefix}{collector_id}"
+
+    @property
+    def collector_settings_prefix(self) -> str:
+        section_prefix = self._ensure_leading_slash(self.collector_settings_section_prefix)
+        return f"{self.base_secret_prefix}{section_prefix}"
+
+    @property
+    def plugins_prefix(self) -> str:
+        section_prefix = self._ensure_leading_slash(self.plugins_section_prefix)
+        return f"{self.base_secret_prefix}{section_prefix}"
+
+    def _get_secrets_with_prefix(self, prefix: str, decrypt: bool = True) -> list[dict]:
+        """
+        Retrieve all secrets from AWS Systems Manager Parameter Store
+        whose names start with the given prefix.
+
+        Parameters:
+            prefix: the prefix for filtering secrets.
+            decrypt: whether to decrypt the secrets if they're encrypted (default is True).
 
         Returns:
-        - The value of the secret.
+            A list of dictionaries containing information about each secret.
+            Each dictionary may include keys like 'Name', 'Type', 'Value', etc.
         """
-        response = self.ssm_client.get_parameter(Name=name, WithDecryption=decrypt)
-        return response["Parameter"]["Value"]
+        try:
+            response = self.ssm_client.get_parameters_by_path(
+                Path=prefix, WithDecryption=decrypt, Recursive=True
+            )
+            secrets = response.get("Parameters", [])
+            return secrets
+        except self.ssm_client.exceptions.ParameterNotFound as e:
+            # Handle the case when the specified prefix doesn't exist
+            logger.info(f"ParameterNotFound: {e}")
+            return []
+        except Exception as e:
+            logger.info(f"Unexpected Exception: {e}")
+            raise RuntimeError("An unexpected error occurred")
 
-    def get_collector_config(self) -> CollectorConfig:
-        pass
+    def get_collector_settings(self):
+        return self._get_secrets_with_prefix(self.collector_settings_prefix)
+
+    def get_plugins(self):
+        return self._get_secrets_with_prefix(self.plugins_prefix)

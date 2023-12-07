@@ -2,13 +2,11 @@ import asyncio
 import logging
 import signal
 import traceback
-import json
 from importlib import import_module
 from asyncio import AbstractEventLoop
 from datetime import datetime
 from pathlib import Path
 from typing import List, Optional, Union
-from configparser import ConfigParser
 
 import tzlocal
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -72,8 +70,8 @@ class Collector:
         parsed_config = read_config_yaml(config_path)
         (
             secrets_info,
-            local_connection_settings,
-            local_plugins_settings,
+            local_collector_settings,
+            local_plugins,
         ) = unpack_config_logical_sections(parsed_config)
 
         secrets_backend = secrets_info["secrets_backend"]
@@ -92,12 +90,12 @@ class Collector:
             error_message = f"Could not import '{secrets_backend}'"
             raise ImportError(error_message) from e
 
-        # secrets_backend_class_instance = secrets_backend_class(**secrets_backend_kwargs)
-        # connection_settings = secrets_backend_class_instance.get_platform_connection_settings()
-        # plugins_settings = secrets_backend_class_instance.get_plugins_settings()
+        secrets_backend_class_instance = secrets_backend_class(**secrets_backend_kwargs)
+        secret_backend_collector_settings = secrets_backend_class_instance.get_collector_settings()
+        secret_backend_plugins = secrets_backend_class_instance.get_plugins()
 
         collector_config = generate_collector_config(
-            local_connection_settings, local_plugins_settings, plugin_factory
+            local_collector_settings, local_plugins, plugin_factory
         )
 
         self.config = collector_config
