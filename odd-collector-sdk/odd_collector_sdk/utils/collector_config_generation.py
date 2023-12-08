@@ -67,7 +67,7 @@ def generate_collector_config(
         plugin_factory: factory for choosing adapters for different plugin types.
 
     Returns:
-        Custom objecet representing config structure.
+        Custom CollectorConfig objecet representing config structure.
     """
     config_dict = {
         **collector_settings,
@@ -76,3 +76,46 @@ def generate_collector_config(
         ],
     }
     return CollectorConfig.parse_obj(config_dict)
+
+
+def merge_collector_settings(priority_settings: dict, settings: dict) -> dict:
+    """
+    Merge collector settings from two sources, giving priority to priority_settings.
+
+    Parameters:
+        priority_settings: the collector settings from a higher-priority source.
+        settings: the collector settings from a lower-priority source.
+
+    Returns:
+        Merged collector settings with priority given to priority_settings.
+    """
+    merged_settings = priority_settings.copy()
+
+    for key, value in settings.items():
+        if key not in priority_settings:
+            merged_settings[key] = value
+
+    return merged_settings
+
+
+def merge_plugins(priority_plugins: list[dict], plugins: list[dict]) -> list[dict]:
+    """
+    Merge plugins from two sources, giving priority to priority_plugins.
+
+    Parameters:
+        priority_plugins: the list of plugins from a higher-priority source.
+        plugins: the list of plugins from a lower-priority source.
+
+    Returns:
+        Merged list of plugins with priority given to priority_plugins.
+    """
+    merged_plugins = priority_plugins.copy()
+
+    # names are unique, we can't have 2 and more different plugins with one name
+    priority_plugins_names = [p["name"] for p in priority_plugins]
+
+    for plugin in plugins:
+        if plugin["name"] not in priority_plugins_names:
+            merged_plugins.append(plugin)
+
+    return merged_plugins

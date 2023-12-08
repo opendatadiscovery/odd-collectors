@@ -10,23 +10,23 @@ from typing import List, Optional, Union
 
 import tzlocal
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from odd_collector_sdk.domain.adapter import Adapter
+from odd_models.models import DataSource, DataSourceList
 from odd_collector_sdk.job import create_job
 from odd_collector_sdk.logger import logger
 from odd_collector_sdk.shutdown import shutdown, shutdown_by
 from odd_collector_sdk.types import PluginFactory
-from odd_models.models import DataSource, DataSourceList
-
-from .api.datasource_api import PlatformApi
-from .api.http_client import HttpClient
-from .domain.collector_config import load_config
-from .errors import PlatformApiError
-from .load_adapter import load_adapters
-from .utils.print_version import print_collector_packages_info
-from .utils.collector_config_parse import (
+from odd_collector_sdk.errors import PlatformApiError
+from odd_collector_sdk.load_adapter import load_adapters
+from odd_collector_sdk.domain.adapter import Adapter
+from odd_collector_sdk.api.datasource_api import PlatformApi
+from odd_collector_sdk.api.http_client import HttpClient
+from odd_collector_sdk.utils.print_version import print_collector_packages_info
+from odd_collector_sdk.utils.collector_config_generation import (
     read_config_yaml,
     unpack_config_logical_sections,
     generate_collector_config,
+    merge_collector_settings,
+    merge_plugins,
 )
 
 logging.getLogger("apscheduler.scheduler").setLevel(logging.ERROR)
@@ -90,17 +90,22 @@ class Collector:
             error_message = f"Could not import '{secrets_backend}'"
             raise ImportError(error_message) from e
 
+        # Retrieve collector config secreats from backend
         secrets_backend_class_instance = secrets_backend_class(**secrets_backend_kwargs)
         secret_backend_collector_settings = (
             secrets_backend_class_instance.get_collector_settings()
         )
         secret_backend_plugins = secrets_backend_class_instance.get_plugins()
 
-        collector_config = generate_collector_config(
-            local_collector_settings, local_plugins, plugin_factory
+        # Merge config from local and secret backend sources
+        merged_collector_settings = merge_collector_settings(
+            secret_backend_collector_settings, local_collector_settings
         )
+        merged_plugins = merge_plugins(secret_backend_plugins, local_plugins)
 
-        self.config = collector_config
+        self.config = generate_collector_config(
+            merged_collector_settings, merged_plugins, plugin_factory
+        )
         self._adapters = load_adapters(
             f"{root_package}.{plugins_package}", self.config.plugins
         )
