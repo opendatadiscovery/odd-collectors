@@ -1,4 +1,5 @@
 import boto3
+from yaml import safe_load
 
 from odd_collector_sdk.logger import logger
 from odd_collector_sdk.secrets.base_secrets import BaseSecretsBackend
@@ -68,10 +69,31 @@ class SSMParameterStoreSecretsBackend(BaseSecretsBackend):
             return []
         except Exception as e:
             logger.info(f"Unexpected Exception: {e}")
-            raise RuntimeError("An unexpected error occurred")
+            raise RuntimeError(f"An unexpected error occurred: {e}")
 
-    def get_collector_settings(self):
-        return self._get_secrets_with_prefix(self.collector_settings_prefix)
+    def get_collector_settings(self) -> dict:
+        """
+        Unpack directly the name of secrets and thier values from raw ssm_client response
+        getting the following result (example): {'platform_host_url': '', 'token': ''}
+        """
+        collector_settings = self._get_secrets_with_prefix(self.collector_settings_prefix)
 
-    def get_plugins(self):
-        return self._get_secrets_with_prefix(self.plugins_prefix)
+        if collector_settings:
+            result = {
+                cs["Name"].rsplit("/", 1)[1]: cs["Value"]
+                for cs in collector_settings
+            }
+            return result
+        return {}
+
+    def get_plugins(self) -> list[dict]:
+        """
+        Unpack directly the secret values from raw ssm_client response getting
+        the following result (example): [{'type': '', 'name': '', 'host': ''}, ...]
+        """
+        plugins = self._get_secrets_with_prefix(self.plugins_prefix)
+
+        if plugins:
+            result = [safe_load(p["Value"]) for p in plugins]
+            return result
+        return []
