@@ -91,7 +91,9 @@ class Collector:
             raise ImportError(error_message) from e
 
         secrets_backend_class_instance = secrets_backend_class(**secrets_backend_kwargs)
-        secret_backend_collector_settings = secrets_backend_class_instance.get_collector_settings()
+        secret_backend_collector_settings = (
+            secrets_backend_class_instance.get_collector_settings()
+        )
         secret_backend_plugins = secrets_backend_class_instance.get_plugins()
 
         collector_config = generate_collector_config(

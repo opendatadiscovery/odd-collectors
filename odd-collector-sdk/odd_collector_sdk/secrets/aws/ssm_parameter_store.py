@@ -31,12 +31,16 @@ class SSMParameterStoreSecretsBackend(BaseSecretsBackend):
     @property
     def base_secret_prefix(self) -> str:
         config_prefix = self._ensure_leading_slash(self.config_prefix)
-        collector_id = self._ensure_leading_slash(self.collector_id ) if self.collector_id else ""
+        collector_id = (
+            self._ensure_leading_slash(self.collector_id) if self.collector_id else ""
+        )
         return f"{config_prefix}{collector_id}"
 
     @property
     def collector_settings_prefix(self) -> str:
-        section_prefix = self._ensure_leading_slash(self.collector_settings_section_prefix)
+        section_prefix = self._ensure_leading_slash(
+            self.collector_settings_section_prefix
+        )
         return f"{self.base_secret_prefix}{section_prefix}"
 
     @property
@@ -76,12 +80,13 @@ class SSMParameterStoreSecretsBackend(BaseSecretsBackend):
         Unpack directly the name of secrets and thier values from raw ssm_client response
         getting the following result (example): {'platform_host_url': '', 'token': ''}
         """
-        collector_settings = self._get_secrets_with_prefix(self.collector_settings_prefix)
+        collector_settings = self._get_secrets_with_prefix(
+            self.collector_settings_prefix
+        )
 
         if collector_settings:
             result = {
-                cs["Name"].rsplit("/", 1)[1]: cs["Value"]
-                for cs in collector_settings
+                cs["Name"].rsplit("/", 1)[1]: cs["Value"] for cs in collector_settings
             }
             return result
         return {}
