@@ -17,4 +17,4 @@ if __name__ == "__main__":
         root_package=COLLECTOR_PACKAGE,
         plugin_factory=PLUGIN_FACTORY,
     )
-    # collector.run()
+    collector.run()
