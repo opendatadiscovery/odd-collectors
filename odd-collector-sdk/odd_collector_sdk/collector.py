@@ -77,25 +77,28 @@ class Collector:
         secrets_backend = secrets_info["secrets_backend"]
         secrets_backend_kwargs = secrets_info["secrets_backend_kwargs"]
 
-        # Dynamically import the secrets backend class
-        secrets_backend_module, secrets_backend_class_name = secrets_backend.rsplit(
-            ".", 1
-        )
-        try:
-            secrets_backend_module = import_module(secrets_backend_module)
-            secrets_backend_class = getattr(
-                secrets_backend_module, secrets_backend_class_name
+        # Dynamically import the secrets backend class if it is provided
+        if secrets_backend:
+            secrets_backend_module, secrets_backend_class_name = secrets_backend.rsplit(
+                ".", 1
             )
-        except ImportError as e:
-            error_message = f"Could not import '{secrets_backend}'"
-            raise ImportError(error_message) from e
+            try:
+                secrets_backend_module = import_module(secrets_backend_module)
+                secrets_backend_class = getattr(
+                    secrets_backend_module, secrets_backend_class_name
+                )
+            except ImportError as e:
+                error_message = f"Could not import '{secrets_backend}'"
+                raise ImportError(error_message) from e
 
-        # Retrieve collector config secreats from backend
-        secrets_backend_class_instance = secrets_backend_class(**secrets_backend_kwargs)
-        secret_backend_collector_settings = (
-            secrets_backend_class_instance.get_collector_settings()
-        )
-        secret_backend_plugins = secrets_backend_class_instance.get_plugins()
+            # Retrieve collector config secreats from backend
+            secrets_backend_class_instance = secrets_backend_class(**secrets_backend_kwargs)
+            secret_backend_collector_settings = (
+                secrets_backend_class_instance.get_collector_settings()
+            )
+            secret_backend_plugins = secrets_backend_class_instance.get_plugins()
+        else:
+            secret_backend_collector_settings, secret_backend_plugins = {}, []
 
         # Merge config from local and secret backend sources
         merged_collector_settings = merge_collector_settings(
