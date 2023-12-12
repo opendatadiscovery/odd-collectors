@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Dict, Type, Union
+from typing import Dict, Type, Union, Optional
 
 from odd_collector_sdk.utils.yaml_parser import parse_yaml
 
@@ -35,10 +35,10 @@ class CollectorConfigLoader:
     def _build_collector_config(self):
         conf_dict = self._parse_config()
         plugins = conf_dict.pop("plugins")
-        secrets_backend = conf_dict.pop("secrets_backend")
+        secrets_backend: Optional[dict] = conf_dict.pop("secrets_backend", None)
         collector_settings = conf_dict
 
-        if secrets_backend:
+        if secrets_backend is not None:
             sb_provider = SecretsBackendFactory(
                 SecretsBackendSettings(**secrets_backend)
             ).get_provider()
