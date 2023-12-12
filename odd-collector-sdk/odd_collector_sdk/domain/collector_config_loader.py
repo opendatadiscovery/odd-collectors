@@ -34,7 +34,7 @@ class CollectorConfigLoader:
 
     def _build_collector_config(self):
         conf_dict = self._parse_config()
-        plugins = conf_dict.pop("plugins")
+        plugins = conf_dict.pop("plugins", [])
         secrets_backend: Optional[dict] = conf_dict.pop("secrets_backend", None)
         collector_settings = conf_dict
 
