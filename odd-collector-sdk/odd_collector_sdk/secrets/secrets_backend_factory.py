@@ -18,9 +18,6 @@ class SecretsBackendSettings(BaseSettings, extra=Extra.allow):
 class SecretsBackendFactory:
     def __init__(self, settings: SecretsBackendSettings) -> None:
         self._settings = settings
-        self._provider: BaseSecretsBackend = PROVIDERS[settings.provider](
-            **settings.dict(exclude={"provider"})
-        )
 
     def get_provider(self) -> BaseSecretsBackend:
         return PROVIDERS[self._settings.provider](
