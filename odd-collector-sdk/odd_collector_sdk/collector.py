@@ -9,19 +9,18 @@ from typing import List, Optional, Union
 
 import tzlocal
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from odd_models.models import DataSource, DataSourceList
-
+from odd_collector_sdk.api.datasource_api import PlatformApi
+from odd_collector_sdk.api.http_client import HttpClient
+from odd_collector_sdk.domain.adapter import Adapter
 from odd_collector_sdk.domain.collector_config_loader import CollectorConfigLoader
+from odd_collector_sdk.errors import PlatformApiError
 from odd_collector_sdk.job import create_job
+from odd_collector_sdk.load_adapter import load_adapters
 from odd_collector_sdk.logger import logger
 from odd_collector_sdk.shutdown import shutdown, shutdown_by
 from odd_collector_sdk.types import PluginFactory
-from odd_collector_sdk.errors import PlatformApiError
-from odd_collector_sdk.load_adapter import load_adapters
-from odd_collector_sdk.domain.adapter import Adapter
-from odd_collector_sdk.api.datasource_api import PlatformApi
-from odd_collector_sdk.api.http_client import HttpClient
 from odd_collector_sdk.utils.print_version import print_collector_packages_info
+from odd_models.models import DataSource, DataSourceList
 
 logging.getLogger("apscheduler.scheduler").setLevel(logging.ERROR)
 

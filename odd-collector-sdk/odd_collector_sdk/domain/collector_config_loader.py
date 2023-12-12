@@ -6,14 +6,17 @@ from odd_collector_sdk.utils.yaml_parser import parse_yaml
 
 from ..errors import LoadConfigError
 from ..logger import logger
+from ..secrets.secrets_backend_factory import (
+    SecretsBackendFactory,
+    SecretsBackendSettings,
+)
 from .collector_config import CollectorConfig
 from .plugin import Plugin
-from ..secrets.secrets_backend_factory import SecretsBackendFactory, SecretsBackendSettings
 
 
 class CollectorConfigLoader:
     def __init__(
-            self, config_path: Union[str, Path], plugin_factory: Dict[str, Type[Plugin]]
+        self, config_path: Union[str, Path], plugin_factory: Dict[str, Type[Plugin]]
     ) -> None:
         self.plugin_factory = plugin_factory
 
@@ -39,13 +42,13 @@ class CollectorConfigLoader:
             sb_provider = SecretsBackendFactory(
                 SecretsBackendSettings(**secrets_backend)
             ).create_provider()
-            collector_settings = self._merge_collector_settings(sb_provider.get_collector_settings(),
-                                                                collector_settings)
+            collector_settings = self._merge_collector_settings(
+                sb_provider.get_collector_settings(), collector_settings
+            )
             plugins = self._merge_plugins(sb_provider.get_plugins(), plugins)
 
         plugins = [
-            self.plugin_factory[plugin["type"]].parse_obj(plugin)
-            for plugin in plugins
+            self.plugin_factory[plugin["type"]].parse_obj(plugin) for plugin in plugins
         ]
 
         return CollectorConfig.parse_obj({**collector_settings, "plugins": plugins})
@@ -78,8 +81,7 @@ class CollectorConfigLoader:
 
     @staticmethod
     def _merge_collector_settings(
-            secret_backend_collector_settings: dict,
-            local_collector_settings: dict
+        secret_backend_collector_settings: dict, local_collector_settings: dict
     ):
         """
         Merge collector settings from two sources, giving priority to priority_settings.

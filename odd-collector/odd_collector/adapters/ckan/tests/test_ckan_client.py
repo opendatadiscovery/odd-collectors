@@ -1,7 +1,7 @@
-import pytest
-from aioresponses import aioresponses
 from unittest.mock import AsyncMock
 
+import pytest
+from aioresponses import aioresponses
 from odd_collector.adapters.ckan.client import CKANRestClient
 
 

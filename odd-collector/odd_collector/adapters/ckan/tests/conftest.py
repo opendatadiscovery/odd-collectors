@@ -1,13 +1,12 @@
 import pytest
-from oddrn_generator import CKANGenerator
-
-from odd_collector.domain.plugin import CKANPlugin
 from odd_collector.adapters.ckan.mappers.models import (
+    Dataset,
     Group,
     Organization,
-    Dataset,
     Resource,
 )
+from odd_collector.domain.plugin import CKANPlugin
+from oddrn_generator import CKANGenerator
 
 
 @pytest.fixture

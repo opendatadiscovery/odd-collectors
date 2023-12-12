@@ -1,8 +1,7 @@
 import boto3
-from yaml import safe_load
-
 from odd_collector_sdk.logger import logger
 from odd_collector_sdk.secrets.base_secrets import BaseSecretsBackend
+from yaml import safe_load
 
 
 class AWSSystemsManagerParameterStoreBackend(BaseSecretsBackend):
