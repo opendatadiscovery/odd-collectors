@@ -9,19 +9,18 @@ from typing import List, Optional, Union
 
 import tzlocal
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from odd_collector_sdk.api.datasource_api import PlatformApi
+from odd_collector_sdk.api.http_client import HttpClient
 from odd_collector_sdk.domain.adapter import Adapter
+from odd_collector_sdk.domain.collector_config_loader import CollectorConfigLoader
+from odd_collector_sdk.errors import PlatformApiError
 from odd_collector_sdk.job import create_job
+from odd_collector_sdk.load_adapter import load_adapters
 from odd_collector_sdk.logger import logger
 from odd_collector_sdk.shutdown import shutdown, shutdown_by
 from odd_collector_sdk.types import PluginFactory
+from odd_collector_sdk.utils.print_version import print_collector_packages_info
 from odd_models.models import DataSource, DataSourceList
-
-from .api.datasource_api import PlatformApi
-from .api.http_client import HttpClient
-from .domain.collector_config import load_config
-from .errors import PlatformApiError
-from .load_adapter import load_adapters
-from .utils.print_version import print_collector_packages_info
 
 logging.getLogger("apscheduler.scheduler").setLevel(logging.ERROR)
 
@@ -41,7 +40,7 @@ class Collector:
 
     Example:
         >>> collector = Collector(
-            config_path=Path().cwd() / "collector_config.yaml",
+            config_path="/absolute/path/to/collector_config.yaml",
             root_package="odd_collector",
             plugin_factory=PLUGIN_FACTORY,
         )
@@ -59,8 +58,8 @@ class Collector:
         plugins_package: str = "adapters",
     ) -> None:
         print_collector_packages_info(root_package)
-        self.config = load_config(config_path, plugin_factory)
 
+        self.config = CollectorConfigLoader(config_path, plugin_factory).load()
         self._adapters = load_adapters(
             f"{root_package}.{plugins_package}", self.config.plugins
         )

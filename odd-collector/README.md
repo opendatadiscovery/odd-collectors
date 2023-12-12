@@ -105,6 +105,31 @@ brew install freetds
 export LDFLAGS="-L/opt/homebrew/Cellar/freetds/1.3.17/lib -L/opt/homebrew/Cellar/openssl@1.1/1.1.1t/lib"
 ```
 
+## Local development setup for odd-collector
+
+When you want to start a collector you can just run ```start.sh``` script, but if you want to start
+or primarily debug the ```__main__.py``` file from IDE it may become confusing because of errors.
+This errors will appear because ```COLLECTOR_PACKAGE = __package__``` constant variable will not get
+any package name as you run it like script. So you must configure the execution in IDE in the way 
+configuration understands it should be invoked like a module.
+
+For example in PyCharm you need to go to:
+- click 'Edit configurations' (script run configurations)
+- click 'Add new configuration'
+- change 'Script path' to 'Module name' and put value of 'odd_collector'
+- Also set 'Working diractory' to the level of 'odd-collectors/odd-collector' (but path should be absolute)
+
+Now you should be able to invoke it just pressing the green triangle.
+
+
+Also if you are working with ```odd_collector_sdk```, modifying its logic and want to be able to debug it from
+collector you need to do some in-between steps:
+- you need to delete package ```odd_collector_sdk``` from venv (because you want this module to be imported not like package from pypi)
+- mark ```odd-collector-sdk``` diractory as 'Source root'
+- set new environment variable in 'Run conficuration': ```PYTHONPATH=${PYTHONPATH}:/absoulte/path/to/repo/odd-collectors/odd-collector-sdk```
+
+Now IDE should see ```odd_collector_sdk``` imports.
+
 ## Docker compose example
 Custom `.env` file for docker-compose.yaml
 ```

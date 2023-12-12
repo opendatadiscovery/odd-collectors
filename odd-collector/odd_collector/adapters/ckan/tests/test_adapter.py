@@ -1,6 +1,6 @@
-import pytest
 from unittest.mock import AsyncMock
 
+import pytest
 from odd_collector.adapters.ckan.adapter import Adapter
 
 

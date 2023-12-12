@@ -1,10 +1,29 @@
+# You can store configuration in AWS SSM Parameter Store, if so - this block must be filled,
+# if not - you can skip it, and only configuration from file will be used.
+#
+# SSM Parameter Store naming example:
+# Lets asume, you are using the example below, and want to store default_pulling_interval secret,
+# in this case you have to create secret with:
+#   name: /odd/collector_config/collector_1/collector_settings/default_pulling_interval
+#   value: 60
+secrets_backend:
+  provider: "AWSSystemsManagerParameterStore"
+  region_name: "eu-central-1"    # region where you store secrets, default is "us-east-1"
+  collector_id: "collector_1"    # unique identifier for your collector, default is blank string ""
+                                 # but if you have more than 1 collector it is essential
+  config_prefix: "/odd/collector_config"    # prefix for Parameter Store naming,
+                                            # default is "/odd/collector_config"
+  collector_settings_section_prefix: "/collector_settings"    # prefix for general collector settings,
+                                                              # default is "/collector_settings"
+  plugins_section_prefix: "/plugins"    # prefix for plugins configurations, default is "/plugins"
+
 default_pulling_interval: 60    # in minutes. If not specified, collector will pull data once.
-platform_host_url: http://localhost:8080    # odd platform host url
+platform_host_url: "http://localhost:8080"    # odd platform host url
 token: ""    # collector token
 plugins:
-  - type: ckan    # adapter type (must be ckan)
-    name: ckan_adapter
-    host: localhost    # host of ckan supported website
+  - type: "ckan"    # adapter type (must be ckan)
+    name: "ckan_adapter"
+    host: "localhost"    # host of ckan supported website
     port: 1234
     ckan_endpoint: ""    # if ckan api is available directly after host specify "" or /
                          # example: www.open_website.com/api/action/package_search
