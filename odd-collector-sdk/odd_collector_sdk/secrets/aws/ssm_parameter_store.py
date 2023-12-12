@@ -5,7 +5,7 @@ from odd_collector_sdk.logger import logger
 from odd_collector_sdk.secrets.base_secrets import BaseSecretsBackend
 
 
-class SSMParameterStoreSecretsBackend(BaseSecretsBackend):
+class AWSSystemsManagerParameterStoreBackend(BaseSecretsBackend):
     def __init__(self, **kwargs) -> None:
         super().__init__()
         self._region_name = kwargs.get("region_name", "us-east-1")

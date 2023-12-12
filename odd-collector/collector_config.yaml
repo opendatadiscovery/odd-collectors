@@ -6,8 +6,8 @@
 # in this case you have to create secret with:
 #   name: /odd/collector_config/collector_1/collector_settings/default_pulling_interval
 #   value: 60
-secrets_backend: "odd_collector_sdk.secrets.aws.ssm_parameter_store.SSMParameterStoreSecretsBackend"
-secrets_backend_kwargs:
+secrets_backend:
+  provider: "AWSSystemsManagerParameterStoreBackend"
   region_name: "eu-central-1"    # region where you store secrets, default is "us-east-1"
   collector_id: "collector_1"    # unique identifier for your collector, default is blank string ""
                                  # but if you have more than 1 collector it is essential

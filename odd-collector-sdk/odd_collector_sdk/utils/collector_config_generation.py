@@ -44,12 +44,15 @@ def unpack_config_logical_sections(
         A tuple containing information about secrets backend and kwargs,
         collector settings, and plugins.
     """
-    plugins = parsed_config.pop("plugins", [])
-    secrets_info = {
-        "secrets_backend": parsed_config.pop("secrets_backend", None),
-        "secrets_backend_kwargs": parsed_config.pop("secrets_backend_kwargs", {}),
+    config = parsed_config.copy()
+
+    plugins = config.pop("plugins", [])
+    secrets_backend_info = config.pop("secrets_backend", {})
+    parsed_secrets_backend_info = {
+        "secrets_backend_provider": secrets_backend_info.pop("provider", None),
+        "secrets_backend_kwargs": secrets_backend_info,
     }
-    return secrets_info, parsed_config, plugins
+    return parsed_secrets_backend_info, config, plugins
 
 
 def generate_collector_config(

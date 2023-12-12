@@ -28,6 +28,10 @@ from odd_collector_sdk.utils.collector_config_generation import (
     merge_collector_settings,
     merge_plugins,
 )
+from odd_collector_sdk.secrets.mappers.backend_paths import (
+    BACKEND_NAME_PATH_MAPPING,
+)
+
 
 logging.getLogger("apscheduler.scheduler").setLevel(logging.ERROR)
 
@@ -69,26 +73,28 @@ class Collector:
         # Parse collector_config.yaml
         parsed_config = read_config_yaml(config_path)
         (
-            secrets_info,
+            secrets_backend_info,
             local_collector_settings,
             local_plugins,
         ) = unpack_config_logical_sections(parsed_config)
 
-        secrets_backend = secrets_info["secrets_backend"]
-        secrets_backend_kwargs = secrets_info["secrets_backend_kwargs"]
+        secrets_backend_provider = secrets_backend_info["secrets_backend_provider"]
+        secrets_backend_kwargs = secrets_backend_info["secrets_backend_kwargs"]
 
         # Dynamically import the secrets backend class if it is provided
-        if secrets_backend:
-            secrets_backend_module, secrets_backend_class_name = secrets_backend.rsplit(
-                ".", 1
-            )
+        secret_backend_collector_settings, secret_backend_plugins = {}, []
+        if secrets_backend_provider:
+            (
+                secrets_backend_module,
+                secrets_backend_class_name,
+            ) = BACKEND_NAME_PATH_MAPPING[secrets_backend_provider].rsplit(".", 1)
             try:
                 secrets_backend_module = import_module(secrets_backend_module)
                 secrets_backend_class = getattr(
                     secrets_backend_module, secrets_backend_class_name
                 )
             except ImportError as e:
-                error_message = f"Could not import '{secrets_backend}'"
+                error_message = f"Could not import '{secrets_backend_provider}'"
                 raise ImportError(error_message) from e
 
             # Retrieve collector config secreats from backend
@@ -99,8 +105,6 @@ class Collector:
                 secrets_backend_class_instance.get_collector_settings()
             )
             secret_backend_plugins = secrets_backend_class_instance.get_plugins()
-        else:
-            secret_backend_collector_settings, secret_backend_plugins = {}, []
 
         # Merge config from local and secret backend sources
         merged_collector_settings = merge_collector_settings(
