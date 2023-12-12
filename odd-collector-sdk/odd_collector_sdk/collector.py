@@ -2,7 +2,6 @@ import asyncio
 import logging
 import signal
 import traceback
-from importlib import import_module
 from asyncio import AbstractEventLoop
 from datetime import datetime
 from pathlib import Path
@@ -11,6 +10,8 @@ from typing import List, Optional, Union
 import tzlocal
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from odd_models.models import DataSource, DataSourceList
+
+from odd_collector_sdk.domain.collector_config_loader import CollectorConfigLoader
 from odd_collector_sdk.job import create_job
 from odd_collector_sdk.logger import logger
 from odd_collector_sdk.shutdown import shutdown, shutdown_by
@@ -21,17 +22,6 @@ from odd_collector_sdk.domain.adapter import Adapter
 from odd_collector_sdk.api.datasource_api import PlatformApi
 from odd_collector_sdk.api.http_client import HttpClient
 from odd_collector_sdk.utils.print_version import print_collector_packages_info
-from odd_collector_sdk.utils.collector_config_generation import (
-    read_config_yaml,
-    unpack_config_logical_sections,
-    generate_collector_config,
-    merge_collector_settings,
-    merge_plugins,
-)
-from odd_collector_sdk.secrets.mappers.backend_paths import (
-    BACKEND_NAME_PATH_MAPPING,
-)
-
 
 logging.getLogger("apscheduler.scheduler").setLevel(logging.ERROR)
 
@@ -70,51 +60,7 @@ class Collector:
     ) -> None:
         print_collector_packages_info(root_package)
 
-        # Parse collector_config.yaml
-        parsed_config = read_config_yaml(config_path)
-        (
-            secrets_backend_info,
-            local_collector_settings,
-            local_plugins,
-        ) = unpack_config_logical_sections(parsed_config)
-
-        secrets_backend_provider = secrets_backend_info["secrets_backend_provider"]
-        secrets_backend_kwargs = secrets_backend_info["secrets_backend_kwargs"]
-
-        # Dynamically import the secrets backend class if it is provided
-        secret_backend_collector_settings, secret_backend_plugins = {}, []
-        if secrets_backend_provider:
-            (
-                secrets_backend_module,
-                secrets_backend_class_name,
-            ) = BACKEND_NAME_PATH_MAPPING[secrets_backend_provider].rsplit(".", 1)
-            try:
-                secrets_backend_module = import_module(secrets_backend_module)
-                secrets_backend_class = getattr(
-                    secrets_backend_module, secrets_backend_class_name
-                )
-            except ImportError as e:
-                error_message = f"Could not import '{secrets_backend_provider}'"
-                raise ImportError(error_message) from e
-
-            # Retrieve collector config secreats from backend
-            secrets_backend_class_instance = secrets_backend_class(
-                **secrets_backend_kwargs
-            )
-            secret_backend_collector_settings = (
-                secrets_backend_class_instance.get_collector_settings()
-            )
-            secret_backend_plugins = secrets_backend_class_instance.get_plugins()
-
-        # Merge config from local and secret backend sources
-        merged_collector_settings = merge_collector_settings(
-            secret_backend_collector_settings, local_collector_settings
-        )
-        merged_plugins = merge_plugins(secret_backend_plugins, local_plugins)
-
-        self.config = generate_collector_config(
-            merged_collector_settings, merged_plugins, plugin_factory
-        )
+        self.config = CollectorConfigLoader(config_path, plugin_factory).load()
         self._adapters = load_adapters(
             f"{root_package}.{plugins_package}", self.config.plugins
         )
