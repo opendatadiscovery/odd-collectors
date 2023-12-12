@@ -41,7 +41,7 @@ class CollectorConfigLoader:
         if secrets_backend:
             sb_provider = SecretsBackendFactory(
                 SecretsBackendSettings(**secrets_backend)
-            ).create_provider()
+            ).get_provider()
             collector_settings = self._merge_collector_settings(
                 sb_provider.get_collector_settings(), collector_settings
             )

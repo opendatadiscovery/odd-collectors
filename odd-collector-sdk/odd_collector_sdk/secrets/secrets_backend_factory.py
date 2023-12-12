@@ -22,7 +22,7 @@ class SecretsBackendFactory:
             **settings.dict(exclude={"provider"})
         )
 
-    def create_provider(self) -> BaseSecretsBackend:
+    def get_provider(self) -> BaseSecretsBackend:
         return PROVIDERS[self._settings.provider](
             **self._settings.dict(exclude={"provider"})
         )
