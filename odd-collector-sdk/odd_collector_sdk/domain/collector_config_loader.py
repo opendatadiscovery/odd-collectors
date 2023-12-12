@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Dict, Type, Union, Optional
+from typing import Dict, Optional, Type, Union
 
 from odd_collector_sdk.utils.yaml_parser import parse_yaml
 
