@@ -96,6 +96,21 @@ Supported data sources:
 - [GoogleCloudStorage](odd-collector-gcp/README.md#googlecloudstorage)
 - [GoogleCloudStoraDeltaTables](odd-collector-gcp/README.md##googlecloudstoragedeltatables)
 
+# Ingestion Filters Configuration
+This section provides a comprehensive reference for configuring Ingestion Filters that are available within several ODD Data Collectors. 
+The table below outlines key information about those Collectors along with Adapters, Filter Configuration Parameters and brief Descriptions of Filter for each of them. 
+
+| Collector | Adapter | Filter Config Parameter | Filter Description |
+| ---------- | ------- | ---------------- | ----------------- |
+| odd-collector | PostgreSQL | schemas_filter | Filter object by database schema name |
+| odd-collector-aws | S3 | filename_filter | Filter by file name |
+| odd-collector-aws | S3 Delta | filter | Filter by file name |
+| odd-collector-gcp | BigQuery | datasets_filter | Filter by data set name |
+| odd-collector-gcp | Google Cloud Storage | filename_filter | Filter by file name |
+| odd-collector-gcp | Google Cloud Storage Delta | filter | Filter by file name |
+| odd-collector-azure | Azure Data Factory (ADF) | pipeline_filter | Filter by pipeline name |
+| odd-collector-azure | Azure BLOB Storage | file_filter | Filter by file name |
+
 # Usage Example
 
 ## Collector configuration
@@ -128,20 +143,6 @@ plugins:
     user: postgres
     password: !ENV ${POSTGRES_PASSWORD}
 ```
-## Ingestion Filters Configuration
-This section provides a comprehensive reference for configuring Ingestion Filters that are available within several ODD Data Collectors. 
-The table below outlines key information about those Collectors along with Adapters, Filter Configuration Parameters and brief Descriptions of Filter for each of them. 
-
-| Collector | Adapter | Filter Config Parameter | Filter Description |
-| ---------- | ------- | ---------------- | ----------------- |
-| odd-collector | PostgreSQL | schemas_filter | Filter object by database schema name |
-| odd-collector-aws | S3 | filename_filter | Filter by file name |
-| odd-collector-aws | S3 Delta | filter | Filter by file name |
-| odd-collector-gcp | BigQuery | datasets_filter | Filter by data set name |
-| odd-collector-gcp | Google Cloud Storage | filename_filter | Filter by file name |
-| odd-collector-gcp | Google Cloud Storage Delta | filter | Filter by file name |
-| odd-collector-azure | Azure Data Factory (ADF) | pipeline_filter | Filter by pipeline name |
-| odd-collector-azure | Azure BLOB Storage | file_filter | Filter by file name |
 
 ## Using any collector in a docker container:
 For more completed example take a look at [docker compose for demo](https://github.com/opendatadiscovery/odd-platform/blob/main/docker/README.md).
