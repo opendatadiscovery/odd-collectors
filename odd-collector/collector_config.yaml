@@ -1,11 +1,24 @@
 # You can store configuration in AWS SSM Parameter Store, if so - this block must be filled,
 # if not - you can skip it, and only configuration from file will be used.
 #
-# SSM Parameter Store naming example:
+# SSM Parameter Store naming examples:
 # Lets asume, you are using the example below, and want to store default_pulling_interval secret,
 # in this case you have to create secret with:
 #   name: /odd/collector_config/collector_1/collector_settings/default_pulling_interval
 #   value: 60
+# If you want to store information about plugin, you need to create one Parameter Store secret for
+# each plugin and provide their config with the simular yaml format, like so:
+#   name: /odd/collector_config/collector_1/plugins/postgresql_adapter
+#   value:
+#    type: postgresql
+#    name: postgresql_adapter
+#    description: "" # Optional string
+#    database: database
+#    host: host
+#    port: 5432
+#    user: user
+#    password: password
+# Remeber that all settings for one plugin should in one place!
 secrets_backend:
   provider: "AWSSystemsManagerParameterStore"
   region_name: "eu-central-1"    # region where you store secrets, default is "us-east-1"
