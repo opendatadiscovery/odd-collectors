@@ -128,8 +128,21 @@ max_instances: Optional[int] = 1  # maximum number of concurrently running insta
 verify_ssl: bool = True # For cases when self-signed certificates are used
 ```
 
+## Collector configuration using Secrets Backend
+There is an option to store collector configuration settings via Secrets Backend (only AWS SSM Parameter Store is supported for now).
+Using this approach you need to create your secrets in the chosen Secret Backend provider according to the naming and backend configuration
+specified in `secrets_backend` section of `collector_config.yaml`. More detailed information with comments about `secrets_backend` you can find
+right now is placed in  `odd-collector/collector_config.yaml` snippet.
+
 ## Example of collector config:
 ```yaml
+secrets_backend:
+  provider: "AWSSystemsManagerParameterStore"
+  # the section below is for key-value arguments provider needs
+  region_name: "eu-central-1"
+  collector_settings_parameter_name: "/odd/collector_config/collector_settings"
+  collector_plugins_prefix: "/odd/collector_config/plugins"
+
 default_pulling_interval: 10
 token: '****'
 platform_host_url: http://localhost:8080
