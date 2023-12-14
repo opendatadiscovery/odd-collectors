@@ -16,7 +16,7 @@ class AWSSystemsManagerParameterStoreBackend(BaseSecretsBackend):
             "collector_plugins_prefix", "/odd/collector_config/plugins"
         )
 
-        self._region_name = kwargs.get("region_name", "us-east-1")
+        self._region_name = kwargs.get("region_name")
         self._collector_settings_parameter_name = self._ensure_leading_slash(
             collector_settings_parameter_name
         )
