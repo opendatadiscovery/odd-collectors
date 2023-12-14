@@ -111,6 +111,12 @@ The table below outlines key information about those Collectors along with Adapt
 | odd-collector-azure | Azure Data Factory (ADF) | pipeline_filter | Filter by pipeline name |
 | odd-collector-azure | Azure BLOB Storage | file_filter | Filter by file name |
 
+# Collector configuration using alternative Secrets Backend
+There is an option to store collector configuration settings via Secrets Backend (only AWS SSM Parameter Store is supported for now).
+Using this approach you need to create your secrets in the chosen Secret Backend provider according to the naming and backend configuration
+specified in `secrets_backend` section of `collector_config.yaml`. More detailed information with comments about `secrets_backend` you can find
+right now is placed in  `odd-collector/collector_config.yaml` snippet.
+
 # Usage Example
 
 ## Collector configuration
@@ -127,12 +133,6 @@ misfire_grace_time: Optional[int] = None  # seconds after the designated runtime
 max_instances: Optional[int] = 1  # maximum number of concurrently running instances allowed
 verify_ssl: bool = True # For cases when self-signed certificates are used
 ```
-
-## Collector configuration using Secrets Backend
-There is an option to store collector configuration settings via Secrets Backend (only AWS SSM Parameter Store is supported for now).
-Using this approach you need to create your secrets in the chosen Secret Backend provider according to the naming and backend configuration
-specified in `secrets_backend` section of `collector_config.yaml`. More detailed information with comments about `secrets_backend` you can find
-right now is placed in  `odd-collector/collector_config.yaml` snippet.
 
 ## Example of collector config:
 ```yaml
