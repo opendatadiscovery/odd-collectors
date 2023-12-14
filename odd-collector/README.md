@@ -143,8 +143,18 @@ There are 3 options for config field pass:
 2. Use `.env` file or ENV variables
 3. In situation when plugins have same field names, we can  explicitly set ENV variable to `collector_config.yaml`, i.e. `password: !ENV ${POSTGRES_PASSWORD}`
 
+Also there is an option to store configuration settings via Secrets Backend (Only AWS SSM Parameter Store is supported for now).
+In this case you need to create secrets in Parameter Store according to namings set up in secrets_backend section of config.
+
 Custom `collector-config.yaml`
 ```yaml
+secrets_backend:
+  provider: "AWSSystemsManagerParameterStore"
+  # the section below is for key-value arguments provider needs
+  region_name: "eu-central-1"
+  collector_settings_parameter_name: "/odd/collector_config/collector_settings"
+  collector_plugins_prefix: "/odd/collector_config/plugins"
+
 platform_host_url: http://localhost:8080
 default_pulling_interval: 10
 token: ""

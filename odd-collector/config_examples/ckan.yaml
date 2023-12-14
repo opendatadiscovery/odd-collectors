@@ -1,32 +1,11 @@
-# You can store configuration in AWS SSM Parameter Store, if so - this block must be filled,
-# if not - you can skip it, and only configuration from file will be used.
-#
-# SSM Parameter Store naming examples:
-# Lets asume, you are using the example below, and want to store default_pulling_interval secret,
-# in this case you have to create secret with:
-#   name: /odd/collector_config/collector_1/collector_settings/default_pulling_interval
-#   value: 60
-# If you want to store information about plugin, you need to create one Parameter Store secret for
-# each plugin and provide their config with the simular yaml format, like so:
-#   name: /odd/collector_config/collector_1/plugins/ckan_adapter
-#   value:
-#    type: "ckan"
-#    name: "ckan_adapter"
-#    host: "localhost"
-#    port: 1234
-#    ckan_endpoint: ""
-#    token: ""
-# Remeber that all settings for one plugin should in one place!
 secrets_backend:
   provider: "AWSSystemsManagerParameterStore"
+  # the section below is for key-value arguments provider needs
   region_name: "eu-central-1"    # region where you store secrets, default is "us-east-1"
-  collector_id: "collector_1"    # unique identifier for your collector, default is blank string ""
-                                 # but if you have more than 1 collector it is essential
-  config_prefix: "/odd/collector_config"    # prefix for Parameter Store naming,
-                                            # default is "/odd/collector_config"
-  collector_settings_section_prefix: "/collector_settings"    # prefix for general collector settings,
-                                                              # default is "/collector_settings"
-  plugins_section_prefix: "/plugins"    # prefix for plugins configurations, default is "/plugins"
+  collector_settings_parameter_name: "/odd/collector_config/collector_settings"   # parameter name for storing
+                                     # collector settings, default is "/odd/collector_config/collector_settings"
+  collector_plugins_prefix: "/odd/collector_config/plugins"   # prefix for parameters, that contain
+                            # plugins configurations, default is "/odd/collector_config/plugins"
 
 default_pulling_interval: 60    # in minutes. If not specified, collector will pull data once.
 platform_host_url: "http://localhost:8080"    # odd platform host url
