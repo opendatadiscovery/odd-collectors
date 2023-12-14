@@ -9,7 +9,8 @@ class AWSSystemsManagerParameterStoreBackend(BaseSecretsBackend):
         super().__init__()
 
         collector_settings_parameter_name = kwargs.get(
-            "collector_settings_parameter_name", "/odd/collector_config/collector_settings"
+            "collector_settings_parameter_name",
+            "/odd/collector_config/collector_settings",
         )
         collector_plugins_prefix = kwargs.get(
             "collector_plugins_prefix", "/odd/collector_config/plugins"
@@ -19,7 +20,9 @@ class AWSSystemsManagerParameterStoreBackend(BaseSecretsBackend):
         self._collector_settings_parameter_name = self._ensure_leading_slash(
             collector_settings_parameter_name
         )
-        self._collector_plugins_prefix = self._ensure_leading_slash(collector_plugins_prefix)
+        self._collector_plugins_prefix = self._ensure_leading_slash(
+            collector_plugins_prefix
+        )
         self._ssm_client = boto3.client("ssm", region_name=self._region_name)
 
     @staticmethod
