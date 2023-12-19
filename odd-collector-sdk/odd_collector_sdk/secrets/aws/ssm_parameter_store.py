@@ -13,11 +13,11 @@ class AWSSystemsManagerParameterStoreBackend(BaseSecretsBackend):
             "collector_settings_parameter_name",
             "/odd/collector_config/collector_settings",
         )
-        collector_plugins_prefix = self._dynamically_get_aws_region(
-            kwargs.get("collector_plugins_prefix", "/odd/collector_config/plugins")
+        collector_plugins_prefix = kwargs.get(
+            "collector_plugins_prefix", "/odd/collector_config/plugins"
         )
 
-        self._region_name = kwargs.get("region_name")
+        self._region_name = self._dynamically_get_aws_region(kwargs.get("region_name"))
         self._collector_settings_parameter_name = self._ensure_leading_slash(
             collector_settings_parameter_name
         )
@@ -43,20 +43,19 @@ class AWSSystemsManagerParameterStoreBackend(BaseSecretsBackend):
                 # Token is required for IMDSv2
                 token_response = requests.put(
                     "http://169.254.169.254/latest/api/token",
-                    headers={"X-aws-ec2-metadata-token-ttl-seconds": "21600"}
+                    headers={"X-aws-ec2-metadata-token-ttl-seconds": "21600"},
                 )
                 token = token_response.text
 
                 # Fetch the region
                 region_response = requests.get(
                     "http://169.254.169.254/latest/meta-data/placement/region",
-                    headers={"X-aws-ec2-metadata-token": token}
+                    headers={"X-aws-ec2-metadata-token": token},
                 )
                 return region_response.text
             except requests.RequestException as e:
-                logger.debug(f"Failed to fetch AWS region dynamically: {e}")
+                logger.debug(f"Failed to fetch AWS region dynamically from IMDS: {e}")
         return check_region_argument
-
 
     @staticmethod
     def _ensure_leading_slash(secret_name: str) -> str:
