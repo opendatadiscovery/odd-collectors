@@ -1,3 +1,5 @@
+import os
+
 import boto3
 import requests
 from odd_collector_sdk.logger import logger
@@ -16,8 +18,12 @@ class AWSSystemsManagerParameterStoreBackend(BaseSecretsBackend):
         collector_plugins_prefix = kwargs.get(
             "collector_plugins_prefix", "/odd/collector_config/plugins"
         )
+        aws_region = kwargs.get("region_name")
 
-        self._region_name = self._dynamically_get_aws_region(kwargs.get("region_name"))
+        self._region_name = os.getenv(
+            "AWS_REGION",
+            self._dynamically_get_aws_region(aws_region),
+        )
         self._collector_settings_parameter_name = self._ensure_leading_slash(
             collector_settings_parameter_name
         )
