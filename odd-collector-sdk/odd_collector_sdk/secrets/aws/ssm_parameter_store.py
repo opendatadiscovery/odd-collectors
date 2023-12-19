@@ -1,4 +1,5 @@
 import boto3
+import requests
 from odd_collector_sdk.logger import logger
 from odd_collector_sdk.secrets.base_secrets import BaseSecretsBackend
 from yaml import safe_load
@@ -12,8 +13,8 @@ class AWSSystemsManagerParameterStoreBackend(BaseSecretsBackend):
             "collector_settings_parameter_name",
             "/odd/collector_config/collector_settings",
         )
-        collector_plugins_prefix = kwargs.get(
-            "collector_plugins_prefix", "/odd/collector_config/plugins"
+        collector_plugins_prefix = self._dynamically_get_aws_region(
+            kwargs.get("collector_plugins_prefix", "/odd/collector_config/plugins")
         )
 
         self._region_name = kwargs.get("region_name")
@@ -24,6 +25,38 @@ class AWSSystemsManagerParameterStoreBackend(BaseSecretsBackend):
             collector_plugins_prefix
         )
         self._ssm_client = boto3.client("ssm", region_name=self._region_name)
+
+    @staticmethod
+    def _dynamically_get_aws_region(check_region_argument: str) -> str:
+        """
+        This method attempts to fetch the AWS region using the Instance Metadata Service (IMDS)
+        if the region is not explicitly provided.
+
+        Parameters:
+            check_region_argument: the explicitly provided region or None if not provided.
+
+        Returns:
+            The AWS region, either fetched dynamically or from the provided argument.
+        """
+        if check_region_argument is None:
+            try:
+                # Token is required for IMDSv2
+                token_response = requests.put(
+                    "http://169.254.169.254/latest/api/token",
+                    headers={"X-aws-ec2-metadata-token-ttl-seconds": "21600"}
+                )
+                token = token_response.text
+
+                # Fetch the region
+                region_response = requests.get(
+                    "http://169.254.169.254/latest/meta-data/placement/region",
+                    headers={"X-aws-ec2-metadata-token": token}
+                )
+                return region_response.text
+            except requests.RequestException as e:
+                logger.debug(f"Failed to fetch AWS region dynamically: {e}")
+        return check_region_argument
+
 
     @staticmethod
     def _ensure_leading_slash(secret_name: str) -> str:
