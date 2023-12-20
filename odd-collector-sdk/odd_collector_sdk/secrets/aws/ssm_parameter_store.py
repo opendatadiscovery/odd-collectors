@@ -36,7 +36,7 @@ class AWSSystemsManagerParameterStoreBackend(BaseSecretsBackend):
     @staticmethod
     def _get_aws_region(config_aws_region: str) -> Union[str, None]:
         """
-        This method attempts to retreive AWS region information with the following priority:
+        This method attempts to retrieve AWS region information with the following priority:
         1) getting region from environment variables;
         2) getting region from collector configuration .yaml file;
         3) getting region from IMDS.
@@ -67,7 +67,7 @@ class AWSSystemsManagerParameterStoreBackend(BaseSecretsBackend):
             return config_aws_region
         logger.info(
             "No region_name variable was provided in config. "
-            "Attempting to retreive region from IMDS."
+            "Attempting to retrieve region from IMDS."
         )
 
         try:
@@ -90,7 +90,7 @@ class AWSSystemsManagerParameterStoreBackend(BaseSecretsBackend):
             )
             return imds_aws_region
         except requests.RequestException as e:
-            logger.info(f"Failed to retreive AWS region dynamically from IMDS: {e}")
+            logger.info(f"Failed to retrieve AWS region dynamically from IMDS: {e}")
         logger.info("No AWS region information was retrieved. Region = None")
         return None
 
