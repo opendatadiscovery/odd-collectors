@@ -1,4 +1,5 @@
 import os
+from typing import Union
 
 import boto3
 import requests
@@ -20,10 +21,7 @@ class AWSSystemsManagerParameterStoreBackend(BaseSecretsBackend):
         )
         aws_region = kwargs.get("region_name")
 
-        self._region_name = os.getenv(
-            "AWS_REGION",
-            self._dynamically_get_aws_region(aws_region),
-        )
+        self._region_name = self._get_aws_region(aws_region)
         self._collector_settings_parameter_name = self._ensure_leading_slash(
             collector_settings_parameter_name
         )
@@ -31,37 +29,70 @@ class AWSSystemsManagerParameterStoreBackend(BaseSecretsBackend):
             collector_plugins_prefix
         )
         self._ssm_client = boto3.client("ssm", region_name=self._region_name)
+        logger.info(
+            f"Successfully created boto3 SSM client with region = {self._region_name}"
+        )
 
     @staticmethod
-    def _dynamically_get_aws_region(check_region_argument: str) -> str:
+    def _get_aws_region(config_aws_region: str) -> Union[str, None]:
         """
-        This method attempts to fetch the AWS region using the Instance Metadata Service (IMDS)
-        if the region is not explicitly provided.
+        This method attempts to retreive AWS region information with the following priority:
+        1) getting region from environment variables;
+        2) getting region from collector configuration .yaml file;
+        3) getting region from IMDS.
 
         Parameters:
-            check_region_argument: the explicitly provided region or None if not provided.
+            config_aws_region: the region provided from collector configuration .yaml file.
 
         Returns:
-            The AWS region, either fetched dynamically or from the provided argument.
+            The AWS region, or None if any of retrieving methods worked.
         """
-        if check_region_argument is None:
-            try:
-                # Token is required for IMDSv2
-                token_response = requests.put(
-                    "http://169.254.169.254/latest/api/token",
-                    headers={"X-aws-ec2-metadata-token-ttl-seconds": "21600"},
-                )
-                token = token_response.text
+        env_aws_region = os.getenv("AWS_REGION")
+        if env_aws_region:
+            logger.info(
+                "Successfully got AWS region information from evironment variable 'AWS_REGION'. "
+                f"Region = {env_aws_region}."
+            )
+            return env_aws_region
+        logger.info(
+            "No 'AWS_REGION' evironment variable was provided. "
+            "Attempting to get region from config."
+        )
 
-                # Fetch the region
-                region_response = requests.get(
-                    "http://169.254.169.254/latest/meta-data/placement/region",
-                    headers={"X-aws-ec2-metadata-token": token},
-                )
-                return region_response.text
-            except requests.RequestException as e:
-                logger.debug(f"Failed to fetch AWS region dynamically from IMDS: {e}")
-        return check_region_argument
+        if config_aws_region is not None:
+            logger.info(
+                "Successfully got AWS region information from config. "
+                f"Region = {config_aws_region}."
+            )
+            return config_aws_region
+        logger.info(
+            "No region_name variable was provided in config. "
+            "Attempting to retreive region from IMDS."
+        )
+
+        try:
+            # Token is required for IMDSv2
+            token_response = requests.put(
+                "http://169.254.169.254/latest/api/token",
+                headers={"X-aws-ec2-metadata-token-ttl-seconds": "21600"},
+            )
+            token = token_response.text
+
+            # Fetch the region
+            region_response = requests.get(
+                "http://169.254.169.254/latest/meta-data/placement/region",
+                headers={"X-aws-ec2-metadata-token": token},
+            )
+            imds_aws_region = region_response.text
+            logger.info(
+                "Successfully got AWS region information from IMDS. "
+                f"Region = {imds_aws_region}."
+            )
+            return imds_aws_region
+        except requests.RequestException as e:
+            logger.info(f"Failed to retreive AWS region dynamically from IMDS: {e}")
+        logger.info("No AWS region information was retrieved. Region = None")
+        return None
 
     @staticmethod
     def _ensure_leading_slash(secret_name: str) -> str:
