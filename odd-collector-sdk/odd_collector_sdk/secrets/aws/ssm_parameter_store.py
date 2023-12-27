@@ -123,6 +123,7 @@ class AWSSystemsManagerParameterStoreBackend(BaseSecretsBackend):
             return secret
         except self._ssm_client.exceptions.ParameterNotFound as e:
             # Handle the case when the specified parameter doesn't exist
+            # TODO: update logging with information about what exectly paramter we tried to find (name)
             logger.info(f"ParameterNotFound: {e}")
             return {}
 
@@ -147,6 +148,7 @@ class AWSSystemsManagerParameterStoreBackend(BaseSecretsBackend):
             return secrets
         except self._ssm_client.exceptions.ParameterNotFound as e:
             # Handle the case when the specified prefix doesn't exist
+            # TODO: update logging with information about what exectly paramter we tried to find (name)
             logger.info(f"ParameterNotFound: {e}")
             return []
 
