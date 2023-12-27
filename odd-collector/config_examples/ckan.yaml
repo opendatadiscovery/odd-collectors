@@ -1,7 +1,7 @@
 secrets_backend:
   provider: "AWSSystemsManagerParameterStore"
   # the section below is for key-value arguments provider needs
-  region_name: "eu-central-1"    # region where you store secrets, default is "us-east-1"
+  region_name: "eu-central-1"    # region where you store secrets
   collector_settings_parameter_name: "/odd/collector_config/collector_settings"   # parameter name for storing
                                      # collector settings, default is "/odd/collector_config/collector_settings"
   collector_plugins_prefix: "/odd/collector_config/plugins"   # prefix for parameters, that contain

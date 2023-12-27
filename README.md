@@ -114,8 +114,8 @@ The table below outlines key information about those Collectors along with Adapt
 # Collector configuration using alternative Secrets Backend
 There is an option to store collector configuration settings via Secrets Backend (only AWS SSM Parameter Store is supported for now).
 Using this approach you need to create your secrets in the chosen Secret Backend provider according to the naming and backend configuration
-specified in `secrets_backend` section of `collector_config.yaml`. More detailed information with comments about `secrets_backend` you can find
-right now is placed in  `odd-collector/collector_config.yaml` snippet.
+specified in `secrets_backend` section of `collector_config.yaml`. More detailed information with usage examples you can find below in
+"Usage Example" section. Also some actual information can be found in `odd-collector` documentation and `odd-collector/collector_config.yaml` snippet.
 
 # Usage Example
 
@@ -133,6 +133,33 @@ misfire_grace_time: Optional[int] = None  # seconds after the designated runtime
 max_instances: Optional[int] = 1  # maximum number of concurrently running instances allowed
 verify_ssl: bool = True # For cases when self-signed certificates are used
 ```
+
+## Secrets Backend configuration
+Secrets Backend section must be specified only in the case when you are using one of the supported
+backends. In case when you use only local `collector_config.yaml` file for configuration you might
+skip the `secrets_backend:` section (delete it, or left commented).
+So, if you need this functionality it must be configured in the `collector_config.yaml` as well as Collector config.
+As only AWSSystemsManagerParameterStore is supported for now, all the examples are attached to this case for now.
+```yaml
+secrets_backend:
+  provider: "AWSSystemsManagerParameterStore"
+  # the section below is for key-value arguments provider needs
+  region_name: "eu-central-1"    # region where you store secrets
+  collector_settings_parameter_name: "/odd/collector_config/collector_settings"   # parameter name for storing
+                                     # collector settings, default is "/odd/collector_config/collector_settings"
+  collector_plugins_prefix: "/odd/collector_config/plugins"   # prefix for parameters, that contain
+                            # plugins configurations, default is "/odd/collector_config/plugins"
+```
+`provider` is must have to specify parameter, without default value.
+
+`region_name` information is retreiving in the following logic:
+1. The most priority has environment variable `AWS_REGION`, if it is specified - it's value will be used.
+2. If no `AWS_REGION` provided, the information from `collector_config.yaml` will be used.
+3. If `region_name` is not specified, we are trying to retreive AWS region information from instance metadata service (IMDS).
+4. If none of the above worked, adapter will throw an error, as we can not instantiate the connection to the service.
+
+`collector_settings_parameter_name` and `collector_plugins_prefix` have the default values, so if naming seems good for you,
+this parameters can be skipped.
 
 ## Example of collector config:
 ```yaml
