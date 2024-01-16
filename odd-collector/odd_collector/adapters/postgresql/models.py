@@ -182,6 +182,15 @@ class Table:
 
 
 @dataclass(frozen=True)
+class Relationship:
+    fk_constraint_name: str
+    source_table: str
+    source_fk_column_name: str
+    target_table: str
+    target_fk_column_name: str
+
+
+@dataclass(frozen=True)
 class Schema(HasMetadata):
     schema_name: str
     schema_owner: str

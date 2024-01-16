@@ -10,6 +10,7 @@ from odd_collector.adapters.postgresql.models import (
     PrimaryKey,
     Schema,
     Table,
+    Relationship,
 )
 from odd_collector.domain.plugin import PostgreSQLPlugin
 from odd_collector_sdk.domain.filter import Filter
@@ -104,6 +105,10 @@ class PostgreSQLRepository:
     def get_primary_keys(self):
         with self.conn.cursor() as cur:
             return [PrimaryKey(*raw) for raw in self.execute(self.pks_query, cur)]
+
+    def get_relationships(self):
+        with self.conn.cursor() as cur:
+            return [Relationship(*raw) for raw in self.execute(self.relationships_query, cur)]
 
     @property
     def pks_query(self):
@@ -245,6 +250,30 @@ class PostgreSQLRepository:
             from pg_enum pe
             join pg_type pt on pt.oid = pe.enumtypid
             order by pe.enumsortorder
+        """
+
+    @property
+    def relationships_query(self) -> str:
+        return """
+            SELECT
+                conname AS fk_constraint_name,
+                conrelid::regclass::name AS source_table_name,
+                sta.attname AS source_fk_column_name,
+                confrelid::regclass::name AS target_table_name,
+                tta.attname AS target_fk_column_name
+            FROM (
+                SELECT
+                    conname, conrelid, confrelid,
+                    unnest(conkey) AS conkey,
+                    unnest(confkey) AS confkey
+                FROM pg_catalog.pg_constraint
+                WHERE contype = 'f'
+            ) subq
+            JOIN pg_catalog.pg_attribute AS sta -- source table attribute
+                ON sta.attrelid = conrelid AND sta.attnum = conkey
+            JOIN pg_catalog.pg_attribute AS tta -- target table attribute
+                ON tta.attrelid = confrelid AND tta.attnum = confkey
+            ORDER BY source_table_name, target_table_name;
         """
 
     @staticmethod

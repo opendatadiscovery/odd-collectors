@@ -36,6 +36,7 @@ class Adapter(BaseAdapter):
 
             tables = repo.get_tables()
             schemas = repo.get_schemas()
+            relationships = repo.get_relationships()
 
             self.generator.set_oddrn_paths(**{"databases": self.config.database})
 
