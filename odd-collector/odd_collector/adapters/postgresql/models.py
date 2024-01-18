@@ -183,11 +183,11 @@ class Table:
 
 @dataclass(frozen=True)
 class Relationship:
-    fk_constraint_name: str
-    source_table: str
-    source_fk_column_name: str
-    target_table: str
-    target_fk_column_name: str
+    constraint_name: str
+    table_name: str
+    foreign_key: tuple[str]
+    referenced_table_name: str
+    referenced_foreign_key: tuple[str]
 
 
 @dataclass(frozen=True)

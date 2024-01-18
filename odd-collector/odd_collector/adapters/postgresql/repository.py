@@ -108,7 +108,11 @@ class PostgreSQLRepository:
 
     def get_relationships(self):
         with self.conn.cursor() as cur:
-            return [Relationship(*raw) for raw in self.execute(self.relationships_query, cur)]
+            relationships = [
+                (cn, tn, tuple(fk), rtn, tuple(rfk))
+                for cn, tn, fk, rtn, rfk in self.execute(self.relationships_query, cur)
+            ]
+            return [Relationship(*r) for r in relationships]
 
     @property
     def pks_query(self):
@@ -256,24 +260,35 @@ class PostgreSQLRepository:
     def relationships_query(self) -> str:
         return """
             SELECT
-                conname AS fk_constraint_name,
-                conrelid::regclass::name AS source_table_name,
-                sta.attname AS source_fk_column_name,
-                confrelid::regclass::name AS target_table_name,
-                tta.attname AS target_fk_column_name
+                conname AS constraint_name
+                , conrelid::regclass::name AS table_name
+                , array_agg(ta.attname ORDER BY unnested_ordinality) AS fkey
+                , confrelid::regclass::name AS referenced_table_name
+                , array_agg(rta.attname ORDER BY unnested_ordinality) AS referenced_fkey
             FROM (
                 SELECT
-                    conname, conrelid, confrelid,
-                    unnest(conkey) AS conkey,
-                    unnest(confkey) AS confkey
-                FROM pg_catalog.pg_constraint
-                WHERE contype = 'f'
+                    conname
+                    , conrelid
+                    , confrelid
+                    , unnested_conkey
+                    , unnested_confkey
+                    , unnested_ordinality
+                FROM
+                    pg_catalog.pg_constraint,
+                    unnest(conkey, confkey) WITH ORDINALITY AS t(
+                        unnested_conkey,
+                        unnested_confkey,
+                        unnested_ordinality
+                    )
+                WHERE
+                    contype = 'f'
             ) subq
-            JOIN pg_catalog.pg_attribute AS sta -- source table attribute
-                ON sta.attrelid = conrelid AND sta.attnum = conkey
-            JOIN pg_catalog.pg_attribute AS tta -- target table attribute
-                ON tta.attrelid = confrelid AND tta.attnum = confkey
-            ORDER BY source_table_name, target_table_name;
+            JOIN pg_catalog.pg_attribute AS ta -- table attribute
+                ON ta.attrelid = conrelid AND ta.attnum = unnested_conkey
+            JOIN pg_catalog.pg_attribute AS rta -- referenced table attribute
+                ON rta.attrelid = confrelid AND rta.attnum = unnested_confkey
+            GROUP BY
+                constraint_name, table_name, referenced_table_name
         """
 
     @staticmethod
