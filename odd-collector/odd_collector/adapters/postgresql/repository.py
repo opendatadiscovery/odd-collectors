@@ -8,9 +8,9 @@ from odd_collector.adapters.postgresql.models import (
     Column,
     EnumTypeLabel,
     PrimaryKey,
+    Relationship,
     Schema,
     Table,
-    Relationship,
 )
 from odd_collector.domain.plugin import PostgreSQLPlugin
 from odd_collector_sdk.domain.filter import Filter
@@ -109,8 +109,21 @@ class PostgreSQLRepository:
     def get_relationships(self):
         with self.conn.cursor() as cur:
             relationships = [
-                (cn, tn, tuple(fk), rtn, tuple(rfk))
-                for cn, tn, fk, rtn, rfk in self.execute(self.relationships_query, cur)
+                (
+                    oid,
+                    cn,
+                    tn,
+                    tc,
+                    tuple(fk),
+                    tuple(fka),
+                    rtn,
+                    rtc,
+                    tuple(rfk),
+                    tuple(rfka),
+                )
+                for oid, cn, tn, tc, fk, fka, rtn, rtc, rfk, rfka in self.execute(
+                    self.relationships_query, cur
+                )
             ]
             return [Relationship(*r) for r in relationships]
 
@@ -260,14 +273,20 @@ class PostgreSQLRepository:
     def relationships_query(self) -> str:
         return """
             SELECT
-                conname AS constraint_name
+                oid
+                , conname AS constraint_name
                 , conrelid::regclass::name AS table_name
+                , conrelid as table_conrelid
                 , array_agg(ta.attname ORDER BY unnested_ordinality) AS fkey
+                , array_agg(unnested_conkey ORDER BY unnested_ordinality) as fkey_attnum
                 , confrelid::regclass::name AS referenced_table_name
+                , confrelid as referenced_table_confrelid
                 , array_agg(rta.attname ORDER BY unnested_ordinality) AS referenced_fkey
+                , array_agg(unnested_confkey ORDER BY unnested_ordinality) AS referenced_fkey_attnum
             FROM (
                 SELECT
-                    conname
+                    oid
+                    , conname
                     , conrelid
                     , confrelid
                     , unnested_conkey
@@ -288,7 +307,7 @@ class PostgreSQLRepository:
             JOIN pg_catalog.pg_attribute AS rta -- referenced table attribute
                 ON rta.attrelid = confrelid AND rta.attnum = unnested_confkey
             GROUP BY
-                constraint_name, table_name, referenced_table_name
+                oid, conname, conrelid, confrelid;
         """
 
     @staticmethod

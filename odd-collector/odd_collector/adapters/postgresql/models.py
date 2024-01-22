@@ -183,11 +183,16 @@ class Table:
 
 @dataclass(frozen=True)
 class Relationship:
+    oid: int
     constraint_name: str
     table_name: str
+    table_conrelid: int
     foreign_key: tuple[str]
+    foreign_key_attnum: tuple[int]
     referenced_table_name: str
+    referenced_table_confrelid: int
     referenced_foreign_key: tuple[str]
+    referenced_foreign_key_attnum: tuple[int]
 
 
 @dataclass(frozen=True)
