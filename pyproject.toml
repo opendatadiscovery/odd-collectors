@@ -9,6 +9,7 @@ repository = "https://github.com/opendatadiscovery/odd-collectors"
 
 [tool.poetry.dependencies]
 python = "^3.9"
+oddrn-generator = "^0.1.99"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.2"
