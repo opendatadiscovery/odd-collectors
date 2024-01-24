@@ -305,9 +305,10 @@ class PostgreSQLRepository:
                         unnested_ordinality
                     )
                 WHERE
-                    contype = 'f'
+                    contype = 'f'       -- only foreign keys
+                    AND conparentid = 0 -- exclude constraints on partitions
             ) subq
-            JOIN pg_catalog.pg_attribute AS ta -- table attribute
+            JOIN pg_catalog.pg_attribute AS ta  -- table attribute
                 ON ta.attrelid = conrelid AND ta.attnum = unnested_conkey
             JOIN pg_catalog.pg_attribute AS rta -- referenced table attribute
                 ON rta.attrelid = confrelid AND rta.attnum = unnested_confkey
