@@ -123,7 +123,7 @@ class PostgreSQLRepository:
                     tuple(rfk),
                     tuple(rfka),
                 )
-                for oid, cn, nsp_oid, nsp, tn, tc, fk, fka, rtn, rtc, rfk, rfka in self.execute(
+                for oid, cn, nsp_oid, nsp, tn, tc, rtn, rtc, fk, fka, rfk, rfka in self.execute(
                     self.relationships_query, cur
                 )
             ]
