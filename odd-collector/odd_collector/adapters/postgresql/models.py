@@ -185,12 +185,14 @@ class Table:
 class Relationship:
     oid: int
     constraint_name: str
+    namespace_oid: int
+    namespace: str
     table_name: str
     table_conrelid: int
-    foreign_key: tuple[str]
-    foreign_key_attnum: tuple[int]
     referenced_table_name: str
     referenced_table_confrelid: int
+    foreign_key: tuple[str]
+    foreign_key_attnum: tuple[int]
     referenced_foreign_key: tuple[str]
     referenced_foreign_key_attnum: tuple[int]
 

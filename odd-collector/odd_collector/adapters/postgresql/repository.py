@@ -112,16 +112,18 @@ class PostgreSQLRepository:
                 (
                     oid,
                     cn,
+                    nsp_oid,
+                    nsp,
                     tn,
                     tc,
-                    tuple(fk),
-                    tuple(fka),
                     rtn,
                     rtc,
+                    tuple(fk),
+                    tuple(fka),
                     tuple(rfk),
                     tuple(rfka),
                 )
-                for oid, cn, tn, tc, fk, fka, rtn, rtc, rfk, rfka in self.execute(
+                for oid, cn, nsp_oid, nsp, tn, tc, fk, fka, rtn, rtc, rfk, rfka in self.execute(
                     self.relationships_query, cur
                 )
             ]
@@ -273,20 +275,23 @@ class PostgreSQLRepository:
     def relationships_query(self) -> str:
         return """
             SELECT
-                oid
+                subq.oid
                 , conname AS constraint_name
+                , ns.oid AS namespace_oid
+                , nspname AS namespace
                 , conrelid::regclass::name AS table_name
-                , conrelid as table_conrelid
-                , array_agg(ta.attname ORDER BY unnested_ordinality) AS fkey
-                , array_agg(unnested_conkey ORDER BY unnested_ordinality) as fkey_attnum
+                , conrelid AS table_conrelid
                 , confrelid::regclass::name AS referenced_table_name
-                , confrelid as referenced_table_confrelid
+                , confrelid AS referenced_table_confrelid
+                , array_agg(ta.attname ORDER BY unnested_ordinality) AS fkey
+                , array_agg(unnested_conkey ORDER BY unnested_ordinality) AS fkey_attnum
                 , array_agg(rta.attname ORDER BY unnested_ordinality) AS referenced_fkey
                 , array_agg(unnested_confkey ORDER BY unnested_ordinality) AS referenced_fkey_attnum
             FROM (
                 SELECT
                     oid
                     , conname
+                    , connamespace
                     , conrelid
                     , confrelid
                     , unnested_conkey
@@ -306,8 +311,10 @@ class PostgreSQLRepository:
                 ON ta.attrelid = conrelid AND ta.attnum = unnested_conkey
             JOIN pg_catalog.pg_attribute AS rta -- referenced table attribute
                 ON rta.attrelid = confrelid AND rta.attnum = unnested_confkey
+            JOIN pg_catalog.pg_namespace AS ns
+                ON ns.oid = connamespace
             GROUP BY
-                oid, conname, conrelid, confrelid;
+                subq.oid, conname, conrelid, confrelid, ns.oid, nspname;
         """
 
     @staticmethod
