@@ -11,6 +11,7 @@ from .logger import logger
 from .mappers.database import map_database
 from .mappers.schemas import map_schema
 from .mappers.tables import map_tables
+from .mappers.relationships import map_relationship
 from .repository import ConnectionParams, PostgreSQLRepository
 
 
@@ -20,30 +21,33 @@ class Adapter(BaseAdapter):
 
     def __init__(self, config: PostgreSQLPlugin) -> None:
         super().__init__(config)
+        self._cashed_query_results = self._get_query_results_from_repository()
 
-    def _create_repository(self) -> PostgreSQLRepository:
-        return PostgreSQLRepository(
+    def _get_query_results_from_repository(self) -> dict[str, list]:
+        with PostgreSQLRepository(
             ConnectionParams.from_config(self.config), self.config.schemas_filter
-        )
-
-    def _get_tables(self) -> list[Table]:
-        with self._create_repository() as repo:
-            return repo.get_tables()
+        ) as repo:
+            return {
+                "schemas_query": repo.get_schemas(),
+                "tables_query": repo.get_tables(),
+                "relationships_query": repo.get_relationships(),
+            }
 
     def _get_schemas(self) -> list[Schema]:
-        with self._create_repository() as repo:
-            return repo.get_schemas()
+        return self._cashed_query_results["schemas_query"]
+
+    def _get_tables(self) -> list[Table]:
+        return self._cashed_query_results["tables_query"]
 
     def _get_relationships(self) -> list[Relationship]:
-        with self._create_repository() as repo:
-            return repo.get_relationships()
+        return self._cashed_query_results["relationships_query"]
 
     def create_generator(self) -> PostgresqlGenerator:
         return PostgresqlGenerator(
             host_settings=self.config.host, databases=self.config.database
         )
 
-    def get_data_entity_list(self) -> DataEntityList:
+    def _map_entities(self) -> dict:
         schema_entities: list[DataEntity] = []
 
         all_table_entities: dict[str, DataEntity] = {}
@@ -72,13 +76,36 @@ class Adapter(BaseAdapter):
 
         create_lineage(self._get_tables(), all_table_entities)
 
+        relationship_entities = []
+        for relationship in self._get_relationships():
+            relationship_entities.append(
+                map_relationship(
+                    self.generator, relationship, all_table_entities
+                )
+            )
+
+        return {
+            "database_entity": database_entity,
+            "schema_entities": schema_entities,
+            "table_entities": all_table_entities.values(),
+            "relationship_entities": relationship_entities,
+        }
+
+    def get_data_entity_list(self) -> DataEntityList:
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
-            items=[*all_table_entities.values(), *schema_entities, database_entity],
+            items=[
+                *self._map_entities()["table_entities"],
+                *self._map_entities()["schema_entities"],
+                self._map_entities()["database_entity"]
+            ],
         )
 
     def get_relationship_list(self) -> RelationshipList:
-        pass
+        return RelationshipList(
+            data_source_oddrn=self.get_data_source_oddrn(),
+            items=[*self._map_entities()["relationship_entities"]],
+        )
 
 
 def create_lineage(tables: list[Table], data_entities: dict[str, DataEntity]) -> None:
