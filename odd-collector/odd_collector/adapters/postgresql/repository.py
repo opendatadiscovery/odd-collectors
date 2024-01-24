@@ -138,10 +138,11 @@ class PostgreSQLRepository:
                 join pg_catalog.pg_class c on c.oid = a.attrelid
                 join pg_catalog.pg_namespace n on n.oid = c.relnamespace
             where i.indisprimary
-            and c.relkind in ('r', 'v', 'm')
-            and a.attnum > 0
-            and n.nspname not like 'pg_temp_%'
-            and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema')
+                and c.relkind in ('r', 'v', 'm', 'p')
+                and c.relispartition = false -- exclude partiotions
+                and a.attnum > 0
+                and n.nspname not like 'pg_temp_%'
+                and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema')
         """
 
     @property
@@ -188,9 +189,10 @@ class PostgreSQLRepository:
                     join pg_catalog.pg_namespace n on n.oid = c.relnamespace
                     left join information_schema.tables it on it.table_schema = n.nspname and it.table_name = c.relname
                     left join information_schema.views iw on iw.table_schema = n.nspname and iw.table_name = c.relname
-            where c.relkind in ('r', 'v', 'm')
-            and n.nspname not like 'pg_temp_%'
-            and n.nspname in ({schemas}) 
+            where c.relkind in ('r', 'v', 'm', 'p')
+                and c.relispartition = false -- exclude partiotions
+                and n.nspname not like 'pg_temp_%'
+                and n.nspname in ({schemas}) 
             order by n.nspname, c.relname
         """
 
@@ -252,11 +254,12 @@ class PostgreSQLRepository:
                     left join information_schema.columns ic on ic.table_schema = n.nspname
                         and ic.table_name = c.relname
                         and ic.ordinal_position = a.attnum
-            where c.relkind in ('r', 'v', 'm')
-            and a.attnum > 0
-            and n.nspname not like 'pg_temp_%'
-            and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema')
-            and a.attisdropped is false
+            where c.relkind in ('r', 'v', 'm', 'p')
+                and c.relispartition = false -- exclude partiotions
+                and a.attnum > 0
+                and n.nspname not like 'pg_temp_%'
+                and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema')
+                and a.attisdropped is false
             order by n.nspname, c.relname, a.attnum
         """
 
