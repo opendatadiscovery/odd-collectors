@@ -46,7 +46,8 @@ def map_tables(
     for table in tables:
         logger.debug(f"Map table {table.table_name} {table.table_type}")
 
-        if table.table_type in ("r", "p"):  # 'p' type means table is partitioned, but not a partition by itself
+        # 'p' type means table is partitioned, but not a partition by itself
+        if table.table_type in ("r", "p"):
             entity = map_table(generator, table)
         elif table.table_type in ("v", "m"):
             entity = map_view(generator, table)

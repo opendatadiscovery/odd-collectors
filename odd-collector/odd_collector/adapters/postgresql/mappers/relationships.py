@@ -1,16 +1,13 @@
 from odd_collector.adapters.postgresql.models import Relationship
-from odd_models import (
-    Relationship as RelationshipEntity,
-    DataEntity,
-    ERDRelationship,
-)
+from odd_models import DataEntity, ERDRelationship
+from odd_models import Relationship as RelationshipEntity
 from oddrn_generator import PostgresqlGenerator
 
 
 def map_relationship(
     generator: PostgresqlGenerator,
     relationship: Relationship,
-    table_entities: dict[str, DataEntity]
+    table_entities: dict[str, DataEntity],
 ) -> RelationshipEntity:
     generator.set_oddrn_paths(
         **{
@@ -18,7 +15,7 @@ def map_relationship(
             "tables": relationship.table_name,
             "relationships": (
                 f"references_{relationship.referenced_table_name}_with_{relationship.constraint_name}"
-            )
+            ),
         }
     )
 
@@ -46,6 +43,6 @@ def map_relationship(
         target_dataset_oddrn=target_dataset.oddrn,
         erd_relationship=ERDRelationship(
             source_dataset_field_oddrns_list=source_dataset_field_oddrns_list,
-            target_dataset_field_oddrns_list=target_dataset_field_oddrns_list
-        )
+            target_dataset_field_oddrns_list=target_dataset_field_oddrns_list,
+        ),
     )

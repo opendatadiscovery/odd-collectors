@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from odd_collector.adapters.postgresql.models import Table, Schema, Relationship
+from odd_collector.adapters.postgresql.models import Relationship, Schema, Table
 from odd_collector.domain.plugin import PostgreSQLPlugin
 from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models import DataEntity
@@ -9,9 +9,9 @@ from oddrn_generator import PostgresqlGenerator
 
 from .logger import logger
 from .mappers.database import map_database
+from .mappers.relationships import map_relationship
 from .mappers.schemas import map_schema
 from .mappers.tables import map_tables
-from .mappers.relationships import map_relationship
 from .repository import ConnectionParams, PostgreSQLRepository
 
 
@@ -64,9 +64,7 @@ class Adapter(BaseAdapter):
             )
             table_entities_tmp = map_tables(self.generator, tables_per_schema)
             schema_entities.append(
-                map_schema(
-                    self.generator, schema, list(table_entities_tmp.values())
-                )
+                map_schema(self.generator, schema, list(table_entities_tmp.values()))
             )
             all_table_entities |= table_entities_tmp
 
@@ -79,9 +77,7 @@ class Adapter(BaseAdapter):
         relationship_entities = []
         for relationship in self._get_relationships():
             relationship_entities.append(
-                map_relationship(
-                    self.generator, relationship, all_table_entities
-                )
+                map_relationship(self.generator, relationship, all_table_entities)
             )
 
         return {
@@ -97,7 +93,7 @@ class Adapter(BaseAdapter):
             items=[
                 *self._map_entities()["table_entities"],
                 *self._map_entities()["schema_entities"],
-                self._map_entities()["database_entity"]
+                self._map_entities()["database_entity"],
             ],
         )
 
