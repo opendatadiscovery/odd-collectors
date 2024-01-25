@@ -8,13 +8,25 @@ from oddrn_generator import PostgresqlGenerator
 
 
 def map_relationship(
-    generator: PostgresqlGenerator, relationship: Relationship, table_entities: dict[str, DataEntity]
+    generator: PostgresqlGenerator,
+    relationship: Relationship,
+    table_entities: dict[str, DataEntity]
 ) -> RelationshipEntity:
+    generator.set_oddrn_paths(
+        **{
+            "schemas": relationship.schema_name,
+            "tables": relationship.table_name,
+            "relationships": (
+                f"references_{relationship.referenced_table_name}_with_{relationship.constraint_name}"
+            )
+        }
+    )
+
     source_dataset = table_entities[
-        f"{relationship.namespace}.{relationship.table_name}"
+        f"{relationship.schema_name}.{relationship.table_name}"
     ]
     target_dataset = table_entities[
-        f"{relationship.namespace}.{relationship.referenced_table_name}"
+        f"{relationship.schema_name}.{relationship.referenced_table_name}"
     ]
 
     source_dataset_field_oddrns_list = [
@@ -28,7 +40,7 @@ def map_relationship(
         if t_ds_field.name in relationship.referenced_foreign_key
     ]
     return RelationshipEntity(
-        oddrn="filler",
+        oddrn=generator.get_oddrn_by_path("relationships"),
         name=relationship.constraint_name,
         source_dataset_oddrn=source_dataset.oddrn,
         target_dataset_oddrn=target_dataset.oddrn,
