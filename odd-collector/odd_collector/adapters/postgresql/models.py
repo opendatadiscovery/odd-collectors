@@ -185,8 +185,8 @@ class Table:
 class Relationship:
     oid: int
     constraint_name: str
-    namespace_oid: int
-    namespace: str
+    schema_oid: int
+    schema_name: str
     table_name: str
     table_conrelid: int
     referenced_table_name: str

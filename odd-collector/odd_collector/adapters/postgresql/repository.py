@@ -280,8 +280,8 @@ class PostgreSQLRepository:
             SELECT
                 subq.oid
                 , conname AS constraint_name
-                , ns.oid AS namespace_oid
-                , nspname AS namespace
+                , ns.oid AS schema_oid
+                , nspname AS schema_name
                 , conrelid::regclass::name AS table_name
                 , conrelid AS table_conrelid
                 , confrelid::regclass::name AS referenced_table_name
