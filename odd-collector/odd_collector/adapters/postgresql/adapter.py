@@ -4,7 +4,7 @@ from odd_collector.adapters.postgresql.models import Relationship, Schema, Table
 from odd_collector.domain.plugin import PostgreSQLPlugin
 from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models import DataEntity
-from odd_models.models import DataEntityList, RelationshipList
+from odd_models.models import DataEntityList
 from oddrn_generator import PostgresqlGenerator
 
 from .logger import logger
@@ -88,19 +88,16 @@ class Adapter(BaseAdapter):
         }
 
     def get_data_entity_list(self) -> DataEntityList:
+        mapped_entities = self._map_entities()
+
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
             items=[
-                *self._map_entities()["table_entities"],
-                *self._map_entities()["schema_entities"],
-                self._map_entities()["database_entity"],
+                *mapped_entities["table_entities"],
+                *mapped_entities["relationship_entities"],
+                *mapped_entities["schema_entities"],
+                mapped_entities["database_entity"],
             ],
-        )
-
-    def get_relationship_list(self) -> RelationshipList:
-        return RelationshipList(
-            data_source_oddrn=self.get_data_source_oddrn(),
-            items=[*self._map_entities()["relationship_entities"]],
         )
 
 

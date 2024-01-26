@@ -1,6 +1,7 @@
 from odd_collector.adapters.postgresql.models import Relationship
-from odd_models import DataEntity, ERDRelationship
-from odd_models import Relationship as RelationshipEntity
+from odd_models import DataEntity, DataEntityType, ERDRelationship
+from odd_models import Relationship as DataEntityRelationship
+from odd_models import RelationshipType
 from oddrn_generator import PostgresqlGenerator
 
 
@@ -8,7 +9,7 @@ def map_relationship(
     generator: PostgresqlGenerator,
     relationship: Relationship,
     table_entities: dict[str, DataEntity],
-) -> RelationshipEntity:
+) -> DataEntity:
     generator.set_oddrn_paths(
         **{
             "schemas": relationship.schema_name,
@@ -36,13 +37,18 @@ def map_relationship(
         for t_ds_field in target_dataset.dataset.field_list
         if t_ds_field.name in relationship.referenced_foreign_key
     ]
-    return RelationshipEntity(
+    return DataEntity(
         oddrn=generator.get_oddrn_by_path("relationships"),
         name=relationship.constraint_name,
-        source_dataset_oddrn=source_dataset.oddrn,
-        target_dataset_oddrn=target_dataset.oddrn,
-        erd_relationship=ERDRelationship(
-            source_dataset_field_oddrns_list=source_dataset_field_oddrns_list,
-            target_dataset_field_oddrns_list=target_dataset_field_oddrns_list,
+        type=DataEntityType.RELATIONSHIP,
+        data_entity_relationship=DataEntityRelationship(
+            relationship_type=RelationshipType.ERD,
+            source_dataset_oddrn=source_dataset.oddrn,
+            target_dataset_oddrn=target_dataset.oddrn,
+            details=ERDRelationship(
+                source_dataset_field_oddrns_list=source_dataset_field_oddrns_list,
+                target_dataset_field_oddrns_list=target_dataset_field_oddrns_list,
+                relationship_entity_name="ERDRelationship",
+            ),
         ),
     )
