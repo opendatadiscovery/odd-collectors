@@ -11,13 +11,11 @@ def map_relationship(
     table_entities: dict[str, DataEntity],
 ) -> DataEntity:
     generator.set_oddrn_paths(
-        **{
-            "schemas": relationship.schema_name,
-            "tables": relationship.table_name,
-            "relationships": (
-                f"references_{relationship.referenced_table_name}_with_{relationship.constraint_name}"
-            ),
-        }
+        schemas=relationship.schema_name,
+        tables=relationship.table_name,
+        relationships=(
+            f"references_{relationship.referenced_table_name}_with_{relationship.constraint_name}"
+        ),
     )
 
     source_dataset = table_entities[
