@@ -182,7 +182,7 @@ class Table:
 
 
 @dataclass(frozen=True)
-class Relationship:
+class ForeignKeyConstraint:
     oid: int
     constraint_name: str
     schema_oid: int

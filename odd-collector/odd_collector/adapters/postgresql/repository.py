@@ -8,7 +8,7 @@ from odd_collector.adapters.postgresql.models import (
     Column,
     EnumTypeLabel,
     PrimaryKey,
-    Relationship,
+    ForeignKeyConstraint,
     Schema,
     Table,
 )
@@ -106,9 +106,9 @@ class PostgreSQLRepository:
         with self.conn.cursor() as cur:
             return [PrimaryKey(*raw) for raw in self.execute(self.pks_query, cur)]
 
-    def get_relationships(self):
+    def get_foreign_key_constraints(self):
         with self.conn.cursor() as cur:
-            relationships = [
+            fk_constraints = [
                 (
                     oid,
                     cn,
@@ -124,10 +124,10 @@ class PostgreSQLRepository:
                     tuple(rfka),
                 )
                 for oid, cn, nsp_oid, nsp, tn, tc, rtn, rtc, fk, fka, rfk, rfka in self.execute(
-                    self.relationships_query, cur
+                    self.foreign_key_constraints_query, cur
                 )
             ]
-            return [Relationship(*r) for r in relationships]
+            return [ForeignKeyConstraint(*fkc) for fkc in fk_constraints]
 
     @property
     def pks_query(self):
@@ -275,7 +275,7 @@ class PostgreSQLRepository:
         """
 
     @property
-    def relationships_query(self) -> str:
+    def foreign_key_constraints_query(self) -> str:
         return """
             SELECT
                 subq.oid

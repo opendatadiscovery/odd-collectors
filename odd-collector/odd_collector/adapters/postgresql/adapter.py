@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from odd_collector.adapters.postgresql.models import Relationship, Schema, Table
+from odd_collector.adapters.postgresql.models import ForeignKeyConstraint, Schema, Table
 from odd_collector.domain.plugin import PostgreSQLPlugin
 from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models import DataEntity
@@ -30,7 +30,7 @@ class Adapter(BaseAdapter):
             return {
                 "schemas_query": repo.get_schemas(),
                 "tables_query": repo.get_tables(),
-                "relationships_query": repo.get_relationships(),
+                "foreign_key_constraints_query": repo.get_foreign_key_constraints(),
             }
 
     def _get_schemas(self) -> list[Schema]:
@@ -39,8 +39,8 @@ class Adapter(BaseAdapter):
     def _get_tables(self) -> list[Table]:
         return self._cashed_query_results["tables_query"]
 
-    def _get_relationships(self) -> list[Relationship]:
-        return self._cashed_query_results["relationships_query"]
+    def _get_foreign_key_constraints(self) -> list[ForeignKeyConstraint]:
+        return self._cashed_query_results["foreign_key_constraints_query"]
 
     def create_generator(self) -> PostgresqlGenerator:
         return PostgresqlGenerator(
@@ -75,9 +75,9 @@ class Adapter(BaseAdapter):
         create_lineage(self._get_tables(), all_table_entities)
 
         relationship_entities = []
-        for relationship in self._get_relationships():
+        for fk_constraint in self._get_foreign_key_constraints():
             relationship_entities.append(
-                map_relationship(self.generator, relationship, all_table_entities)
+                map_relationship(self.generator, fk_constraint, all_table_entities)
             )
 
         return {
