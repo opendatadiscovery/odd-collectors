@@ -27,16 +27,17 @@ def map_relationship(
         f"{relationship.schema_name}.{relationship.referenced_table_name}"
     ]
 
-    source_dataset_field_oddrns_list = [
-        s_ds_field.oddrn
-        for s_ds_field in source_dataset.dataset.field_list
-        if s_ds_field.name in relationship.foreign_key
+    source_dataset_field_list = [
+        ds_field
+        for ds_field in source_dataset.dataset.field_list
+        if ds_field.name in relationship.foreign_key
     ]
-    target_dataset_field_oddrns_list = [
-        t_ds_field.oddrn
-        for t_ds_field in target_dataset.dataset.field_list
-        if t_ds_field.name in relationship.referenced_foreign_key
+    target_dataset_field_list = [
+        ds_field
+        for ds_field in target_dataset.dataset.field_list
+        if ds_field.name in relationship.referenced_foreign_key
     ]
+
     return DataEntity(
         oddrn=generator.get_oddrn_by_path("relationships"),
         name=relationship.constraint_name,
@@ -46,8 +47,15 @@ def map_relationship(
             source_dataset_oddrn=source_dataset.oddrn,
             target_dataset_oddrn=target_dataset.oddrn,
             details=ERDRelationship(
-                source_dataset_field_oddrns_list=source_dataset_field_oddrns_list,
-                target_dataset_field_oddrns_list=target_dataset_field_oddrns_list,
+                source_dataset_field_oddrns_list=[
+                    ds_field.oddrn for ds_field in source_dataset_field_list
+                ],
+                target_dataset_field_oddrns_list=[
+                    ds_field.oddrn for ds_field in target_dataset_field_list
+                ],
+                is_identifying=all(
+                    ds_field.is_primary_key for ds_field in target_dataset_field_list
+                ),
                 relationship_entity_name="ERDRelationship",
             ),
         ),
