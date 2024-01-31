@@ -9,6 +9,7 @@ from odd_collector.adapters.postgresql.models import (
     EnumTypeLabel,
     PrimaryKey,
     ForeignKeyConstraint,
+    UniqueConstraint,
     Schema,
     Table,
 )
@@ -128,6 +129,13 @@ class PostgreSQLRepository:
                 )
             ]
             return [ForeignKeyConstraint(*fkc) for fkc in fk_constraints]
+
+    def get_unique_constraints(self):
+        with self.conn.cursor() as cur:
+            return [
+                UniqueConstraint(*raw)
+                for raw in self.execute(self.unique_constraints_query, cur)
+            ]
 
     @property
     def pks_query(self):
@@ -319,6 +327,27 @@ class PostgreSQLRepository:
                 ON ns.oid = connamespace
             GROUP BY
                 subq.oid, conname, conrelid, confrelid, ns.oid, nspname;
+        """
+
+    @property
+    def unique_constraints_query(self):
+        return """
+            SELECT
+                att.attrelid AS table_oid,
+                con.oid AS constraint_oid,
+                con.conname AS constraint_name,
+                ARRAY_AGG(att.attname) AS column_names,
+                ARRAY_AGG(att.attnum) AS column_ids
+            FROM
+                pg_catalog.pg_constraint con
+                    JOIN
+                pg_catalog.pg_attribute att
+                ON
+                    con.conrelid = att.attrelid AND att.attnum = ANY(con.conkey)
+            WHERE
+                con.contype = 'u'
+            GROUP BY
+                att.attrelid, con.oid, con.conname
         """
 
     @staticmethod

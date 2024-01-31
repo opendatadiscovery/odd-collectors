@@ -198,6 +198,16 @@ class ForeignKeyConstraint:
 
 
 @dataclass(frozen=True)
+class UniqueConstraint:
+    oid: int
+    table_oid: int
+    constraint_name: str
+    table_name: str
+    column_names: list[str]
+    column_attnums: list[int]
+
+
+@dataclass(frozen=True)
 class Schema(HasMetadata):
     schema_name: str
     schema_owner: str

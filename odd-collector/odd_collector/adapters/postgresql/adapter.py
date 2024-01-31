@@ -8,8 +8,8 @@ from odd_models.models import DataEntityList
 from oddrn_generator import PostgresqlGenerator
 
 from .logger import logger
+from .mappers.base_mapper import RelationshipMapper
 from .mappers.database import map_database
-from .mappers.relationships import map_relationship
 from .mappers.schemas import map_schema
 from .mappers.tables import map_tables
 from .repository import ConnectionParams, PostgreSQLRepository
@@ -31,6 +31,7 @@ class Adapter(BaseAdapter):
                 "schemas_query": repo.get_schemas(),
                 "tables_query": repo.get_tables(),
                 "foreign_key_constraints_query": repo.get_foreign_key_constraints(),
+                "unique_constraints_query": repo.get_unique_constraints(),
             }
 
     def _get_schemas(self) -> list[Schema]:
@@ -52,7 +53,7 @@ class Adapter(BaseAdapter):
 
         all_table_entities: dict[str, DataEntity] = {}
 
-        self.generator.set_oddrn_paths(**{"databases": self.config.database})
+        self.generator.set_oddrn_paths(databases=self.config.database)
 
         tables_by_schema = defaultdict(list)
         for table in self._get_tables():
@@ -74,11 +75,11 @@ class Adapter(BaseAdapter):
 
         create_lineage(self._get_tables(), all_table_entities)
 
-        relationship_entities = []
-        for fk_constraint in self._get_foreign_key_constraints():
-            relationship_entities.append(
-                map_relationship(self.generator, fk_constraint, all_table_entities)
-            )
+        relationship_entities = RelationshipMapper(
+            generator=self.generator,
+            unique_constraints=self._cashed_query_results["unique_constraints_query"],
+            table_entities=all_table_entities
+        ).map(self._get_foreign_key_constraints())
 
         return {
             "database_entity": database_entity,
