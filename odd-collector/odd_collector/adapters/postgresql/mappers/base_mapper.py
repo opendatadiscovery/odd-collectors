@@ -5,12 +5,12 @@ from odd_collector.adapters.postgresql.models import (
     UniqueConstraint,
 )
 from odd_models.models import (
+    CardinalityType,
     DataEntity,
     DataEntityType,
     ERDRelationship,
     Relationship,
     RelationshipType,
-    CardinalityType,
 )
 from oddrn_generator import PostgresqlGenerator
 
@@ -84,7 +84,9 @@ class DataEntityRelationshipMapper(Mappable[ForeignKeyConstraint]):
             if dsf.name in fk_constraint.referenced_foreign_key
         ]
 
-    def _get_unique_constraint(self, schema_name: str, table_name: str) -> Union[UniqueConstraint, None]:
+    def _get_unique_constraint(
+        self, schema_name: str, table_name: str
+    ) -> Union[UniqueConstraint, None]:
         return self.unique_constraints.get(f"{schema_name}.{table_name}")
 
     def _build_relationship(self, fk_constraint: ForeignKeyConstraint) -> Relationship:
@@ -138,9 +140,7 @@ class DataEntityRelationshipMapper(Mappable[ForeignKeyConstraint]):
             fk_constraint.schema_name, fk_constraint.table_name
         )
         ref_pk_columns = {
-            ds_field.name
-            for ds_field in ref_all_field_list
-            if ds_field.is_primary_key
+            ds_field.name for ds_field in ref_all_field_list if ds_field.is_primary_key
         }
         source_pk_columns = {
             ds_field.name
@@ -148,41 +148,50 @@ class DataEntityRelationshipMapper(Mappable[ForeignKeyConstraint]):
             if ds_field.is_primary_key
         }
 
-        return all(
-            cn in source_pk_columns for cn in ref_pk_columns
-        ) and all(cn in ref_pk_columns for cn in ref_fk_field_list)
+        return all(cn in source_pk_columns for cn in ref_pk_columns) and all(
+            cn in ref_pk_columns for cn in ref_fk_field_list
+        )
 
-    def _check_cardinality(self, fk_constraint: ForeignKeyConstraint) -> CardinalityType:
-        ref_fk_field_list = [
+    def _check_cardinality(
+        self, fk_constraint: ForeignKeyConstraint
+    ) -> CardinalityType:
+        ref_fk_field_name_list = [
             dsf.name
             for dsf in self._get_dataset_field_list_filter_on_constraint_referenced_foreign_key(
                 fk_constraint
             )
         ]
 
-        ref_all_field_list = self._get_dataset_field_list(
-            fk_constraint.schema_name, fk_constraint.referenced_table_name
-        )
-
-        ref_uc_column_names = self._get_unique_constraint(
-            fk_constraint.schema_name, fk_constraint.referenced_table_name
-        )
-        ref_uc_field_list_nullable_status = [
-            c.type.is_nullable
-            for c in ref_all_field_list
-            if c.name in ref_uc_column_names
+        ref_fk_field_is_nullable_status_list = [
+            dsf.type.is_nullable
+            for dsf in self._get_dataset_field_list_filter_on_constraint_referenced_foreign_key(
+                fk_constraint
+            )
         ]
 
-        if any(
-            cn in ref_uc_column_names
-            for cn in ref_fk_field_list
-        ):
-            if all(ref_uc_field_list_nullable_status):
+        uc_by_full_name = self._get_unique_constraint(
+            fk_constraint.schema_name, fk_constraint.referenced_table_name
+        )
+
+        ref_uc_column_names = (
+            uc_by_full_name.column_names
+            if uc_by_full_name is not None
+            else uc_by_full_name
+        )
+
+        referenced_to_unique = (
+            any(cn in ref_uc_column_names for cn in ref_fk_field_name_list)
+            if ref_uc_column_names is not None
+            else False
+        )
+
+        if referenced_to_unique:
+            if all(ref_fk_field_is_nullable_status_list):
                 return CardinalityType.ONE_TO_ZERO_OR_ONE
             else:
                 return CardinalityType.ONE_TO_EXACTLY_ONE
         else:
-            if all(ref_uc_field_list_nullable_status):
+            if all(ref_fk_field_is_nullable_status_list):
                 return CardinalityType.ONE_TO_ZERO_ONE_OR_MORE
             else:
                 return CardinalityType.ONE_TO_ONE_OR_MORE
