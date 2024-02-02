@@ -1,6 +1,11 @@
 from collections import defaultdict
 
-from odd_collector.adapters.postgresql.models import ForeignKeyConstraint, Schema, Table
+from odd_collector.adapters.postgresql.models import (
+    ForeignKeyConstraint,
+    Schema,
+    Table,
+    UniqueConstraint,
+)
 from odd_collector.domain.plugin import PostgreSQLPlugin
 from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models import DataEntity
@@ -8,7 +13,7 @@ from odd_models.models import DataEntityList
 from oddrn_generator import PostgresqlGenerator
 
 from .logger import logger
-from .mappers.base_mapper import RelationshipMapper
+from .mappers.base_mapper import DataEntityRelationshipMapper
 from .mappers.database import map_database
 from .mappers.schemas import map_schema
 from .mappers.tables import map_tables
@@ -43,6 +48,9 @@ class Adapter(BaseAdapter):
     def _get_foreign_key_constraints(self) -> list[ForeignKeyConstraint]:
         return self._cashed_query_results["foreign_key_constraints_query"]
 
+    def _get_unique_constraints(self) -> list[UniqueConstraint]:
+        return self._cashed_query_results["unique_constraints_query"]
+
     def create_generator(self) -> PostgresqlGenerator:
         return PostgresqlGenerator(
             host_settings=self.config.host, databases=self.config.database
@@ -75,10 +83,17 @@ class Adapter(BaseAdapter):
 
         create_lineage(self._get_tables(), all_table_entities)
 
-        relationship_entities = RelationshipMapper(
-            generator=self.generator,
-            unique_constraints=self._cashed_query_results["unique_constraints_query"],
-            table_entities=all_table_entities
+        unique_constraints_per_schema_table = {}
+        for unqiue_constraint in self._get_unique_constraints():
+            full_key_name = (
+                f"{unqiue_constraint.schema_name}.{unqiue_constraint.table_name}"
+            )
+            unique_constraints_per_schema_table[full_key_name] = unqiue_constraint
+
+        relationship_entities = DataEntityRelationshipMapper(
+            oddrn_generator=self.generator,
+            unique_constraints=unique_constraints_per_schema_table,
+            datasets=all_table_entities,
         ).map(self._get_foreign_key_constraints())
 
         return {

@@ -200,11 +200,11 @@ class ForeignKeyConstraint:
 @dataclass(frozen=True)
 class UniqueConstraint:
     oid: int
-    table_oid: int
     constraint_name: str
+    schema_name: str
+    table_conrelid: int
     table_name: str
     column_names: list[str]
-    column_attnums: list[int]
 
 
 @dataclass(frozen=True)

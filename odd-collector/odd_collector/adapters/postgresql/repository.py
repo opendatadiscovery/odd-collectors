@@ -7,11 +7,11 @@ from funcy.seqs import group_by
 from odd_collector.adapters.postgresql.models import (
     Column,
     EnumTypeLabel,
-    PrimaryKey,
     ForeignKeyConstraint,
-    UniqueConstraint,
+    PrimaryKey,
     Schema,
     Table,
+    UniqueConstraint,
 )
 from odd_collector.domain.plugin import PostgreSQLPlugin
 from odd_collector_sdk.domain.filter import Filter
@@ -319,12 +319,12 @@ class PostgreSQLRepository:
                     contype = 'f'       -- only foreign keys
                     AND conparentid = 0 -- exclude constraints on partitions
             ) subq
-            JOIN pg_catalog.pg_attribute AS ta  -- table attribute
-                ON ta.attrelid = conrelid AND ta.attnum = unnested_conkey
-            JOIN pg_catalog.pg_attribute AS rta -- referenced table attribute
-                ON rta.attrelid = confrelid AND rta.attnum = unnested_confkey
-            JOIN pg_catalog.pg_namespace AS ns
-                ON ns.oid = connamespace
+                JOIN pg_catalog.pg_attribute AS ta  -- table attribute
+                    ON ta.attrelid = conrelid AND ta.attnum = unnested_conkey
+                JOIN pg_catalog.pg_attribute AS rta -- referenced table attribute
+                    ON rta.attrelid = confrelid AND rta.attnum = unnested_confkey
+                JOIN pg_catalog.pg_namespace AS ns
+                    ON ns.oid = connamespace
             GROUP BY
                 subq.oid, conname, conrelid, confrelid, ns.oid, nspname;
         """
@@ -333,21 +333,21 @@ class PostgreSQLRepository:
     def unique_constraints_query(self):
         return """
             SELECT
-                att.attrelid AS table_oid,
-                con.oid AS constraint_oid,
-                con.conname AS constraint_name,
-                ARRAY_AGG(att.attname) AS column_names,
-                ARRAY_AGG(att.attnum) AS column_ids
-            FROM
-                pg_catalog.pg_constraint con
-                    JOIN
-                pg_catalog.pg_attribute att
-                ON
-                    con.conrelid = att.attrelid AND att.attnum = ANY(con.conkey)
+                con.oid AS oid
+                , con.conname AS constraint_name
+                , ns.nspname AS schema_name
+                , con.conrelid AS table_conrelid
+                , con.conrelid::regclass::name AS table_name
+                , ARRAY_AGG(att.attname) AS column_names
+            FROM pg_catalog.pg_constraint AS con
+                JOIN pg_catalog.pg_attribute AS att
+                    ON con.conrelid = att.attrelid AND att.attnum = ANY(con.conkey)
+                JOIN pg_catalog.pg_namespace AS ns
+                    ON ns.oid = con.connamespace
             WHERE
                 con.contype = 'u'
             GROUP BY
-                att.attrelid, con.oid, con.conname
+                con.oid, con.conname, con.conrelid, ns.nspname;
         """
 
     @staticmethod
