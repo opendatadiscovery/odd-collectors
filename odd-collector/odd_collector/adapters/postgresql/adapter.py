@@ -14,12 +14,12 @@ from odd_models.models import DataEntityList
 from oddrn_generator import PostgresqlGenerator
 
 from .logger import logger
-from .mappers.base_mapper import DataEntityRelationshipMapper
 from .mappers.database import map_database
+from .mappers.relationships.mapper import DataEntityRelationshipsMapper
 from .mappers.schemas import map_schema
 from .mappers.tables import map_tables
 from .repository import ConnectionParams, PostgreSQLRepository
-from .utils import group_uniques_constraints_by_table, filter_views
+from .utils import filter_views
 
 
 class Adapter(BaseAdapter):
@@ -78,12 +78,11 @@ class Adapter(BaseAdapter):
 
     @cached_property
     def _relationship_entities(self) -> list[DataEntity]:
-        relationship_entities = DataEntityRelationshipMapper(
+        return DataEntityRelationshipsMapper(
             oddrn_generator=self.generator,
-            unique_constraints=group_uniques_constraints_by_table(self._unique_constraints),
+            unique_constraints=self._unique_constraints,
             datasets=self._table_entities,
         ).map(self._fk_constraints)
-        return relationship_entities
 
     @cached_property
     def _database_entity(self) -> DataEntity:
@@ -103,8 +102,8 @@ class Adapter(BaseAdapter):
             data_source_oddrn=self.get_data_source_oddrn(),
             items=[
                 *self._table_entities.values(),
-                *self._relationship_entities,
                 *self._schema_entities,
+                *self._relationship_entities,
                 self._database_entity
             ],
         )
