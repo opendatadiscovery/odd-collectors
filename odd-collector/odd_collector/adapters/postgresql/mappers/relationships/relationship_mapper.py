@@ -28,9 +28,21 @@ class RelationshipMapper:
             ref_fk_field_list=self._ref_fk_field_list, unique_constraints=unique_constraints
         )
 
+    def build_data_entity(self):
+        return DataEntity(
+            oddrn=self.oddrn,
+            name=self.fk_cons.constraint_name,
+            type=DataEntityType.RELATIONSHIP,
+            data_entity_relationship=self._build_relationship(),
+        )
+
     @cached_property
     def _ref_fk_field_list(self):
         return [fl for fl in self._target_field_list if fl.name in self.fk_cons.referenced_foreign_key]
+
+    @cached_property
+    def _fk_field_list(self):
+        return [fl for fl in self._source_field_list if fl.name in self.fk_cons.foreign_key]
 
     @cached_property
     def _target_field_list(self):
@@ -39,14 +51,6 @@ class RelationshipMapper:
     @cached_property
     def _source_field_list(self):
         return self.source.dataset.field_list
-
-    def build_data_entity(self):
-        return DataEntity(
-            oddrn=self.oddrn,
-            name=self.fk_cons.constraint_name,
-            type=DataEntityType.RELATIONSHIP,
-            data_entity_relationship=self._build_relationship(),
-        )
 
     def _build_relationship(self) -> Relationship:
         return Relationship(
@@ -57,11 +61,9 @@ class RelationshipMapper:
         )
 
     def _build_details(self):
-        source_oddrn_list = [fl.oddrn for fl in self._source_field_list if fl.name in self.fk_cons.foreign_key]
-        target_oddrn_list = [fl.oddrn for fl in self._ref_fk_field_list]
         return ERDRelationship(
-            source_dataset_field_oddrns_list=source_oddrn_list,
-            target_dataset_field_oddrns_list=target_oddrn_list,
+            source_dataset_field_oddrns_list=[fl.oddrn for fl in self._fk_field_list],
+            target_dataset_field_oddrns_list=[fl.oddrn for fl in self._ref_fk_field_list],
             is_identifying=self.identifying_checker.is_identifying(),
             cardinality=self.cardinality_checker.get_cardinality(),
             relationship_entity_name="ERDRelationship",

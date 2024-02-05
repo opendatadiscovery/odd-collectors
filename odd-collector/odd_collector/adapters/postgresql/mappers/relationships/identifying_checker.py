@@ -20,8 +20,8 @@ class IdentifyingChecker:
         Check if the foreign key is part of primary key source table
         """
         fk_columns = {dsf.name for dsf in self.source_field_list if dsf.name in self.foreign_key}
-        source_pk_columns = {dsf.name for dsf in self.source_field_list if dsf.is_primary_key}
-        return all(cn in source_pk_columns for cn in fk_columns)
+        pk_columns = {dsf.name for dsf in self.source_field_list if dsf.is_primary_key}
+        return all(cn in pk_columns for cn in fk_columns)
 
     def _is_ref_fk_refers_to_pk(self) -> bool:
         """
