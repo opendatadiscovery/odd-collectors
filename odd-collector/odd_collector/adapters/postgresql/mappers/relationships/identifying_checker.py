@@ -1,7 +1,5 @@
 from odd_models.models.models import DataSetField
 
-from adapters.postgresql.models import ForeignKeyConstraint
-
 
 class IdentifyingChecker:
     def __init__(self,

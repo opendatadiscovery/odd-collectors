@@ -58,9 +58,7 @@ class RelationshipMapper:
 
     def _build_details(self):
         source_oddrn_list = [fl.oddrn for fl in self._source_field_list if fl.name in self.fk_cons.foreign_key]
-        target_oddrn_list = [
-            fl.oddrn for fl in self._ref_fk_field_list
-        ]
+        target_oddrn_list = [fl.oddrn for fl in self._ref_fk_field_list]
         return ERDRelationship(
             source_dataset_field_oddrns_list=source_oddrn_list,
             target_dataset_field_oddrns_list=target_oddrn_list,
