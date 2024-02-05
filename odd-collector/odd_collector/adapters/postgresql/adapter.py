@@ -15,7 +15,7 @@ from oddrn_generator import PostgresqlGenerator
 
 from .logger import logger
 from .mappers.database import map_database
-from .mappers.relationships.mapper import DataEntityRelationshipsMapper
+from .mappers.relationships import DataEntityRelationshipsMapper
 from .mappers.schemas import map_schema
 from .mappers.tables import map_tables
 from .repository import ConnectionParams, PostgreSQLRepository
