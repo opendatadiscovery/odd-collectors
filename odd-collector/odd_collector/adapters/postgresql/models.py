@@ -182,6 +182,32 @@ class Table:
 
 
 @dataclass(frozen=True)
+class ForeignKeyConstraint:
+    oid: int
+    constraint_name: str
+    schema_oid: int
+    schema_name: str
+    table_name: str
+    table_conrelid: int
+    referenced_table_name: str
+    referenced_table_confrelid: int
+    foreign_key: tuple[str]
+    foreign_key_attnum: tuple[int]
+    referenced_foreign_key: tuple[str]
+    referenced_foreign_key_attnum: tuple[int]
+
+
+@dataclass(frozen=True)
+class UniqueConstraint:
+    oid: int
+    constraint_name: str
+    schema_name: str
+    table_conrelid: int
+    table_name: str
+    column_names: list[str]
+
+
+@dataclass(frozen=True)
 class Schema(HasMetadata):
     schema_name: str
     schema_owner: str

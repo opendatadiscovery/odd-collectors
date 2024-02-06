@@ -7,9 +7,11 @@ from funcy.seqs import group_by
 from odd_collector.adapters.postgresql.models import (
     Column,
     EnumTypeLabel,
+    ForeignKeyConstraint,
     PrimaryKey,
     Schema,
     Table,
+    UniqueConstraint,
 )
 from odd_collector.domain.plugin import PostgreSQLPlugin
 from odd_collector_sdk.domain.filter import Filter
@@ -105,6 +107,36 @@ class PostgreSQLRepository:
         with self.conn.cursor() as cur:
             return [PrimaryKey(*raw) for raw in self.execute(self.pks_query, cur)]
 
+    def get_foreign_key_constraints(self):
+        with self.conn.cursor() as cur:
+            fk_constraints = [
+                (
+                    oid,
+                    cn,
+                    nsp_oid,
+                    nsp,
+                    tn,
+                    tc,
+                    rtn,
+                    rtc,
+                    tuple(fk),
+                    tuple(fka),
+                    tuple(rfk),
+                    tuple(rfka),
+                )
+                for oid, cn, nsp_oid, nsp, tn, tc, rtn, rtc, fk, fka, rfk, rfka in self.execute(
+                    self.foreign_key_constraints_query, cur
+                )
+            ]
+            return [ForeignKeyConstraint(*fkc) for fkc in fk_constraints]
+
+    def get_unique_constraints(self):
+        with self.conn.cursor() as cur:
+            return [
+                UniqueConstraint(*raw)
+                for raw in self.execute(self.unique_constraints_query, cur)
+            ]
+
     @property
     def pks_query(self):
         return """
@@ -114,23 +146,24 @@ class PostgreSQLRepository:
                 join pg_catalog.pg_class c on c.oid = a.attrelid
                 join pg_catalog.pg_namespace n on n.oid = c.relnamespace
             where i.indisprimary
-            and c.relkind in ('r', 'v', 'm')
-            and a.attnum > 0
-            and n.nspname not like 'pg_temp_%'
-            and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema')
+                and c.relkind in ('r', 'v', 'm', 'p')
+                and c.relispartition = false -- exclude partiotions
+                and a.attnum > 0
+                and n.nspname not like 'pg_temp_%'
+                and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema')
         """
 
     @property
     def schemas_query(self):
         return """
-           select 
+            select 
                 n.nspname as schema_name, 
                 pg_catalog.pg_get_userbyid(n.nspowner) as schema_owner,
                 n.oid as oid,
                 pg_catalog.obj_description(n.oid, 'pg_namespace') as description,
                 pg_total_relation_size(n.oid) as total_size_bytes
             from pg_catalog.pg_namespace n
-            where n.nspname not like 'pg_temp_%'
+            where n.nspname not like all(array['pg_temp_%', 'pg_toast_%'])
             and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema');
         """
 
@@ -164,9 +197,10 @@ class PostgreSQLRepository:
                     join pg_catalog.pg_namespace n on n.oid = c.relnamespace
                     left join information_schema.tables it on it.table_schema = n.nspname and it.table_name = c.relname
                     left join information_schema.views iw on iw.table_schema = n.nspname and iw.table_name = c.relname
-            where c.relkind in ('r', 'v', 'm')
-            and n.nspname not like 'pg_temp_%'
-            and n.nspname in ({schemas}) 
+            where c.relkind in ('r', 'v', 'm', 'p')
+                and c.relispartition = false -- exclude partiotions
+                and n.nspname not like 'pg_temp_%'
+                and n.nspname in ({schemas}) 
             order by n.nspname, c.relname
         """
 
@@ -228,11 +262,12 @@ class PostgreSQLRepository:
                     left join information_schema.columns ic on ic.table_schema = n.nspname
                         and ic.table_name = c.relname
                         and ic.ordinal_position = a.attnum
-            where c.relkind in ('r', 'v', 'm')
-            and a.attnum > 0
-            and n.nspname not like 'pg_temp_%'
-            and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema')
-            and a.attisdropped is false
+            where c.relkind in ('r', 'v', 'm', 'p')
+                and c.relispartition = false -- exclude partiotions
+                and a.attnum > 0
+                and n.nspname not like 'pg_temp_%'
+                and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema')
+                and a.attisdropped is false
             order by n.nspname, c.relname, a.attnum
         """
 
@@ -245,6 +280,74 @@ class PostgreSQLRepository:
             from pg_enum pe
             join pg_type pt on pt.oid = pe.enumtypid
             order by pe.enumsortorder
+        """
+
+    @property
+    def foreign_key_constraints_query(self) -> str:
+        return """
+            SELECT
+                subq.oid
+                , conname AS constraint_name
+                , ns.oid AS schema_oid
+                , nspname AS schema_name
+                , conrelid::regclass::name AS table_name
+                , conrelid AS table_conrelid
+                , confrelid::regclass::name AS referenced_table_name
+                , confrelid AS referenced_table_confrelid
+                , array_agg(ta.attname ORDER BY unnested_ordinality) AS fkey
+                , array_agg(unnested_conkey ORDER BY unnested_ordinality) AS fkey_attnum
+                , array_agg(rta.attname ORDER BY unnested_ordinality) AS referenced_fkey
+                , array_agg(unnested_confkey ORDER BY unnested_ordinality) AS referenced_fkey_attnum
+            FROM (
+                SELECT
+                    oid
+                    , conname
+                    , connamespace
+                    , conrelid
+                    , confrelid
+                    , unnested_conkey
+                    , unnested_confkey
+                    , unnested_ordinality
+                FROM
+                    pg_catalog.pg_constraint,
+                    unnest(conkey, confkey) WITH ORDINALITY AS t(
+                        unnested_conkey,
+                        unnested_confkey,
+                        unnested_ordinality
+                    )
+                WHERE
+                    contype = 'f'       -- only foreign keys
+                    AND conparentid = 0 -- exclude constraints on partitions
+            ) subq
+                JOIN pg_catalog.pg_attribute AS ta  -- table attribute
+                    ON ta.attrelid = conrelid AND ta.attnum = unnested_conkey
+                JOIN pg_catalog.pg_attribute AS rta -- referenced table attribute
+                    ON rta.attrelid = confrelid AND rta.attnum = unnested_confkey
+                JOIN pg_catalog.pg_namespace AS ns
+                    ON ns.oid = connamespace
+            GROUP BY
+                subq.oid, conname, conrelid, confrelid, ns.oid, nspname;
+        """
+
+    @property
+    def unique_constraints_query(self):
+        return """
+            SELECT
+                con.oid AS oid
+                , con.conname AS constraint_name
+                , ns.nspname AS schema_name
+                , con.conrelid AS table_conrelid
+                , con.conrelid::regclass::name AS table_name
+                , ARRAY_AGG(att.attname) AS column_names
+            FROM pg_catalog.pg_constraint AS con
+                JOIN pg_catalog.pg_attribute AS att
+                    ON con.conrelid = att.attrelid AND att.attnum = ANY(con.conkey)
+                JOIN pg_catalog.pg_namespace AS ns
+                    ON ns.oid = con.connamespace
+            WHERE
+                con.contype = 'u'
+            GROUP BY
+                con.oid, con.conname, con.conrelid, ns.nspname;
         """
 
     @staticmethod
