@@ -38,7 +38,7 @@ class Adapter(BaseAdapter):
 
     def _get_database_metadata(self) -> dict[str, list]:
         with PostgreSQLRepository(
-                ConnectionParams.from_config(self.config), self.config.schemas_filter
+            ConnectionParams.from_config(self.config), self.config.schemas_filter
         ) as repo:
             return {
                 "schemas": repo.get_schemas(),
@@ -104,7 +104,7 @@ class Adapter(BaseAdapter):
                 *self._table_entities.values(),
                 *self._schema_entities,
                 *self._relationship_entities,
-                self._database_entity
+                self._database_entity,
             ],
         )
 

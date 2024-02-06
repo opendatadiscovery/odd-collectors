@@ -1,15 +1,16 @@
 from functools import cached_property
-
 from itertools import chain
-from odd_models.models.models import CardinalityType, DataSetField
 
 from adapters.postgresql.models import UniqueConstraint
+from odd_models.models.models import CardinalityType, DataSetField
 
 
 class CardinalityChecker:
-    def __init__(self,
-                 ref_fk_field_list: list[DataSetField],
-                 unique_constraints: list[UniqueConstraint]):
+    def __init__(
+        self,
+        ref_fk_field_list: list[DataSetField],
+        unique_constraints: list[UniqueConstraint],
+    ):
         """
         :param ref_fk_field_list: list of DataSetField of referenced foreign key
         :param unique_constraints: list of UniqueConstraint of target table
@@ -24,7 +25,7 @@ class CardinalityChecker:
         if self._is_ref_to_unique and (not self._is_ref_to_nullable):
             return CardinalityType.ONE_TO_EXACTLY_ONE
 
-        if self._is_ref_to_nullable and (not self._is_ref_to_unique):
+        if (not self._is_ref_to_unique) and self._is_ref_to_nullable:
             return CardinalityType.ONE_TO_ZERO_ONE_OR_MORE
 
         return CardinalityType.ONE_TO_ONE_OR_MORE
@@ -42,8 +43,8 @@ class CardinalityChecker:
         Check if the referenced foreign key refers to unique constraint of target table
         """
         ref_fk_columns = {dsf.name for dsf in self.ref_fk_field_list}
-        ref_uc_columns = list(chain.from_iterable(
-            uc.column_names for uc in self.unique_constraints
-        ))
+        ref_uc_columns = list(
+            chain.from_iterable(uc.column_names for uc in self.unique_constraints)
+        )
 
         return any(cn in ref_uc_columns for cn in ref_fk_columns)

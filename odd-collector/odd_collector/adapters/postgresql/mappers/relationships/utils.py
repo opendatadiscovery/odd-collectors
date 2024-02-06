@@ -4,7 +4,7 @@ from adapters.postgresql.models import UniqueConstraint
 
 
 def group_uniques_constraints_by_table(
-        unique_constraints: list[UniqueConstraint],
+    unique_constraints: list[UniqueConstraint],
 ) -> dict[str, list[UniqueConstraint]]:
     """
     Groups unique constraints by table name.

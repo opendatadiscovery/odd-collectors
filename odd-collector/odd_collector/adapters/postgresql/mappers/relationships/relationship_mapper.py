@@ -1,19 +1,30 @@
 from functools import cached_property
 
-from odd_models.models.models import DataEntity, DataEntityType, Relationship, RelationshipType, ERDRelationship
-
-from adapters.postgresql.mappers.relationships.cardinality_checker import CardinalityChecker
-from adapters.postgresql.mappers.relationships.identifying_checker import IdentifyingChecker
+from adapters.postgresql.mappers.relationships.cardinality_checker import (
+    CardinalityChecker,
+)
+from adapters.postgresql.mappers.relationships.identifying_checker import (
+    IdentifyingChecker,
+)
 from adapters.postgresql.models import ForeignKeyConstraint, UniqueConstraint
+from odd_models.models.models import (
+    DataEntity,
+    DataEntityType,
+    ERDRelationship,
+    Relationship,
+    RelationshipType,
+)
 
 
 class RelationshipMapper:
-    def __init__(self,
-                 fk_cons: ForeignKeyConstraint,
-                 source: DataEntity,
-                 target: DataEntity,
-                 unique_constraints: list[UniqueConstraint],
-                 oddrn: str):
+    def __init__(
+        self,
+        fk_cons: ForeignKeyConstraint,
+        source: DataEntity,
+        target: DataEntity,
+        unique_constraints: list[UniqueConstraint],
+        oddrn: str,
+    ):
         self.fk_cons = fk_cons
         self.source = source
         self.target = target
@@ -22,10 +33,11 @@ class RelationshipMapper:
             foreign_key=self.fk_cons.foreign_key,
             ref_foreign_key=self.fk_cons.referenced_foreign_key,
             source_field_list=self._source_field_list,
-            target_field_list=self._target_field_list
+            target_field_list=self._target_field_list,
         )
         self.cardinality_checker = CardinalityChecker(
-            ref_fk_field_list=self._ref_fk_field_list, unique_constraints=unique_constraints
+            ref_fk_field_list=self._ref_fk_field_list,
+            unique_constraints=unique_constraints,
         )
 
     def build_data_entity(self):
@@ -38,11 +50,17 @@ class RelationshipMapper:
 
     @cached_property
     def _ref_fk_field_list(self):
-        return [fl for fl in self._target_field_list if fl.name in self.fk_cons.referenced_foreign_key]
+        return [
+            fl
+            for fl in self._target_field_list
+            if fl.name in self.fk_cons.referenced_foreign_key
+        ]
 
     @cached_property
     def _fk_field_list(self):
-        return [fl for fl in self._source_field_list if fl.name in self.fk_cons.foreign_key]
+        return [
+            fl for fl in self._source_field_list if fl.name in self.fk_cons.foreign_key
+        ]
 
     @cached_property
     def _target_field_list(self):
@@ -63,7 +81,9 @@ class RelationshipMapper:
     def _build_details(self):
         return ERDRelationship(
             source_dataset_field_oddrns_list=[fl.oddrn for fl in self._fk_field_list],
-            target_dataset_field_oddrns_list=[fl.oddrn for fl in self._ref_fk_field_list],
+            target_dataset_field_oddrns_list=[
+                fl.oddrn for fl in self._ref_fk_field_list
+            ],
             is_identifying=self.identifying_checker.is_identifying(),
             cardinality=self.cardinality_checker.get_cardinality(),
             relationship_entity_name="ERDRelationship",
