@@ -1,7 +1,7 @@
 from functools import cached_property
 from itertools import chain
 
-from adapters.postgresql.models import UniqueConstraint
+from odd_collector.adapters.postgresql.models import UniqueConstraint
 from odd_models.models.models import CardinalityType, DataSetField
 
 

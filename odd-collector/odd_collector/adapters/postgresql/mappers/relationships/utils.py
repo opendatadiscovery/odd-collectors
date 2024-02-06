@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from adapters.postgresql.models import UniqueConstraint
+from odd_collector.adapters.postgresql.models import UniqueConstraint
 
 
 def group_uniques_constraints_by_table(

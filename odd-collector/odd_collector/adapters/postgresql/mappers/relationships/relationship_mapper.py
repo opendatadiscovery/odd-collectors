@@ -1,12 +1,15 @@
 from functools import cached_property
 
-from adapters.postgresql.mappers.relationships.cardinality_checker import (
+from odd_collector.adapters.postgresql.mappers.relationships.cardinality_checker import (
     CardinalityChecker,
 )
-from adapters.postgresql.mappers.relationships.identifying_checker import (
+from odd_collector.adapters.postgresql.mappers.relationships.identifying_checker import (
     IdentifyingChecker,
 )
-from adapters.postgresql.models import ForeignKeyConstraint, UniqueConstraint
+from odd_collector.adapters.postgresql.models import (
+    ForeignKeyConstraint,
+    UniqueConstraint,
+)
 from odd_models.models.models import (
     DataEntity,
     DataEntityType,

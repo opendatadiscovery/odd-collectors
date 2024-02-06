@@ -1,4 +1,4 @@
-from adapters.postgresql.models import Table
+from odd_collector.adapters.postgresql.models import Table
 
 
 def filter_views(tables: list[Table]) -> list[Table]:

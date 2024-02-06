@@ -1,11 +1,14 @@
-from adapters.postgresql.mappers.relationships.relationship_mapper import (
+from odd_collector.adapters.postgresql.mappers.relationships.relationship_mapper import (
     RelationshipMapper,
 )
-from adapters.postgresql.mappers.relationships.utils import (
+from odd_collector.adapters.postgresql.mappers.relationships.utils import (
     group_uniques_constraints_by_table,
 )
-from adapters.postgresql.models import ForeignKeyConstraint, UniqueConstraint
-from odd_models.models.models import DataEntity, DataSetField
+from odd_collector.adapters.postgresql.models import (
+    ForeignKeyConstraint,
+    UniqueConstraint,
+)
+from odd_models.models.models import DataEntity
 from oddrn_generator.generators import PostgresqlGenerator
 
 
