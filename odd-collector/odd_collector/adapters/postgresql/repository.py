@@ -156,14 +156,14 @@ class PostgreSQLRepository:
     @property
     def schemas_query(self):
         return """
-           select 
+            select 
                 n.nspname as schema_name, 
                 pg_catalog.pg_get_userbyid(n.nspowner) as schema_owner,
                 n.oid as oid,
                 pg_catalog.obj_description(n.oid, 'pg_namespace') as description,
                 pg_total_relation_size(n.oid) as total_size_bytes
             from pg_catalog.pg_namespace n
-            where n.nspname not like 'pg_temp_%'
+            where n.nspname not like all(array['pg_temp_%', 'pg_toast_%'])
             and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema');
         """
 
