@@ -47,7 +47,7 @@ class RelationshipMapper:
         return DataEntity(
             oddrn=self.oddrn,
             name=self.fk_cons.constraint_name,
-            type=DataEntityType.RELATIONSHIP,
+            type=DataEntityType.ENTITY_RELATIONSHIP,
             data_entity_relationship=self._build_relationship(),
         )
 
