@@ -1,9 +1,7 @@
-import contextlib
 import re
-from ast import literal_eval
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import Callable, Dict, List, Type, Union, Any
+from typing import Callable, Union, Any
 
 from funcy import lsplit
 from odd_collector.domain.plugin import SnowflakePlugin
@@ -12,7 +10,7 @@ from odd_collector_sdk.errors import DataSourceError
 from snowflake import connector
 from snowflake.connector.cursor import DictCursor
 
-from .domain import Column, Pipe, RawPipe, RawStage, Table, View, ImportedKey
+from .domain import Column, RawPipe, RawStage, Table, View, ForeignKeyConstraint
 from .logger import logger
 
 TABLES_VIEWS_QUERY = """
@@ -185,21 +183,21 @@ PRIMARY_KEYS_QUERY = """
     SHOW PRIMARY KEYS IN DATABASE;
 """
 
-IMPORTED_KEYS_QUERIES = (
+FOREIGN_KEY_CONSTRAINTS_QUERIES = (
     '''SHOW IMPORTED KEYS IN DATABASE;''',
     '''
         SELECT
             "created_on",
-            "pk_database_name",
-            "pk_schema_name",
-            "pk_table_name",
-            ARRAY_AGG("pk_column_name") WITHIN GROUP (ORDER BY "key_sequence") AS "pk_columns",
-            "fk_database_name",
-            "fk_schema_name",
-            "fk_table_name",
-            ARRAY_AGG("fk_column_name") WITHIN GROUP (ORDER BY "key_sequence") AS "fk_columns",
-            "fk_name",
-            "pk_name"
+            "fk_name" as constraint_name,
+            "fk_database_name" as database_name,
+            "fk_schema_name" as schema_name,
+            "fk_table_name" as table_name,
+            ARRAY_AGG("fk_column_name") WITHIN GROUP (ORDER BY "key_sequence") AS "foreign_key",
+            "pk_name" as referenced_constraint_name,
+            "pk_database_name" as referenced_database_name,
+            "pk_schema_name" as referenced_schema_name,
+            "pk_table_name" as referenced_table_name,
+            ARRAY_AGG("pk_column_name") WITHIN GROUP (ORDER BY "key_sequence") AS "referenced_foreign_key"
         FROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))
         GROUP BY
             "created_on",
@@ -223,6 +221,10 @@ class SnowflakeClientBase(ABC):
 
     @abstractmethod
     def get_raw_stages(self) -> list[RawStage]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_fk_constraints(self) -> list[ForeignKeyConstraint]:
         raise NotImplementedError
 
 
@@ -295,10 +297,10 @@ class SnowflakeClient(SnowflakeClientBase):
         with DictCursor(self._conn) as cursor:
             return self._base_fetch_entity_list(RAW_STAGES_QUERY, cursor, RawStage)
 
-    def get_imported_keys(self) -> list[ImportedKey]:
-        logger.info("Getting imported keys from Snowflake")
+    def get_fk_constraints(self) -> list[ForeignKeyConstraint]:
+        logger.info("Getting foreign key constraints from Snowflake")
         with DictCursor(self._conn) as cursor:
-            return self._fetch_something_many(IMPORTED_KEYS_QUERIES, cursor, ImportedKey)
+            return self._fetch_fk_constraints(cursor)
 
     @staticmethod
     def _get_clustering_keys(tables: list[Table]) -> dict[str, list]:
@@ -352,18 +354,17 @@ class SnowflakeClient(SnowflakeClientBase):
         ]
 
     @staticmethod
-    def _fetch_something_many(
-        queries: tuple,
-        cursor: DictCursor,
-        entity_type: Type[Union[Pipe, RawPipe, RawStage, ImportedKey]],
-    ) -> list[Union[Pipe, RawPipe, RawStage, ImportedKey]]:
-        result: list[entity_type] = []
-        for query in queries:
+    def _fetch_fk_constraints(cursor: DictCursor) -> list[ForeignKeyConstraint]:
+        result: list[ForeignKeyConstraint] = []
+
+        for query in FOREIGN_KEY_CONSTRAINTS_QUERIES:
             cursor.execute(query)
+
+        # for clearing string representation of list, in order to further transformation into tuple
+        translation_table = str.maketrans({"[": None, "]": None, "\n": None, " ": None, '"': None})
+
         for raw_object in cursor.fetchall():
-            for col in ("pk_columns", "fk_columns"):
-                raw_object[col] = raw_object[col].strip(
-                    "[]"
-                ).replace("\n", "").replace(" ", "").replace('"', '').split(",")
-            result.append(entity_type.parse_obj(LowerKeyDict(raw_object)))
+            for col in ("foreign_key", "referenced_foreign_key"):
+                raw_object[col] = tuple(raw_object[col].translate(translation_table).split(","))
+            result.append(ForeignKeyConstraint.parse_obj(LowerKeyDict(raw_object)))
         return result

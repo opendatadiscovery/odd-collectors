@@ -8,7 +8,7 @@ from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import Generator, SnowflakeGenerator
 
 from .client import SnowflakeClient, SnowflakeClientBase
-from .domain import Pipe, Table, View, RawPipe, RawStage, ImportedKey
+from .domain import Pipe, Table, View, RawPipe, RawStage, ForeignKeyConstraint
 from .map import map_database, map_pipe, map_schemas, map_table, map_view
 
 
@@ -33,7 +33,7 @@ class Adapter(BaseAdapter):
                 "tables": client.get_tables(),
                 "raw_pipes": client.get_raw_pipes(),
                 "raw_stages": client.get_raw_stages(),
-                "imported_keys": client.get_imported_keys(),
+                "fk_constraints": client.get_fk_constraints(),
             }
 
     @cached_property
@@ -48,10 +48,9 @@ class Adapter(BaseAdapter):
     def _raw_stages(self) -> list[RawStage]:
         return self._metadata["raw_stages"]
 
-
     @cached_property
-    def _imported_keys(self) -> list[ImportedKey]:
-        return self._metadata["imported_keys"]
+    def _fk_constraints(self) -> list[ForeignKeyConstraint]:
+        return self._metadata["fk_constraints"]
 
     @cached_property
     def _pipe_entities(self) -> list[DataEntity]:
@@ -84,7 +83,7 @@ class Adapter(BaseAdapter):
 
     def get_data_entity_list(self) -> DataEntityList:
         try:
-            imported_keys = self._metadata["imported_keys"]
+            imported_keys = self._fk_constraints
             return DataEntityList(
                 data_source_oddrn=self.get_data_source_oddrn(),
                 items=[

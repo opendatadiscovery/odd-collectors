@@ -3,4 +3,4 @@ from .entity import Connection
 from .pipe import Pipe, RawPipe, RawStage
 from .table import Table
 from .view import View
-from .imported_keys import ImportedKey
+from .fk_constraint import ForeignKeyConstraint
