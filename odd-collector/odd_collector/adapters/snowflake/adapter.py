@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Type
+from typing import List, Tuple
 from functools import cached_property
 
 from odd_collector.domain.plugin import SnowflakePlugin
@@ -7,9 +7,10 @@ from odd_collector_sdk.errors import MappingDataError
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import Generator, SnowflakeGenerator
 
-from .client import SnowflakeClient, SnowflakeClientBase
+from .client import SnowflakeClient
 from .domain import Pipe, Table, View, RawPipe, RawStage, ForeignKeyConstraint
-from .map import map_database, map_pipe, map_schemas, map_table, map_view
+from .mappers import map_database, map_pipe, map_schemas, map_table, map_view
+from .mappers.relationships import DataEntityRelationshipsMapper
 
 
 class Adapter(BaseAdapter):
@@ -74,6 +75,13 @@ class Adapter(BaseAdapter):
         return self._get_tables_entities(self._tables)
 
     @cached_property
+    def _relationship_entities(self) -> list[DataEntity]:
+        return DataEntityRelationshipsMapper(
+            oddrn_generator=self.generator,
+            table_entities_pair=self._table_entities,
+        ).map(self._fk_constraints)
+
+    @cached_property
     def _schema_entities(self) -> list[DataEntity]:
         return self._get_schemas_entities(self._table_entities)
 
@@ -83,7 +91,6 @@ class Adapter(BaseAdapter):
 
     def get_data_entity_list(self) -> DataEntityList:
         try:
-            imported_keys = self._fk_constraints
             return DataEntityList(
                 data_source_oddrn=self.get_data_source_oddrn(),
                 items=[
@@ -91,6 +98,7 @@ class Adapter(BaseAdapter):
                     *self._schema_entities,
                     self._database_entity,
                     *self._pipe_entities,
+                    *self._relationship_entities,
                 ]
             )
         except Exception as e:
