@@ -1,4 +1,3 @@
-from typing import List, Tuple
 from functools import cached_property
 
 from odd_collector.domain.plugin import SnowflakePlugin
@@ -8,7 +7,7 @@ from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import Generator, SnowflakeGenerator
 
 from .client import SnowflakeClient
-from .domain import Pipe, Table, View, RawPipe, RawStage, ForeignKeyConstraint
+from .domain import ForeignKeyConstraint, Pipe, RawPipe, RawStage, Table, View
 from .mappers import map_database, map_pipe, map_schemas, map_table, map_view
 from .mappers.relationships import DataEntityRelationshipsMapper
 
@@ -55,7 +54,7 @@ class Adapter(BaseAdapter):
 
     @cached_property
     def _pipe_entities(self) -> list[DataEntity]:
-        pipes: List[Pipe] = []
+        pipes: list[Pipe] = []
         for raw_pipe in self._raw_pipes:
             pipes.extend(
                 Pipe(
@@ -72,7 +71,14 @@ class Adapter(BaseAdapter):
 
     @cached_property
     def _table_entities(self) -> list[tuple[Table, DataEntity]]:
-        return self._get_tables_entities(self._tables)
+        result = []
+
+        for table in self._tables:
+            if isinstance(table, View):
+                result.append((table, map_view(table, self.generator)))
+            else:
+                result.append((table, map_table(table, self.generator)))
+        return result
 
     @cached_property
     def _relationship_entities(self) -> list[DataEntity]:
@@ -83,11 +89,11 @@ class Adapter(BaseAdapter):
 
     @cached_property
     def _schema_entities(self) -> list[DataEntity]:
-        return self._get_schemas_entities(self._table_entities)
+        return map_schemas(self._table_entities, self.generator)
 
     @cached_property
     def _database_entity(self) -> DataEntity:
-        return self._get_database_entity(self._schema_entities)
+        return map_database(self._database_name, self._schema_entities, self.generator)
 
     def get_data_entity_list(self) -> DataEntityList:
         try:
@@ -99,28 +105,7 @@ class Adapter(BaseAdapter):
                     self._database_entity,
                     *self._pipe_entities,
                     *self._relationship_entities,
-                ]
+                ],
             )
         except Exception as e:
             raise MappingDataError("Error during mapping") from e
-
-    def _get_tables_entities(
-        self, tables: List[Table]
-    ) -> List[Tuple[Table, DataEntity]]:
-        result = []
-
-        for table in tables:
-            if isinstance(table, View):
-                result.append((table, map_view(table, self.generator)))
-            else:
-                result.append((table, map_table(table, self.generator)))
-
-        return result
-
-    def _get_schemas_entities(
-        self, tables_with_entities: List[Tuple[Table, DataEntity]]
-    ) -> List[DataEntity]:
-        return map_schemas(tables_with_entities, self.generator)
-
-    def _get_database_entity(self, schemas: List[DataEntity]) -> DataEntity:
-        return map_database(self._database_name, schemas, self.generator)

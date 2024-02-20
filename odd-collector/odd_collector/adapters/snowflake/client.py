@@ -1,7 +1,7 @@
 import re
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import Callable, Union, Any
+from typing import Any, Callable, Union
 
 from funcy import lsplit
 from odd_collector.domain.plugin import SnowflakePlugin
@@ -10,7 +10,7 @@ from odd_collector_sdk.errors import DataSourceError
 from snowflake import connector
 from snowflake.connector.cursor import DictCursor
 
-from .domain import Column, RawPipe, RawStage, Table, View, ForeignKeyConstraint
+from .domain import Column, ForeignKeyConstraint, RawPipe, RawStage, Table, View
 from .logger import logger
 
 TABLES_VIEWS_QUERY = """
@@ -184,8 +184,8 @@ PRIMARY_KEYS_QUERY = """
 """
 
 FOREIGN_KEY_CONSTRAINTS_QUERIES = (
-    '''SHOW IMPORTED KEYS IN DATABASE;''',
-    '''
+    """SHOW IMPORTED KEYS IN DATABASE;""",
+    """
         SELECT
             "created_on",
             "fk_name" as constraint_name,
@@ -203,7 +203,7 @@ FOREIGN_KEY_CONSTRAINTS_QUERIES = (
             "created_on",
             "pk_database_name", "pk_schema_name", "pk_table_name", "pk_name",
             "fk_database_name", "fk_schema_name", "fk_table_name", "fk_name";
-    '''
+    """,
 )
 
 
@@ -361,10 +361,14 @@ class SnowflakeClient(SnowflakeClientBase):
             cursor.execute(query)
 
         # for clearing string representation of list, in order to further transformation into tuple
-        translation_table = str.maketrans({"[": None, "]": None, "\n": None, " ": None, '"': None})
+        translation_table = str.maketrans(
+            {"[": None, "]": None, "\n": None, " ": None, '"': None}
+        )
 
         for raw_object in cursor.fetchall():
             for col in ("foreign_key", "referenced_foreign_key"):
-                raw_object[col] = tuple(raw_object[col].translate(translation_table).split(","))
+                raw_object[col] = tuple(
+                    raw_object[col].translate(translation_table).split(",")
+                )
             result.append(ForeignKeyConstraint.parse_obj(LowerKeyDict(raw_object)))
         return result

@@ -1,13 +1,11 @@
 from functools import cached_property
 
+from odd_collector.adapters.snowflake.domain import ForeignKeyConstraint
 from odd_collector.adapters.snowflake.mappers.relationships.cardinality_checker import (
     CardinalityChecker,
 )
 from odd_collector.adapters.snowflake.mappers.relationships.identifying_checker import (
     IdentifyingChecker,
-)
-from odd_collector.adapters.snowflake.domain import (
-    ForeignKeyConstraint,
 )
 from odd_models.models.models import (
     DataEntity,

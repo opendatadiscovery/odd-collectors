@@ -1,13 +1,9 @@
-from odd_models.models.models import DataEntity
-from oddrn_generator.generators import SnowflakeGenerator
-
+from odd_collector.adapters.snowflake.domain import ForeignKeyConstraint, Table
 from odd_collector.adapters.snowflake.mappers.relationships.relationship_mapper import (
     RelationshipMapper,
 )
-from odd_collector.adapters.snowflake.domain import (
-    Table,
-    ForeignKeyConstraint,
-)
+from odd_models.models.models import DataEntity
+from oddrn_generator.generators import SnowflakeGenerator
 
 
 class DataEntityRelationshipsMapper:

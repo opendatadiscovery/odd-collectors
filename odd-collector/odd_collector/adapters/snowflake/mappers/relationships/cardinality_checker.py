@@ -1,5 +1,3 @@
-from functools import cached_property
-
 from odd_models.models.models import CardinalityType, DataSetField
 
 
@@ -25,7 +23,7 @@ class CardinalityChecker:
 
         return CardinalityType.ONE_TO_EXACTLY_ONE
 
-    @cached_property
+    @property
     def _is_ref_to_nullable(self) -> bool:
         """
         Check if the referenced foreign key refers to nullable column of target table
