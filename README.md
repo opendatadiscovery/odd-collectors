@@ -125,9 +125,10 @@ There are 2 types of relationships: ERD(Entity-Relationship Diagram) and GRAPH.
   relationships between nodes.
 
 
-| Collector             | Adapter              | Relationship Type | Relationship Description                                                                   |
-|-----------------------|----------------------|-------------------|--------------------------------------------------------------------------------------------|
-| odd-collector         | PostgreSQL           | ERD               | Relationship between 2 related table entities that is determined by foreign key constraint |
+| Collector             | Adapter    | Relationship Type | Relationship Description                                                                   |
+|-----------------------|------------|-------------------|--------------------------------------------------------------------------------------------|
+| odd-collector         | PostgreSQL | ERD               | Relationship between 2 related table entities that is determined by foreign key constraint |
+| odd-collector         | Snowflake  | ERD               | Relationship between 2 related table entities that is determined by foreign key constraint |
 
 
 # Collector configuration using alternative Secrets Backend
