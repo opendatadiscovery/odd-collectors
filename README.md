@@ -162,7 +162,9 @@ But there is a possibility to store one plugin in one place, and the other one i
 In case information about one plugin(determined by name) is stored in both `Secrets Backend` and `collector_config.yaml`
 the priority is given to the `Secrets Backend`.
 2) Fetching fields from `collector_config.yaml`.
-3) Fetching fields from `Environment variables`(all fields except `plugins`).
+3) Fetching fields from `Environment variables`(all fields except `plugins`). Environments variables must have
+the same name as fields in `collector_config.yaml`, but they are case-insensitive, so `platform_host_url`,
+`PLATFORM_HOST_URL` and `PlAtFoRm_HoSt_UrL` - are all valid environment variables names.
 4) Default values setting. For `default_pulling_interval`, `chunk_size`, `connection_timeout_seconds`, `misfire_grace_time`,
 `max_instances` and `verify_ssl` default values are acceptable(see in fields description above).
 
