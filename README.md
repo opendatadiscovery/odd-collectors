@@ -100,16 +100,35 @@ Supported data sources:
 This section provides a comprehensive reference for configuring Ingestion Filters that are available within several ODD Data Collectors. 
 The table below outlines key information about those Collectors along with Adapters, Filter Configuration Parameters and brief Descriptions of Filter for each of them. 
 
-| Collector | Adapter | Filter Config Parameter | Filter Description |
-| ---------- | ------- | ---------------- | ----------------- |
-| odd-collector | PostgreSQL | schemas_filter | Filter object by database schema name |
-| odd-collector-aws | S3 | filename_filter | Filter by file name |
-| odd-collector-aws | S3 Delta | filter | Filter by file name |
-| odd-collector-gcp | BigQuery | datasets_filter | Filter by data set name |
-| odd-collector-gcp | Google Cloud Storage | filename_filter | Filter by file name |
-| odd-collector-gcp | Google Cloud Storage Delta | filter | Filter by file name |
-| odd-collector-azure | Azure Data Factory (ADF) | pipeline_filter | Filter by pipeline name |
-| odd-collector-azure | Azure BLOB Storage | file_filter | Filter by file name |
+| Collector           | Adapter                    | Filter Config Parameter   | Filter Description                    |
+|---------------------|----------------------------|---------------------------|---------------------------------------|
+| odd-collector       | PostgreSQL                 | schemas_filter            | Filter object by database schema name |
+| odd-collector-aws   | S3                         | filename_filter           | Filter by file name                   |
+| odd-collector-aws   | S3 Delta                   | filter                    | Filter by file name                   |
+| odd-collector-gcp   | BigQuery                   | datasets_filter           | Filter by data set name               |
+| odd-collector-gcp   | Google Cloud Storage       | filename_filter           | Filter by file name                   |
+| odd-collector-gcp   | Google Cloud Storage Delta | filter                    | Filter by file name                   |
+| odd-collector-azure | Azure Data Factory (ADF)   | pipeline_filter           | Filter by pipeline name               |
+| odd-collector-azure | Azure BLOB Storage         | file_filter               | Filter by file name                   |
+
+# Relationships
+The goal of this feature is to build relationships on the top of core data entities that are logically related.
+The table below represents what adapters currently support this feature and are capable of constructing the
+Relationship DataEntity.
+There are 2 types of relationships: ERD(Entity-Relationship Diagram) and GRAPH.
+- ERD relationships represent associations between entities within a relational database. We determine 4 cardinality types of relationships:
+    - ONE_TO_EXACTLY_ONE - a single instance of an entity is related to a single instance of another entity.
+    - ONE_TO_ZERO_OR_ONE - a single instance of an entity is related to either zero instances or one instance of another entity.
+    - ONE_TO_ONE_OR_MORE - a single instance of an entity is related to multiple instances of another entity.
+    - ONE_TO_ZERO_ONE_OR_MORE - a single instance of an entity is related to zero instances or one or more instances of another entity.
+- GRAPH relationships refer to connections between entities represented in a graph data structure. For example in Neo4j it will be
+  relationships between nodes.
+
+
+| Collector             | Adapter              | Relationship Type | Relationship Description                                                                   |
+|-----------------------|----------------------|-------------------|--------------------------------------------------------------------------------------------|
+| odd-collector         | PostgreSQL           | ERD               | Relationship between 2 related table entities that is determined by foreign key constraint |
+
 
 # Collector configuration using alternative Secrets Backend
 There is an option to store collector configuration settings via Secrets Backend (only AWS SSM Parameter Store is supported for now).
