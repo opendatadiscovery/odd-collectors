@@ -152,6 +152,24 @@ misfire_grace_time: Optional[int] = None  # seconds after the designated runtime
 max_instances: Optional[int] = 1  # maximum number of concurrently running instances allowed
 verify_ssl: bool = True # For cases when self-signed certificates are used
 ```
+The priority of fields initialization:
+1) Fetching fields from `Secrets Backend`(if configured, see "Secrets Backend configuration" paragraph).
+All collector config fields described above can be stored via `Secrets Backend`. If there is a field
+configured both in `Secrets Backend` and in `collector_config.yaml` the priority is given to the value
+stored in `Secrets Backend`. The information for one plugin must be stored in the unified place:
+all connection settings stored in `collector_config.yaml` or in `Secrets Backend`.
+But there is a possibility to store one plugin in one place, and the other one in the second place.
+In case information about one plugin(determined by name) is stored in both `Secrets Backend` and `collector_config.yaml`
+the priority is given to the `Secrets Backend`.
+2) Fetching fields from `collector_config.yaml`.
+3) Fetching fields from `Environment variables`(all fields except `plugins`). Environments variables must have
+the same name as fields in `collector_config.yaml`, but they are case-insensitive, so `platform_host_url`,
+`PLATFORM_HOST_URL` and `PlAtFoRm_HoSt_UrL` - are all valid environment variables names.
+4) Default values setting. For `default_pulling_interval`, `chunk_size`, `connection_timeout_seconds`, `misfire_grace_time`,
+`max_instances` and `verify_ssl` default values are acceptable(see in fields description above).
+
+If `token`, `plugins` and `platform_host_url` fields are not specified in any way - the collector will
+throw config parsing error.
 
 ## Secrets Backend configuration
 Secrets Backend section must be specified only in the case when you are using one of the supported
