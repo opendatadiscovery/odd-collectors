@@ -189,6 +189,8 @@ class ForeignKeyConstraint:
     schema_name: str
     table_name: str
     table_conrelid: int
+    referenced_schema_oid: int
+    referenced_schema_name: str
     referenced_table_name: str
     referenced_table_confrelid: int
     foreign_key: tuple[str]
