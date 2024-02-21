@@ -117,6 +117,8 @@ class PostgreSQLRepository:
                     nsp,
                     tn,
                     tc,
+                    rnsp_oid,
+                    rnsp,
                     rtn,
                     rtc,
                     tuple(fk),
@@ -124,7 +126,7 @@ class PostgreSQLRepository:
                     tuple(rfk),
                     tuple(rfka),
                 )
-                for oid, cn, nsp_oid, nsp, tn, tc, rtn, rtc, fk, fka, rfk, rfka in self.execute(
+                for oid, cn, nsp_oid, nsp, tn, tc, rnsp_oid, rnsp, rtn, rtc, fk, fka, rfk, rfka in self.execute(
                     self.foreign_key_constraints_query, cur
                 )
             ]
@@ -289,10 +291,12 @@ class PostgreSQLRepository:
                 subq.oid
                 , conname AS constraint_name
                 , ns.oid AS schema_oid
-                , nspname AS schema_name
+                , ns.nspname AS schema_name
                 , conrelid::regclass::name AS table_name
                 , conrelid AS table_conrelid
-                , confrelid::regclass::name AS referenced_table_name
+                , rc.relnamespace AS referenced_schema_oid
+                , rns.nspname AS referenced_schema_name
+                , rc.relname AS referenced_table_name
                 , confrelid AS referenced_table_confrelid
                 , array_agg(ta.attname ORDER BY unnested_ordinality) AS fkey
                 , array_agg(unnested_conkey ORDER BY unnested_ordinality) AS fkey_attnum
@@ -319,14 +323,18 @@ class PostgreSQLRepository:
                     contype = 'f'       -- only foreign keys
                     AND conparentid = 0 -- exclude constraints on partitions
             ) subq
+                JOIN pg_catalog.pg_class AS rc
+                    ON rc.oid = confrelid
+                JOIN pg_catalog.pg_namespace AS ns  -- table namespace
+                    ON ns.oid = connamespace
+                JOIN pg_catalog.pg_namespace AS rns -- referenced table namespace
+                    ON rns.oid = rc.relnamespace
                 JOIN pg_catalog.pg_attribute AS ta  -- table attribute
                     ON ta.attrelid = conrelid AND ta.attnum = unnested_conkey
                 JOIN pg_catalog.pg_attribute AS rta -- referenced table attribute
                     ON rta.attrelid = confrelid AND rta.attnum = unnested_confkey
-                JOIN pg_catalog.pg_namespace AS ns
-                    ON ns.oid = connamespace
             GROUP BY
-                subq.oid, conname, conrelid, confrelid, ns.oid, nspname;
+                subq.oid, conname, conrelid, confrelid, ns.oid, ns.nspname, rc.relnamespace, rns.nspname, rc.relname;
         """
 
     @property

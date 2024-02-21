@@ -31,6 +31,7 @@ class DataEntityRelationshipsMapper:
     ) -> DataEntity:
         schema_name = fk_cons.schema_name
         table_name = fk_cons.table_name
+        referenced_schema_name = fk_cons.referenced_schema_name
         referenced_table_name = fk_cons.referenced_table_name
 
         self.oddrn_generator.set_oddrn_paths(
@@ -43,9 +44,9 @@ class DataEntityRelationshipsMapper:
             fk_cons=fk_cons,
             oddrn=self.oddrn_generator.get_oddrn_by_path("relationships"),
             source=self._get_dataset(schema_name, table_name),
-            target=self._get_dataset(schema_name, referenced_table_name),
+            target=self._get_dataset(referenced_schema_name, referenced_table_name),
             unique_constraints=self._get_unique_constraints(
-                schema_name, referenced_table_name
+                referenced_schema_name, referenced_table_name
             ),
         ).build_data_entity()
 
