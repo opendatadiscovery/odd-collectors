@@ -40,11 +40,14 @@ class CardinalityChecker:
     @cached_property
     def _is_ref_to_unique(self) -> bool:
         """
-        Check if the referenced foreign key refers to unique constraint of target table
+        Check if the referenced foreign key refers to unique constraint
+        or primary key of target table
         """
         ref_fk_columns = {dsf.name for dsf in self.ref_fk_field_list}
         ref_uc_columns = list(
             chain.from_iterable(uc.column_names for uc in self.unique_constraints)
         )
 
-        return any(cn in ref_uc_columns for cn in ref_fk_columns)
+        return any(cn in ref_uc_columns for cn in ref_fk_columns) or any(
+            dsf.is_primary_key for dsf in self.ref_fk_field_list
+        )
