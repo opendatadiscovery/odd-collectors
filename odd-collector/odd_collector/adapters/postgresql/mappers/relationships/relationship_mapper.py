@@ -39,7 +39,7 @@ class RelationshipMapper:
             target_field_list=self._target_field_list,
         )
         self.cardinality_checker = CardinalityChecker(
-            ref_fk_field_list=self._ref_fk_field_list,
+            fk_field_list=self._fk_field_list,
             unique_constraints=unique_constraints,
         )
 
