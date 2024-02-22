@@ -10,7 +10,7 @@ from odd_collector_sdk.errors import DataSourceError
 from snowflake import connector
 from snowflake.connector.cursor import DictCursor
 
-from .domain import Column, ForeignKeyConstraint, RawPipe, RawStage, Table, View
+from .domain import Column, ForeignKeyConstraint, RawPipe, RawStage, Table, View, UniqueConstraint
 from .logger import logger
 
 TABLES_VIEWS_QUERY = """
