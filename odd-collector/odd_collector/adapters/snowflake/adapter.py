@@ -7,7 +7,7 @@ from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import Generator, SnowflakeGenerator
 
 from .client import SnowflakeClient
-from .domain import ForeignKeyConstraint, Pipe, RawPipe, RawStage, Table, View
+from .domain import ForeignKeyConstraint, Pipe, RawPipe, RawStage, Table, View, UniqueConstraint
 from .mappers import map_database, map_pipe, map_schemas, map_table, map_view
 from .mappers.relationships import DataEntityRelationshipsMapper
 
@@ -34,6 +34,7 @@ class Adapter(BaseAdapter):
                 "raw_pipes": client.get_raw_pipes(),
                 "raw_stages": client.get_raw_stages(),
                 "fk_constraints": client.get_fk_constraints(),
+                "unique_constraints": client.get_unique_constraints(),
             }
 
     @cached_property
@@ -51,6 +52,10 @@ class Adapter(BaseAdapter):
     @cached_property
     def _fk_constraints(self) -> list[ForeignKeyConstraint]:
         return self._metadata["fk_constraints"]
+
+    @cached_property
+    def _unique_constraints(self) -> list[UniqueConstraint]:
+        return self._metadata["unique_constraints"]
 
     @cached_property
     def _pipe_entities(self) -> list[DataEntity]:
@@ -84,6 +89,7 @@ class Adapter(BaseAdapter):
     def _relationship_entities(self) -> list[DataEntity]:
         return DataEntityRelationshipsMapper(
             oddrn_generator=self.generator,
+            unique_constraints=self._unique_constraints,
             table_entities_pair=self._table_entities,
         ).map(self._fk_constraints)
 

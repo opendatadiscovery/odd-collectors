@@ -1,6 +1,6 @@
 from functools import cached_property
 
-from odd_collector.adapters.snowflake.domain import ForeignKeyConstraint
+from odd_collector.adapters.snowflake.domain import ForeignKeyConstraint, UniqueConstraint
 from odd_collector.adapters.snowflake.mappers.relationships.cardinality_checker import (
     CardinalityChecker,
 )
@@ -23,6 +23,7 @@ class RelationshipMapper:
         oddrn: str,
         source: DataEntity,
         target: DataEntity,
+        unique_constraints: list[UniqueConstraint],
     ):
         self.fk_cons = fk_cons
         self.source = source
@@ -35,7 +36,8 @@ class RelationshipMapper:
             target_field_list=self._target_field_list,
         )
         self.cardinality_checker = CardinalityChecker(
-            ref_fk_field_list=self._ref_fk_field_list,
+            fk_field_list=self._fk_field_list,
+            unique_constraints=unique_constraints,
         )
 
     def build_data_entity(self):

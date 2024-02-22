@@ -206,6 +206,23 @@ FOREIGN_KEY_CONSTRAINTS_QUERIES = (
     """,
 )
 
+UNIQUE_KEY_CONSTRAINTS_QUERIES = (
+    """SHOW UNIQUE KEYS IN DATABASE;""",
+    """
+        SELECT
+            "created_on",
+            "database_name",
+            "schema_name",
+            "table_name",
+            ARRAY_AGG("column_name") WITHIN GROUP (ORDER BY "key_sequence") AS "column_names",
+            "constraint_name"
+        FROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))
+        GROUP BY
+            "created_on",
+            "database_name", "schema_name", "table_name", "constraint_name";
+    """,
+)
+
 
 class SnowflakeClientBase(ABC):
     def __init__(self, config: SnowflakePlugin):
@@ -225,6 +242,10 @@ class SnowflakeClientBase(ABC):
 
     @abstractmethod
     def get_fk_constraints(self) -> list[ForeignKeyConstraint]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_unique_constraints(self) -> list[UniqueConstraint]:
         raise NotImplementedError
 
 
@@ -302,6 +323,11 @@ class SnowflakeClient(SnowflakeClientBase):
         with DictCursor(self._conn) as cursor:
             return self._fetch_fk_constraints(cursor)
 
+    def get_unique_constraints(self) -> list[UniqueConstraint]:
+        logger.info("Getting unique key constraints from Snowflake")
+        with DictCursor(self._conn) as cursor:
+            return self._fetch_unique_constraints(cursor)
+
     @staticmethod
     def _get_clustering_keys(tables: list[Table]) -> dict[str, list]:
         res: dict[str, list] = {}
@@ -353,22 +379,36 @@ class SnowflakeClient(SnowflakeClientBase):
             for raw_object in cursor.fetchall()
         ]
 
-    @staticmethod
-    def _fetch_fk_constraints(cursor: DictCursor) -> list[ForeignKeyConstraint]:
+    def _fetch_fk_constraints(self, cursor: DictCursor) -> list[ForeignKeyConstraint]:
         result: list[ForeignKeyConstraint] = []
 
         for query in FOREIGN_KEY_CONSTRAINTS_QUERIES:
             cursor.execute(query)
 
-        # for clearing string representation of list, in order to further transformation into tuple
+        for raw_object in cursor.fetchall():
+            for col in ("foreign_key", "referenced_foreign_key"):
+                raw_object[col] = self.array_string_to_tuple(raw_object[col])
+            result.append(ForeignKeyConstraint.parse_obj(LowerKeyDict(raw_object)))
+        return result
+
+    def _fetch_unique_constraints(self, cursor: DictCursor) -> list[UniqueConstraint]:
+        result: list[UniqueConstraint] = []
+
+        for query in UNIQUE_KEY_CONSTRAINTS_QUERIES:
+            cursor.execute(query)
+
+        for raw_object in cursor.fetchall():
+            raw_object["column_names"] = self.array_string_to_tuple(raw_object["column_names"])
+            result.append(UniqueConstraint.parse_obj(LowerKeyDict(raw_object)))
+        return result
+
+    @staticmethod
+    def array_string_to_tuple(array_string: str) -> tuple[str]:
+        """
+        Removes unnecessary characters from array-like string(column value)
+        taken from Snowflake and splits elements into tuple.
+        """
         translation_table = str.maketrans(
             {"[": None, "]": None, "\n": None, " ": None, '"': None}
         )
-
-        for raw_object in cursor.fetchall():
-            for col in ("foreign_key", "referenced_foreign_key"):
-                raw_object[col] = tuple(
-                    raw_object[col].translate(translation_table).split(",")
-                )
-            result.append(ForeignKeyConstraint.parse_obj(LowerKeyDict(raw_object)))
-        return result
+        return tuple(array_string.translate(translation_table).split(","))
