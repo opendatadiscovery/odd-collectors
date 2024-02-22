@@ -292,7 +292,7 @@ class PostgreSQLRepository:
                 , conname AS constraint_name
                 , ns.oid AS schema_oid
                 , ns.nspname AS schema_name
-                , conrelid::regclass::name AS table_name
+                , c.relname AS table_name
                 , conrelid AS table_conrelid
                 , rc.relnamespace AS referenced_schema_oid
                 , rns.nspname AS referenced_schema_name
@@ -323,6 +323,8 @@ class PostgreSQLRepository:
                     contype = 'f'       -- only foreign keys
                     AND conparentid = 0 -- exclude constraints on partitions
             ) subq
+                JOIN pg_catalog.pg_class AS c
+                    ON c.oid = conrelid
                 JOIN pg_catalog.pg_class AS rc
                     ON rc.oid = confrelid
                 JOIN pg_catalog.pg_namespace AS ns  -- table namespace
@@ -334,7 +336,7 @@ class PostgreSQLRepository:
                 JOIN pg_catalog.pg_attribute AS rta -- referenced table attribute
                     ON rta.attrelid = confrelid AND rta.attnum = unnested_confkey
             GROUP BY
-                subq.oid, conname, conrelid, confrelid, ns.oid, ns.nspname, rc.relnamespace, rns.nspname, rc.relname;
+                subq.oid, conname, conrelid, confrelid, ns.oid, ns.nspname, c.relname, rc.relnamespace, rns.nspname, rc.relname;
         """
 
     @property
@@ -345,9 +347,11 @@ class PostgreSQLRepository:
                 , con.conname AS constraint_name
                 , ns.nspname AS schema_name
                 , con.conrelid AS table_conrelid
-                , con.conrelid::regclass::name AS table_name
+                , c.relname AS table_name
                 , ARRAY_AGG(att.attname) AS column_names
             FROM pg_catalog.pg_constraint AS con
+                JOIN pg_catalog.pg_class AS c
+                    ON c.oid = con.conrelid
                 JOIN pg_catalog.pg_attribute AS att
                     ON con.conrelid = att.attrelid AND att.attnum = ANY(con.conkey)
                 JOIN pg_catalog.pg_namespace AS ns
@@ -355,7 +359,7 @@ class PostgreSQLRepository:
             WHERE
                 con.contype = 'u'
             GROUP BY
-                con.oid, con.conname, con.conrelid, ns.nspname;
+                con.oid, con.conname, con.conrelid, c.relname, ns.nspname;
         """
 
     @staticmethod
