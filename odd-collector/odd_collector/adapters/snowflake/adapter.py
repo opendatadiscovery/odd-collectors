@@ -7,7 +7,15 @@ from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import Generator, SnowflakeGenerator
 
 from .client import SnowflakeClient
-from .domain import ForeignKeyConstraint, Pipe, RawPipe, RawStage, Table, View, UniqueConstraint
+from .domain import (
+    ForeignKeyConstraint,
+    Pipe,
+    RawPipe,
+    RawStage,
+    Table,
+    UniqueConstraint,
+    View,
+)
 from .mappers import map_database, map_pipe, map_schemas, map_table, map_view
 from .mappers.relationships import DataEntityRelationshipsMapper
 

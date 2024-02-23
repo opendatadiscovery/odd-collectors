@@ -1,10 +1,16 @@
-from odd_collector.adapters.snowflake.domain import ForeignKeyConstraint, Table, UniqueConstraint
+from odd_collector.adapters.snowflake.domain import (
+    ForeignKeyConstraint,
+    Table,
+    UniqueConstraint,
+)
 from odd_collector.adapters.snowflake.mappers.relationships.relationship_mapper import (
     RelationshipMapper,
 )
+from odd_collector.adapters.snowflake.mappers.relationships.utils import (
+    group_uniques_constraints_by_table,
+)
 from odd_models.models.models import DataEntity
 from oddrn_generator.generators import SnowflakeGenerator
-from odd_collector.adapters.snowflake.mappers.relationships.utils import group_uniques_constraints_by_table
 
 
 class DataEntityRelationshipsMapper:

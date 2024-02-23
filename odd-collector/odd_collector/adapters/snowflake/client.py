@@ -10,7 +10,15 @@ from odd_collector_sdk.errors import DataSourceError
 from snowflake import connector
 from snowflake.connector.cursor import DictCursor
 
-from .domain import Column, ForeignKeyConstraint, RawPipe, RawStage, Table, View, UniqueConstraint
+from .domain import (
+    Column,
+    ForeignKeyConstraint,
+    RawPipe,
+    RawStage,
+    Table,
+    UniqueConstraint,
+    View,
+)
 from .logger import logger
 
 TABLES_VIEWS_QUERY = """
@@ -398,7 +406,9 @@ class SnowflakeClient(SnowflakeClientBase):
             cursor.execute(query)
 
         for raw_object in cursor.fetchall():
-            raw_object["column_names"] = self.array_string_to_tuple(raw_object["column_names"])
+            raw_object["column_names"] = self.array_string_to_tuple(
+                raw_object["column_names"]
+            )
             result.append(UniqueConstraint.parse_obj(LowerKeyDict(raw_object)))
         return result
 

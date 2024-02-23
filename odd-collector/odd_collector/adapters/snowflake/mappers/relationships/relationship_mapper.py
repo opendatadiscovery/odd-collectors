@@ -1,6 +1,9 @@
 from functools import cached_property
 
-from odd_collector.adapters.snowflake.domain import ForeignKeyConstraint, UniqueConstraint
+from odd_collector.adapters.snowflake.domain import (
+    ForeignKeyConstraint,
+    UniqueConstraint,
+)
 from odd_collector.adapters.snowflake.mappers.relationships.cardinality_checker import (
     CardinalityChecker,
 )
