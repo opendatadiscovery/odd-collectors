@@ -45,9 +45,7 @@ class DataEntityRelationshipsMapper:
             oddrn=self.oddrn_generator.get_oddrn_by_path("relationships"),
             source=self._get_dataset(schema_name, table_name),
             target=self._get_dataset(referenced_schema_name, referenced_table_name),
-            unique_constraints=self._get_unique_constraints(
-                referenced_schema_name, referenced_table_name
-            ),
+            unique_constraints=self._get_unique_constraints(schema_name, table_name),
         ).build_data_entity()
 
     def _get_dataset(self, schema_name: str, table_name: str) -> DataEntity:
