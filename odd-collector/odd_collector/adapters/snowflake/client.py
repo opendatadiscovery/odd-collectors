@@ -22,37 +22,7 @@ from .domain import (
 from .logger import logger
 
 TABLES_VIEWS_QUERY = """
-    with recursive cte as (
-        select
-            referenced_database,
-            referenced_schema,
-            referenced_object_name,
-            referenced_object_id,
-            referenced_object_domain,
-            referencing_database,
-            referencing_schema,
-            referencing_object_name,
-            referencing_object_id,
-            referencing_object_domain
-        from snowflake.account_usage.object_dependencies
-        union all
-        select
-            deps.referenced_database,
-            deps.referenced_schema,
-            deps.referenced_object_name,
-            deps.referenced_object_id,
-            deps.referenced_object_domain,
-            deps.referencing_database,
-            deps.referencing_schema,
-            deps.referencing_object_name,
-            deps.referencing_object_id,
-            deps.referencing_object_domain
-        from snowflake.account_usage.object_dependencies deps
-        join cte
-            on deps.referencing_object_id = cte.referenced_object_id
-            and deps.referencing_object_domain = cte.referenced_object_domain
-    ),
-    upstream as (
+    with upstream as (
         select
             referencing_database as node_database,
             referencing_schema as node_schema,
@@ -67,7 +37,7 @@ TABLES_VIEWS_QUERY = """
                     referenced_object_domain
                 )
             ) as nodes
-        from cte
+        from snowflake.account_usage.object_dependencies
         group by
             referencing_database,
             referencing_schema,
@@ -90,7 +60,7 @@ TABLES_VIEWS_QUERY = """
                     referencing_object_domain
                 )
             ) as nodes
-        from cte
+        from snowflake.account_usage.object_dependencies
         group by referenced_database,
             referenced_schema,
             referenced_object_name,
