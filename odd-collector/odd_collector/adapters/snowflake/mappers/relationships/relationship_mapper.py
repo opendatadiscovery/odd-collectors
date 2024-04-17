@@ -14,7 +14,7 @@ from odd_models.models.models import (
     DataEntity,
     DataEntityType,
     ERDRelationship,
-    Relationship,
+    DataRelationship,
     RelationshipType,
 )
 
@@ -48,7 +48,7 @@ class RelationshipMapper:
             oddrn=self.oddrn,
             name=self.fk_cons.constraint_name,
             type=DataEntityType.ENTITY_RELATIONSHIP,
-            data_entity_relationship=self._build_relationship(),
+            data_relationship=self._build_relationship(),
         )
 
     @cached_property
@@ -73,8 +73,8 @@ class RelationshipMapper:
     def _source_field_list(self):
         return self.source.dataset.field_list
 
-    def _build_relationship(self) -> Relationship:
-        return Relationship(
+    def _build_relationship(self) -> DataRelationship:
+        return DataRelationship(
             relationship_type=RelationshipType.ERD,
             source_dataset_oddrn=self.source.oddrn,
             target_dataset_oddrn=self.target.oddrn,
