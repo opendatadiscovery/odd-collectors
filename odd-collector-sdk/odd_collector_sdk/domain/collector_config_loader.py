@@ -48,10 +48,10 @@ class CollectorConfigLoader:
             plugins = self._merge_plugins(sb_provider.get_plugins(), plugins)
 
         plugins = [
-            self.plugin_factory[plugin["type"]].parse_obj(plugin) for plugin in plugins
+            self.plugin_factory[plugin["type"]].model_validate(plugin) for plugin in plugins
         ]
 
-        return CollectorConfig.parse_obj({**collector_settings, "plugins": plugins})
+        return CollectorConfig.model_validate({**collector_settings, "plugins": plugins})
 
     def _parse_config(self) -> dict:
         """
