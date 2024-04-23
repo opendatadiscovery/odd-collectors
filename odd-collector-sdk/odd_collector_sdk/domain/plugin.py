@@ -1,9 +1,9 @@
 from typing import Optional
 
-from pydantic import BaseSettings, Extra
+from pydantic_settings import BaseSettings
 
 
-class Plugin(BaseSettings, extra=Extra.allow):
+class Plugin(BaseSettings, extra="allow"):
     type: str
     name: str
     description: Optional[str] = None

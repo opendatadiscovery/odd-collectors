@@ -1,15 +1,15 @@
 import re
 
 from funcy import partial
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class Filter(BaseModel):
-    include: list[str] = []
+    include: list[str] = Field(default=[], validate_default=True)
     exclude: list[str] = []
     ignore_case: bool = False
 
-    @validator("include", always=True)
+    @field_validator("include")
     def check_include(cls, include):
         if not include:
             return [".*"]

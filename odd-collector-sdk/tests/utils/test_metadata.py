@@ -92,7 +92,7 @@ def test_extract_metadata_from_class_without_metadata_field(partial_extract_meta
     assert isinstance(metadata, MetadataExtension)
     assert metadata.metadata == {}
 
-    assert metadata.json()
+    assert metadata.model_dump_json()
 
 
 def test_extract_metadata_from_dataclass_without_metadata_field(
@@ -104,7 +104,7 @@ def test_extract_metadata_from_dataclass_without_metadata_field(
     assert isinstance(metadata, MetadataExtension)
     assert metadata.metadata == {}
 
-    assert metadata.json()
+    assert metadata.model_dump_json()
 
 
 def test_extract_metadata_from_pydantic_without_metadata_field(
@@ -116,7 +116,7 @@ def test_extract_metadata_from_pydantic_without_metadata_field(
     assert isinstance(metadata, MetadataExtension)
     assert metadata.metadata == {}
 
-    assert metadata.json()
+    assert metadata.model_dump_json()
 
 
 def test_extract_metadata_from_class_with_metadata_field(partial_extract_metadata):
@@ -126,7 +126,7 @@ def test_extract_metadata_from_class_with_metadata_field(partial_extract_metadat
     assert isinstance(metadata, MetadataExtension)
     assert metadata.metadata == entity.odd_metadata
 
-    assert metadata.json()
+    assert metadata.model_dump_json()
 
 
 def test_extract_metadata_from_class_with_metadata_added_at_runtime(
@@ -139,7 +139,7 @@ def test_extract_metadata_from_class_with_metadata_added_at_runtime(
     assert isinstance(metadata, MetadataExtension)
     assert metadata.metadata == entity.odd_metadata
 
-    assert metadata.json()
+    assert metadata.model_dump_json()
 
 
 def test_extract_metadata_from_dataclass_with_metadata_field(partial_extract_metadata):
@@ -151,7 +151,7 @@ def test_extract_metadata_from_dataclass_with_metadata_field(partial_extract_met
     assert isinstance(metadata, MetadataExtension)
     assert metadata.metadata == entity.odd_metadata
 
-    assert metadata.json()
+    assert metadata.model_dump_json()
 
 
 def test_extract_metadata_from_dataclass_with_metadata_field_added_at_runtime(
@@ -164,7 +164,7 @@ def test_extract_metadata_from_dataclass_with_metadata_field_added_at_runtime(
     assert isinstance(metadata, MetadataExtension)
     assert metadata.metadata == entity.odd_metadata
 
-    assert metadata.json()
+    assert metadata.model_dump_json()
 
 
 def test_extract_metadata_from_pydantic_class_with_metadata_field(
@@ -178,7 +178,7 @@ def test_extract_metadata_from_pydantic_class_with_metadata_field(
     assert isinstance(metadata, MetadataExtension)
     assert metadata.metadata == entity.odd_metadata
 
-    assert metadata.json()
+    assert metadata.model_dump_json()
 
 
 def test_extract_metadata_from_class_with_an_empty_with_complex(
@@ -188,7 +188,7 @@ def test_extract_metadata_from_class_with_an_empty_with_complex(
     metadata = partial_extract_metadata(entity=entity)
 
     assert metadata.metadata == COMPLEX_METADATA
-    assert metadata.json()
+    assert metadata.model_dump_json()
 
 
 def test_extract_flatten_metadata_from_class_with_an_empty_with_complex(
@@ -198,7 +198,7 @@ def test_extract_flatten_metadata_from_class_with_an_empty_with_complex(
     metadata = partial_extract_metadata(entity=entity, flatten=True)
 
     assert metadata.metadata == FLATTEN
-    assert metadata.json()
+    assert metadata.model_dump_json()
 
 
 def test_extract_jsonfy_metadata_from_class_with_an_empty_with_complex(
@@ -208,7 +208,7 @@ def test_extract_jsonfy_metadata_from_class_with_an_empty_with_complex(
     metadata = partial_extract_metadata(entity=entity, jsonify=True)
 
     assert metadata.metadata == ENCODED_METADATA
-    assert metadata.json()
+    assert metadata.model_dump_json()
 
 
 def test_extract_flatten_jsonfy_metadata_from_class_with_an_empty_with_complex(
@@ -218,7 +218,7 @@ def test_extract_flatten_jsonfy_metadata_from_class_with_an_empty_with_complex(
     metadata = partial_extract_metadata(entity=entity, flatten=True, jsonify=True)
 
     assert metadata.metadata == FLATTEN_ENCODED_METADATA
-    assert metadata.json()
+    assert metadata.model_dump_json()
 
 
 def test_filter_none_values(partial_extract_metadata):
