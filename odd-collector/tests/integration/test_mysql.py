@@ -30,9 +30,10 @@ def create_primary_schema(connection: sqlalchemy.engine.Connection):
         FROM persons_names;
     """
 
-    connection.exec_driver_sql(create_tables)
-    connection.exec_driver_sql(create_view)
-    connection.exec_driver_sql(create_view_from_view)
+    with connection.begin():
+        connection.exec_driver_sql(create_tables)
+        connection.exec_driver_sql(create_view)
+        connection.exec_driver_sql(create_view_from_view)
 
 
 def create_other_schema(connection: sqlalchemy.engine.Connection):
@@ -61,10 +62,11 @@ def create_other_schema(connection: sqlalchemy.engine.Connection):
         FROM `other_schema`.`persons_names`;
     """
 
-    connection.exec_driver_sql(create_other_schema)
-    connection.exec_driver_sql(create_tables)
-    connection.exec_driver_sql(create_view)
-    connection.exec_driver_sql(create_view_from_view)
+    with connection.begin():
+        connection.exec_driver_sql(create_other_schema)
+        connection.exec_driver_sql(create_tables)
+        connection.exec_driver_sql(create_view)
+        connection.exec_driver_sql(create_view_from_view)
 
 
 def entities_are_unique(entities: list[odd_models.DataEntity]):
@@ -73,7 +75,7 @@ def entities_are_unique(entities: list[odd_models.DataEntity]):
 
 @pytest.fixture(scope="module")
 def data_entities() -> odd_models.DataEntityList:
-    with MySqlContainer(MYSQL_USER="root") as mysql:
+    with MySqlContainer(username="root") as mysql:
         engine = sqlalchemy.create_engine(mysql.get_connection_url())
 
         with engine.connect() as connection:
@@ -146,4 +148,4 @@ def test_view_depends_on_view(data_entities: odd_models.DataEntityList):
 
 
 def test_decoding_data_entities(data_entities: odd_models.DataEntityList):
-    assert data_entities.json()
+    assert data_entities.model_dump_json()

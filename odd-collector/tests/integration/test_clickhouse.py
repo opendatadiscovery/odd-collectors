@@ -37,7 +37,7 @@ CREATE TABLE my_database.test (
 @pytest.mark.integration
 def test_clickhouse():
     with ClickHouseContainer(
-        user="username",
+        username="username",
         password="password",
     ).with_bind_ports(8123, 8123) as clickhouse:
         clickhouse.with_env("CLICKHOUSE_DB", "my_database")
@@ -74,4 +74,4 @@ def test_clickhouse():
         table = tables[0]
         assert len(table.dataset.field_list) == 13
 
-        assert data_entities.json()
+        assert data_entities.model_dump_json()

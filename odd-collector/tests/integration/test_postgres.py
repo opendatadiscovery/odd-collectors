@@ -36,10 +36,11 @@ def create_primary_schema(connection: sqlalchemy.engine.Connection):
     FROM TABLE_ONE t, VIEW_ONE v
     """
 
-    connection.exec_driver_sql(create_enum)
-    connection.exec_driver_sql(create_tables)
-    connection.exec_driver_sql(create_view)
-    connection.exec_driver_sql(create_second_view)
+    with connection.begin():
+        connection.exec_driver_sql(create_enum)
+        connection.exec_driver_sql(create_tables)
+        connection.exec_driver_sql(create_view)
+        connection.exec_driver_sql(create_second_view)
 
 
 def create_other_schema(connection: sqlalchemy.engine.Connection):
@@ -65,10 +66,11 @@ def create_other_schema(connection: sqlalchemy.engine.Connection):
     FROM TABLE_ONE
     """
 
-    connection.exec_driver_sql(create_schema)
-    connection.exec_driver_sql(create_view_three)
-    connection.exec_driver_sql(create_view_four)
-    connection.exec_driver_sql(create_materialized_view)
+    with connection.begin():
+        connection.exec_driver_sql(create_schema)
+        connection.exec_driver_sql(create_view_three)
+        connection.exec_driver_sql(create_view_four)
+        connection.exec_driver_sql(create_materialized_view)
 
 
 def create_vector_store_schema(connection: sqlalchemy.engine.Connection):
@@ -103,20 +105,21 @@ def create_vector_store_schema(connection: sqlalchemy.engine.Connection):
             FROM vector_store_schema.vector_store_table vst;
     """
 
-    for q in (
-        init_pgvector_extension,
-        create_schema,
-        create_vector_store_table,
-        create_vector_store_view,
-        create_vector_store_materialized_view,
-    ):
-        connection.exec_driver_sql(q)
+    with connection.begin():
+        for q in (
+            init_pgvector_extension,
+            create_schema,
+            create_vector_store_table,
+            create_vector_store_view,
+            create_vector_store_materialized_view,
+        ):
+            connection.exec_driver_sql(q)
 
 
 @pytest.fixture(scope="module")
 def data_entity_list() -> odd_models.DataEntityList:
     with PostgresContainer(
-        image="ankane/pgvector", password="postgres", user="postgres"
+        image="ankane/pgvector", password="postgres", username="postgres"
     ) as container:
         engine = sqlalchemy.create_engine(container.get_connection_url())
 
@@ -139,7 +142,7 @@ def data_entity_list() -> odd_models.DataEntityList:
 
 
 def test_decoding_to_json(data_entity_list: odd_models.DataEntityList):
-    assert data_entity_list.json()
+    assert data_entity_list.model_dump_json()
 
 
 def test_data_base_service(data_entity_list: odd_models.DataEntityList):

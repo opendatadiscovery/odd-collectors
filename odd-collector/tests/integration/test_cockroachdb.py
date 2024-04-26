@@ -30,14 +30,15 @@ from odd_collector.domain.plugin import CockroachDBPlugin
 @pytest.mark.integration
 def test_cockroach():
     with PostgresContainer(
-        "postgres:14.7", password="postgres", user="postgres"
+        "postgres:14.7", password="postgres", username="postgres"
     ) as cockroach:
         engine = sqlalchemy.create_engine(cockroach.get_connection_url())
 
         with engine.connect() as connection:
-            connection.exec_driver_sql(create_enum)
-            connection.exec_driver_sql(create_tables)
-            connection.exec_driver_sql(create_view)
+            with connection.begin():
+                connection.exec_driver_sql(create_enum)
+                connection.exec_driver_sql(create_tables)
+                connection.exec_driver_sql(create_view)
 
         config = CockroachDBPlugin(
             type="cockroachdb",

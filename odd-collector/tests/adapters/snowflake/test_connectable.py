@@ -3,7 +3,7 @@ from odd_collector.adapters.snowflake.domain.entity import Connectable
 
 def test_connectable():
     raw_object = {"upstream": "db1.public.table.TABLE"}
-    connectable = Connectable.parse_obj(raw_object)
+    connectable = Connectable.model_validate(raw_object)
 
     assert len(connectable.upstream) == 1
     connection = connectable.upstream[0]
