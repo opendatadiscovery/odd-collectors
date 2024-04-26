@@ -2831,16 +2831,21 @@ opentelemetry = ["Deprecated (>=1.2.6)", "typing-extensions (>=3.7.4)", "zipp (>
 
 [[package]]
 name = "neo4j"
-version = "4.3.7"
+version = "5.19.0"
 description = "Neo4j Bolt driver for Python"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.7"
 files = [
-    {file = "neo4j-4.3.7.tar.gz", hash = "sha256:a5621fbafa54e850c62fba4dfca945b6938e2244aec214f616ed6b7f0d39b63f"},
+    {file = "neo4j-5.19.0.tar.gz", hash = "sha256:23704f604214174f3b7d15a38653a1462809986019dfdaf773ff7ca4e1b9e2de"},
 ]
 
 [package.dependencies]
 pytz = "*"
+
+[package.extras]
+numpy = ["numpy (>=1.7.0,<2.0.0)"]
+pandas = ["numpy (>=1.7.0,<2.0.0)", "pandas (>=1.1.0,<3.0.0)"]
+pyarrow = ["pyarrow (>=1.0.0)"]
 
 [[package]]
 name = "networkx"
@@ -5710,4 +5715,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "fe4ef7afac62900d2d41e64ce7a85291a5d2314462abd9d8cab69fc48feb5c22"
+content-hash = "517bbc479f336abe5d27a2139c43dae2de9942d27c73d262666b31818ae2b222"
