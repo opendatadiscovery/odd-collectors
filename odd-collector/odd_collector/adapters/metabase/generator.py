@@ -1,8 +1,9 @@
 from typing import Optional
 
 from oddrn_generator import Generator
-from oddrn_generator.path_models import BasePathsModel
+from oddrn_generator.path_models import BasePathsModel, DependenciesMap
 from oddrn_generator.server_models import HostnameModel
+from pydantic import Field
 
 
 class MetabasePathModel(BasePathsModel):
@@ -10,18 +11,17 @@ class MetabasePathModel(BasePathsModel):
     dashboards: Optional[str]
     cards: Optional[str]
 
-    class Config:
-        dependencies_map = {
+    @classmethod
+    def _dependencies_map_factory(cls):
+        return {
             "collections": ("collections",),
-            "dashboards": (
-                "collections",
-                "dashboards",
-            ),
-            "cards": (
-                "collections",
-                "cards",
-            ),
+            "dashboards": ("collections", "dashboards",),
+            "cards": ("collections", "cards",),
         }
+
+    dependencies_map: DependenciesMap = Field(
+        default_factory=lambda: MetabasePathModel._dependencies_map_factory()
+    )
 
 
 class MetabaseGenerator(Generator):

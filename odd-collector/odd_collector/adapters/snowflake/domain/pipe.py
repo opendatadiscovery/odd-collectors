@@ -67,7 +67,7 @@ class RawStage(BaseModel):
     stage_name: str
     stage_catalog: str
     stage_schema: str
-    stage_url: Optional[str]
+    stage_url: Optional[str] = None
     stage_type: str
 
     @property
@@ -78,5 +78,5 @@ class RawStage(BaseModel):
 class Pipe(Connectable):
     name: str
     definition: str
-    stage_url: Optional[str]
+    stage_url: Optional[str] = None
     stage_type: str

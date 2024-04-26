@@ -1,8 +1,9 @@
 from typing import Optional
 
 from oddrn_generator.generators import Generator
-from oddrn_generator.path_models import BasePathsModel
+from oddrn_generator.path_models import BasePathsModel, DependenciesMap
 from oddrn_generator.server_models import HostnameModel
+from pydantic import Field
 
 
 class KafkaPathsModel(BasePathsModel):
@@ -10,13 +11,18 @@ class KafkaPathsModel(BasePathsModel):
     topics: Optional[str]
     columns: Optional[str]
 
-    class Config:
-        dependencies_map = {
+    @classmethod
+    def _dependencies_map_factory(cls):
+        return {
             "clusters": ("clusters",),
             "topics": ("clusters", "topics"),
             "columns": ("clusters", "topics", "columns"),
         }
-        data_source_path = "clusters"
+
+    data_source_path: str = "clusters"
+    dependencies_map: DependenciesMap = Field(
+        default_factory=lambda: KafkaPathsModel._dependencies_map_factory()
+    )
 
 
 class KafkaGenerator(Generator):

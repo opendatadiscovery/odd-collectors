@@ -1,6 +1,6 @@
 from typing import List, Optional, Union
 
-from pydantic import BaseModel, validator
+from pydantic import field_validator, BaseModel
 
 from ..logger import logger
 
@@ -16,7 +16,8 @@ class Connectable(BaseModel):
     upstream: Optional[List[Connection]] = []
     downstream: Optional[List[Connection]] = []
 
-    @validator("upstream", "downstream", pre=True)
+    @field_validator("upstream", "downstream", mode="before")
+    @classmethod
     def split_str(cls, nodes: Union[str, List[Connection]]):
         """
         For cases when upstream or downstream are string like 'database.schema.name'

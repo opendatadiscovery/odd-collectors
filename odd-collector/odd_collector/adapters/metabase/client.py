@@ -50,7 +50,7 @@ class MetabaseClient:
         for idx, dashboard in enumerate(dashboards_list):
             ordered_cards = lpluck("card", dashboard.get("ordered_cards", []))
 
-            cards = lmap(Card.parse_obj, ordered_cards)
+            cards = lmap(Card.model_validate, ordered_cards)
             dashboards[idx].cards = cards
 
         return dashboards
@@ -94,7 +94,7 @@ class MetabaseClient:
         response = await session.get(endpoint)
         entities = await response.json()
 
-        return lmap(model.parse_obj, entities)
+        return lmap(model.model_validate, entities)
 
     @asynccontextmanager
     async def session(self):

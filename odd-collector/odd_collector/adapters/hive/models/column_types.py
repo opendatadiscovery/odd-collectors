@@ -4,8 +4,8 @@ from pydantic import BaseModel
 
 
 class ColumnType(BaseModel):
-    field_type: Optional[str]
-    logical_type: Optional[str]
+    field_type: Optional[str] = None
+    logical_type: Optional[str] = None
 
 
 class PrimitiveColumnType(ColumnType):

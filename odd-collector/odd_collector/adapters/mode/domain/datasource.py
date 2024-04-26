@@ -31,19 +31,19 @@ class DataSource(BaseModel):
     custom_attributes: dict
     links: dict
 
-    warehouse: Optional[str]
-    account_id: Optional[int]
-    account_username: Optional[str]
-    organization_token: Optional[str]
-    default: Optional[str]
-    default_for_organization_id: Optional[str]
-    ssl_trusted_cert: Optional[str]
-    default_access_level: Optional[str]
+    warehouse: Optional[str] = None
+    account_id: Optional[int] = None
+    account_username: Optional[str] = None
+    organization_token: Optional[str] = None
+    default: Optional[str] = None
+    default_for_organization_id: Optional[str] = None
+    ssl_trusted_cert: Optional[str] = None
+    default_access_level: Optional[str] = None
 
     @staticmethod
     def from_response(response: Dict[str, Any]):
         response["links"] = response.pop("_links")
-        return DataSource.parse_obj(response)
+        return DataSource.model_validate(response)
 
     def get_oddrn(self, oddrn_generator: Generator):
         oddrn_generator.get_oddrn_by_path("datasource", self.id)

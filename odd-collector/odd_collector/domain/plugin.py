@@ -5,7 +5,7 @@ from odd_collector.domain.predefined_data_source import PredefinedDatasourcePara
 from odd_collector_sdk.domain.filter import Filter
 from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
 from odd_collector_sdk.types import PluginFactory
-from pydantic import BaseModel, FilePath, SecretStr, validator
+from pydantic import BaseModel, FilePath, SecretStr, field_validator
 
 
 class WithPredefinedDataSource:
@@ -207,7 +207,7 @@ class CubeJSPlugin(BasePlugin):
     token: Optional[SecretStr]
     predefined_datasource: PredefinedDatasourceParams
 
-    @validator("token")
+    @field_validator("token")
     def validate_token(cls, value: Optional[SecretStr], values):
         if values.get("dev_mode") is False and value is None:
             raise ValueError("Token must be set in production mode")

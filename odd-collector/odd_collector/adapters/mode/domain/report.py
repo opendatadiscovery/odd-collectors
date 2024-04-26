@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel, validator
+from pydantic import field_validator, BaseModel
 from sql_metadata import Parser
 
 from ..generator import Generator
@@ -44,7 +44,7 @@ class Report(BaseModel):
     links: dict
 
     name: Optional[str] = ""
-    published_at: Optional[str]
+    published_at: Optional[str] = None
     description: Optional[str] = None
     theme_id: Optional[int] = None
     color_mappings: Optional[Union[str, dict]] = None
@@ -69,7 +69,7 @@ class Report(BaseModel):
     @staticmethod
     def from_response(response: Dict[str, Any]):
         response["links"] = response.pop("_links")
-        return Report.parse_obj(response)
+        return Report.model_validate(response)
 
     def set_db_setting(self, data_source: DataSource):
         self.host = data_source.host
@@ -77,7 +77,8 @@ class Report(BaseModel):
         self.adapter = data_source.adapter
         return self
 
-    @validator("name")
+    @field_validator("name")
+    @classmethod
     def set_name(cls, name):
         return name or "Untitled Report"
 

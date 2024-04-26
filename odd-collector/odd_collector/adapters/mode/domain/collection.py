@@ -16,15 +16,15 @@ class Collection(BaseModel):
     viewable: Union[str, bool]
     links: dict
 
-    description: Optional[str]
-    viewed: Optional[str]
-    default_access_level: Optional[str]
+    description: Optional[str] = None
+    viewed: Optional[str] = None
+    default_access_level: Optional[str] = None
 
     @staticmethod
     def from_response(response: Dict[str, Any]):
         response["links"] = response.pop("_links")
         response["viewable"] = response.pop("viewable?")
-        return Collection.parse_obj(response)
+        return Collection.model_validate(response)
 
     def get_oddrn(self, oddrn_generator: Generator):
         oddrn_generator.get_oddrn_by_path("datasource", self.id)

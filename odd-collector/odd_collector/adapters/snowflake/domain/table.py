@@ -11,22 +11,22 @@ class Table(Connectable):
     table_catalog: str
     table_schema: str
     table_name: str
-    table_owner: Optional[str]
+    table_owner: Optional[str] = None
     table_type: str
-    is_transient: Optional[str]
-    clustering_key: Optional[Any]
-    row_count: Optional[int]
-    retention_time: Optional[int]
-    created: Optional[datetime]
-    last_altered: Optional[datetime]
-    table_comment: Optional[str]
-    self_referencing_column_name: Optional[str]
-    reference_generation: Optional[str]
-    user_defined_type_catalog: Optional[str]
-    user_defined_type_schema: Optional[str]
-    user_defined_type_name: Optional[str]
-    is_insertable_into: Optional[str]
-    is_typed: Optional[str]
+    is_transient: Optional[str] = None
+    clustering_key: Optional[Any] = None
+    row_count: Optional[int] = None
+    retention_time: Optional[int] = None
+    created: Optional[datetime] = None
+    last_altered: Optional[datetime] = None
+    table_comment: Optional[str] = None
+    self_referencing_column_name: Optional[str] = None
+    reference_generation: Optional[str] = None
+    user_defined_type_catalog: Optional[str] = None
+    user_defined_type_schema: Optional[str] = None
+    user_defined_type_name: Optional[str] = None
+    is_insertable_into: Optional[str] = None
+    is_typed: Optional[str] = None
     columns: Optional[List[Column]] = []
 
     @property
