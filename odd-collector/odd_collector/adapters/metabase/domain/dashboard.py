@@ -10,14 +10,14 @@ keys_to_exclude = {"id", "creator", "last-edit-info"}
 class Dashboard(BaseModel):
     id: int
     name: str
-    description: Optional[str]
+    description: Optional[str] = None
     created_at: datetime
     updated_at: Optional[datetime] = None
     cards: Optional[List[Card]] = []
     creator: Creator
-    collection_id: Optional[int]
+    collection_id: Optional[int] = None
     archived: bool
-    collection_position: Optional[int]
+    collection_position: Optional[int] = None
     enable_embedding: bool
     show_in_getting_started: bool
 

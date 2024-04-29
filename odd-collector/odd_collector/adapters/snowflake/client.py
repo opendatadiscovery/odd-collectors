@@ -328,9 +328,9 @@ class SnowflakeClient(SnowflakeClientBase):
         cursor.execute(TABLES_VIEWS_QUERY)
         for raw_object in cursor.fetchall():
             if raw_object.get("TABLE_TYPE") == "BASE TABLE":
-                result.append(Table.parse_obj(LowerKeyDict(raw_object)))
+                result.append(Table.model_validate(LowerKeyDict(raw_object)))
             elif raw_object.get("TABLE_TYPE") == "VIEW":
-                result.append(View.parse_obj(LowerKeyDict(raw_object)))
+                result.append(View.model_validate(LowerKeyDict(raw_object)))
         return result
 
     def _fetch_columns(self, cursor: DictCursor) -> list[Column]:
@@ -353,7 +353,7 @@ class SnowflakeClient(SnowflakeClientBase):
     ) -> list[Any]:
         cursor.execute(query)
         return [
-            entity_type.parse_obj(LowerKeyDict(raw_object))
+            entity_type.model_validate(LowerKeyDict(raw_object))
             for raw_object in cursor.fetchall()
         ]
 
@@ -366,7 +366,7 @@ class SnowflakeClient(SnowflakeClientBase):
         for raw_object in cursor.fetchall():
             for col in ("foreign_key", "referenced_foreign_key"):
                 raw_object[col] = self.array_string_to_tuple(raw_object[col])
-            result.append(ForeignKeyConstraint.parse_obj(LowerKeyDict(raw_object)))
+            result.append(ForeignKeyConstraint.model_validate(LowerKeyDict(raw_object)))
         return result
 
     def _fetch_unique_constraints(self, cursor: DictCursor) -> list[UniqueConstraint]:
@@ -379,7 +379,7 @@ class SnowflakeClient(SnowflakeClientBase):
             raw_object["column_names"] = self.array_string_to_tuple(
                 raw_object["column_names"]
             )
-            result.append(UniqueConstraint.parse_obj(LowerKeyDict(raw_object)))
+            result.append(UniqueConstraint.model_validate(LowerKeyDict(raw_object)))
         return result
 
     @staticmethod

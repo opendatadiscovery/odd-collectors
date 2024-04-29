@@ -15,9 +15,9 @@ class Query(BaseModel):
     explorations_count: str
     links: dict
 
-    mapping_id: Optional[str]
+    mapping_id: Optional[str] = None
 
     @staticmethod
     def from_response(response: Dict[str, Any]):
         response["links"] = response.pop("_links")
-        return Query.parse_obj(response)
+        return Query.model_validate(response)

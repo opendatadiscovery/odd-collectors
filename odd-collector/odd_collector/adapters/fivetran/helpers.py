@@ -2,7 +2,7 @@ from typing import Optional
 
 import oddrn_generator
 from odd_collector.logger import logger
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 # TODO: update this module as fivetran constantly updates connectors/destinations options.
@@ -21,9 +21,9 @@ class OracleConfig(DatabaseConfig):
 
 
 class MongoConfig(DatabaseConfig):
-    host_settings: str = Field(..., alias="hosts")
+    host_settings: str = Field(..., alias="hosts", validate_default=True)
 
-    @validator("host_settings", pre=True, always=True)
+    @field_validator("host_settings", mode="before")
     def set_host_settings(cls, v):
         return v[0]
 

@@ -9,26 +9,26 @@ from .creator import Creator
 
 class Card(BaseModel):
     id: int
-    table_id: Optional[int]
-    description: Optional[str]
+    table_id: Optional[int] = None
+    description: Optional[str] = None
     name: str
     created_at: datetime
     updated_at: datetime
-    creator: Optional[Creator]
+    creator: Optional[Creator] = None
     query_type: str
     display: str
     entity_id: str
     archived: bool
-    collection_id: Optional[int]
-    collection_position: Optional[int]
-    result_metadata: Optional[List]
-    can_write: Optional[bool]
+    collection_id: Optional[int] = None
+    collection_position: Optional[int] = None
+    result_metadata: Optional[List] = None
+    can_write: Optional[bool] = None
     enable_embedding: bool
-    query_type: Optional[str]
-    dashboard_count: Optional[int]
-    average_query_time: Optional[float]
-    display: Optional[str]
-    collection_preview: Optional[bool]
+    query_type: Optional[str] = None
+    dashboard_count: Optional[int] = None
+    average_query_time: Optional[float] = None
+    display: Optional[str] = None
+    collection_preview: Optional[bool] = None
 
     def get_oddrn(self, generator: Generator) -> str:
         generator.set_oddrn_paths(

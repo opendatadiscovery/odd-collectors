@@ -5,26 +5,26 @@ from pydantic import BaseModel
 
 
 class Column(BaseModel):
-    table_catalog: Any
-    table_schema: Any
-    table_name: Any
-    column_name: Any
-    ordinal_position: Any
-    column_default: Any
-    is_nullable: Any
-    data_type: Any
-    character_maximum_length: Any
-    character_octet_length: Any
-    numeric_precision: Any
-    numeric_precision_radix: Any
-    numeric_scale: Any
-    collation_name: Any
-    is_identity: Any
-    identity_generation: Any
-    identity_start: Any
-    identity_increment: Any
-    identity_cycle: Any
-    comment: Any
+    table_catalog: Any = None
+    table_schema: Any = None
+    table_name: Any = None
+    column_name: Any = None
+    ordinal_position: Any = None
+    column_default: Any = None
+    is_nullable: Any = None
+    data_type: Any = None
+    character_maximum_length: Any = None
+    character_octet_length: Any = None
+    numeric_precision: Any = None
+    numeric_precision_radix: Any = None
+    numeric_scale: Any = None
+    collation_name: Any = None
+    is_identity: Any = None
+    identity_generation: Any = None
+    identity_start: Any = None
+    identity_increment: Any = None
+    identity_cycle: Any = None
+    comment: Any = None
     is_primary_key: bool = False
     is_clustering_key: bool = False
 

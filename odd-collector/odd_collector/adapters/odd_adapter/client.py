@@ -27,7 +27,7 @@ class Client(BaseClient):
                     "/entities", params={"change_since": datetime.now().isoformat()}
                 ) as resp:
                     result = await resp.json()
-                    return DataEntityList.parse_obj(result)
+                    return DataEntityList.model_validate(result)
             except Exception as e:
                 raise DataSourceError(
                     f"Error during getting data entities from {self.__host}"

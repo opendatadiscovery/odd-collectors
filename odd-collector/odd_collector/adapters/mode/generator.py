@@ -1,13 +1,19 @@
 from oddrn_generator import Generator
-from oddrn_generator.path_models import BasePathsModel
+from oddrn_generator.path_models import BasePathsModel, DependenciesMap
 from oddrn_generator.server_models import HostnameModel
+from pydantic import Field
 
 
 class ModePathModel(BasePathsModel):
     reports: str = ""
 
-    class Config:
-        dependencies_map = {"reports": ("reports",)}
+    @classmethod
+    def _dependencies_map_factory(cls):
+        return {"reports": ("reports",)}
+
+    dependencies_map: DependenciesMap = Field(
+        default_factory=lambda: ModePathModel._dependencies_map_factory()
+    )
 
 
 class ModeGenerator(Generator):

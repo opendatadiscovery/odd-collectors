@@ -9,6 +9,6 @@ class Table(BaseModel):
     name: str
     schem: str = Field(..., alias="schema")
     db: Database
-    entity_type: Optional[str]
-    description: Optional[str]
+    entity_type: Optional[str] = None
+    description: Optional[str] = None
     display_name: str

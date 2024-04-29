@@ -4,9 +4,9 @@ from pydantic import BaseModel
 
 
 class Details(BaseModel):
-    port: Optional[int]
-    host: Optional[str]
-    dbname: Optional[str]
+    port: Optional[int] = None
+    host: Optional[str] = None
+    dbname: Optional[str] = None
 
 
 class Database(BaseModel):
