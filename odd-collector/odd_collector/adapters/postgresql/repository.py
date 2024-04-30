@@ -94,7 +94,9 @@ class PostgreSQLRepository:
 
             columns = [
                 Column(*raw)
-                for raw in self.execute(self.columns_query(self.get_filtered_schema_names_str), cur)
+                for raw in self.execute(
+                    self.columns_query(self.get_filtered_schema_names_str), cur
+                )
             ]
 
             for column in columns:
@@ -109,14 +111,18 @@ class PostgreSQLRepository:
         with self.conn.cursor() as cur:
             return [
                 EnumTypeLabel(*raw)
-                for raw in self.execute(self.enums_query(self.get_filtered_schema_names_str), cur)
+                for raw in self.execute(
+                    self.enums_query(self.get_filtered_schema_names_str), cur
+                )
             ]
 
     def get_primary_keys(self):
         with self.conn.cursor() as cur:
             return [
                 PrimaryKey(*raw)
-                for raw in self.execute(self.pks_query(self.get_filtered_schema_names_str), cur)
+                for raw in self.execute(
+                    self.pks_query(self.get_filtered_schema_names_str), cur
+                )
             ]
 
     def get_foreign_key_constraints(self):
@@ -139,7 +145,10 @@ class PostgreSQLRepository:
                     tuple(rfka),
                 )
                 for oid, cn, nsp_oid, nsp, tn, tc, rnsp_oid, rnsp, rtn, rtc, fk, fka, rfk, rfka in self.execute(
-                    self.foreign_key_constraints_query(self.get_filtered_schema_names_str), cur
+                    self.foreign_key_constraints_query(
+                        self.get_filtered_schema_names_str
+                    ),
+                    cur,
                 )
             ]
             return [ForeignKeyConstraint(*fkc) for fkc in fk_constraints]
@@ -148,7 +157,10 @@ class PostgreSQLRepository:
         with self.conn.cursor() as cur:
             return [
                 UniqueConstraint(*raw)
-                for raw in self.execute(self.unique_constraints_query(self.get_filtered_schema_names_str), cur)
+                for raw in self.execute(
+                    self.unique_constraints_query(self.get_filtered_schema_names_str),
+                    cur,
+                )
             ]
 
     @staticmethod

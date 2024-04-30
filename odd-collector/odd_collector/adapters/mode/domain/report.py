@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import field_validator, BaseModel
+from pydantic import BaseModel, field_validator
 from sql_metadata import Parser
 
 from ..generator import Generator

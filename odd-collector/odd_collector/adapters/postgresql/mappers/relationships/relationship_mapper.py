@@ -13,8 +13,8 @@ from odd_collector.adapters.postgresql.models import (
 from odd_models.models.models import (
     DataEntity,
     DataEntityType,
-    ERDRelationship,
     DataRelationship,
+    ERDRelationship,
     RelationshipType,
 )
 

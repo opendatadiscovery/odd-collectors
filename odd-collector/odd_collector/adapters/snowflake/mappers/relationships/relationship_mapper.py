@@ -13,8 +13,8 @@ from odd_collector.adapters.snowflake.mappers.relationships.identifying_checker 
 from odd_models.models.models import (
     DataEntity,
     DataEntityType,
-    ERDRelationship,
     DataRelationship,
+    ERDRelationship,
     RelationshipType,
 )
 
