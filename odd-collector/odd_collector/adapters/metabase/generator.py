@@ -15,8 +15,14 @@ class MetabasePathModel(BasePathsModel):
     def _dependencies_map_factory(cls):
         return {
             "collections": ("collections",),
-            "dashboards": ("collections", "dashboards",),
-            "cards": ("collections", "cards",),
+            "dashboards": (
+                "collections",
+                "dashboards",
+            ),
+            "cards": (
+                "collections",
+                "cards",
+            ),
         }
 
     dependencies_map: DependenciesMap = Field(

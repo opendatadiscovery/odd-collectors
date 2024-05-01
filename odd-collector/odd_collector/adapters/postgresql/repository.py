@@ -66,10 +66,13 @@ class PostgreSQLRepository:
             ]
         return schemas
 
-    def get_tables(self) -> list[Table]:
+    @property
+    def get_filtered_schema_names_str(self):
         schemas = [schema.schema_name for schema in self.get_schemas()]
-        schemas_str = ", ".join([f"'{schema}'" for schema in schemas])
-        query = self.tables_query(schemas_str)
+        return ", ".join([f"'{schema}'" for schema in schemas])
+
+    def get_tables(self) -> list[Table]:
+        query = self.tables_query(self.get_filtered_schema_names_str)
 
         with self.conn.cursor() as cur:
             tables = [Table(*raw) for raw in self.execute(query, cur)]
@@ -89,7 +92,10 @@ class PostgreSQLRepository:
             grouped_enums = group_by(attrgetter("type_oid"), enums)
             grouped_pks = group_by(attrgetter("attrelid", "column_name"), primary_keys)
 
-            columns = [Column(*raw) for raw in self.execute(self.columns_query, cur)]
+            raw_data = self.execute(
+                self.columns_query(self.get_filtered_schema_names_str), cur
+            )
+            columns = [Column(*raw) for raw in raw_data]
 
             for column in columns:
                 if enums := grouped_enums[column.type_oid]:
@@ -101,11 +107,17 @@ class PostgreSQLRepository:
 
     def get_enums(self):
         with self.conn.cursor() as cur:
-            return [EnumTypeLabel(*raw) for raw in self.execute(self.enums_query, cur)]
+            raw_data = self.execute(
+                self.enums_query(self.get_filtered_schema_names_str), cur
+            )
+            return [EnumTypeLabel(*raw) for raw in raw_data]
 
     def get_primary_keys(self):
         with self.conn.cursor() as cur:
-            return [PrimaryKey(*raw) for raw in self.execute(self.pks_query, cur)]
+            raw_data = self.execute(
+                self.pks_query(self.get_filtered_schema_names_str), cur
+            )
+            return [PrimaryKey(*raw) for raw in raw_data]
 
     def get_foreign_key_constraints(self):
         with self.conn.cursor() as cur:
@@ -127,21 +139,24 @@ class PostgreSQLRepository:
                     tuple(rfka),
                 )
                 for oid, cn, nsp_oid, nsp, tn, tc, rnsp_oid, rnsp, rtn, rtc, fk, fka, rfk, rfka in self.execute(
-                    self.foreign_key_constraints_query, cur
+                    self.foreign_key_constraints_query(
+                        self.get_filtered_schema_names_str
+                    ),
+                    cur,
                 )
             ]
             return [ForeignKeyConstraint(*fkc) for fkc in fk_constraints]
 
     def get_unique_constraints(self):
         with self.conn.cursor() as cur:
-            return [
-                UniqueConstraint(*raw)
-                for raw in self.execute(self.unique_constraints_query, cur)
-            ]
+            raw_data = self.execute(
+                self.unique_constraints_query(self.get_filtered_schema_names_str), cur
+            )
+            return [UniqueConstraint(*raw) for raw in raw_data]
 
-    @property
-    def pks_query(self):
-        return """
+    @staticmethod
+    def pks_query(schemas: str):
+        return f"""
             select c.relname, a.attname, a.attrelid
             from pg_index i
                 join pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey)
@@ -151,8 +166,7 @@ class PostgreSQLRepository:
                 and c.relkind in ('r', 'v', 'm', 'p')
                 and c.relispartition = false -- exclude partiotions
                 and a.attnum > 0
-                and n.nspname not like 'pg_temp_%'
-                and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema')
+                and n.nspname in ({schemas}) 
         """
 
     @property
@@ -169,7 +183,8 @@ class PostgreSQLRepository:
             and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema');
         """
 
-    def tables_query(self, schemas: str):
+    @staticmethod
+    def tables_query(schemas: str):
         return f"""
             select
                 c.oid
@@ -206,9 +221,9 @@ class PostgreSQLRepository:
             order by n.nspname, c.relname
         """
 
-    @property
-    def columns_query(self):
-        return """
+    @staticmethod
+    def columns_query(schemas: str):
+        return f"""
             select
                 a.attrelid
                 , ic.table_catalog
@@ -267,26 +282,28 @@ class PostgreSQLRepository:
             where c.relkind in ('r', 'v', 'm', 'p')
                 and c.relispartition = false -- exclude partiotions
                 and a.attnum > 0
-                and n.nspname not like 'pg_temp_%'
-                and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema')
+                and n.nspname in ({schemas}) 
                 and a.attisdropped is false
             order by n.nspname, c.relname, a.attnum
         """
 
-    @property
-    def enums_query(self):
-        return """
-            select pe.enumtypid as type_oid
+    @staticmethod
+    def enums_query(schemas: str):
+        return f"""
+            select
+                pe.enumtypid as type_oid
                 , pt.typname as type_name
                 , pe.enumlabel as label
             from pg_enum pe
             join pg_type pt on pt.oid = pe.enumtypid
+            join pg_catalog.pg_namespace n on n.oid = pt.typnamespace
+            where n.nspname in ({schemas})
             order by pe.enumsortorder
         """
 
-    @property
-    def foreign_key_constraints_query(self) -> str:
-        return """
+    @staticmethod
+    def foreign_key_constraints_query(schemas: str) -> str:
+        return f"""
             SELECT
                 subq.oid
                 , conname AS constraint_name
@@ -335,13 +352,14 @@ class PostgreSQLRepository:
                     ON ta.attrelid = conrelid AND ta.attnum = unnested_conkey
                 JOIN pg_catalog.pg_attribute AS rta -- referenced table attribute
                     ON rta.attrelid = confrelid AND rta.attnum = unnested_confkey
+            WHERE ns.nspname IN ({schemas}) AND rns.nspname in ({schemas})
             GROUP BY
                 subq.oid, conname, conrelid, confrelid, ns.oid, ns.nspname, c.relname, rc.relnamespace, rns.nspname, rc.relname;
         """
 
-    @property
-    def unique_constraints_query(self):
-        return """
+    @staticmethod
+    def unique_constraints_query(schemas: str):
+        return f"""
             SELECT
                 con.oid AS oid
                 , con.conname AS constraint_name
@@ -357,7 +375,7 @@ class PostgreSQLRepository:
                 JOIN pg_catalog.pg_namespace AS ns
                     ON ns.oid = con.connamespace
             WHERE
-                con.contype = 'u'
+                con.contype = 'u' AND ns.nspname IN ({schemas})
             GROUP BY
                 con.oid, con.conname, con.conrelid, c.relname, ns.nspname;
         """

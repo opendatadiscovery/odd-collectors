@@ -1,6 +1,6 @@
 from typing import List, Optional, Union
 
-from pydantic import field_validator, BaseModel
+from pydantic import BaseModel, field_validator
 
 from ..logger import logger
 
