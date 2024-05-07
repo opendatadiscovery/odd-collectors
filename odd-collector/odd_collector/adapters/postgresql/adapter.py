@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from cachetools.func import ttl_cache
 from odd_collector.adapters.postgresql.models import (
     ForeignKeyConstraint,
     Schema,
@@ -24,6 +25,9 @@ from .utils import filter_views
 class Adapter(BaseAdapter):
     config: PostgreSQLPlugin
     generator: PostgresqlGenerator
+    # TODO: to connect CACHE_TTL with default_pulling_interval
+    #  (requires changes in odd-collector-sdk, might affect other adapters)
+    CACHE_TTL = 300  # in seconds, after this time cache of _get_metadata() clears
 
     def __init__(self, config: PostgreSQLPlugin) -> None:
         super().__init__(config)
@@ -34,8 +38,8 @@ class Adapter(BaseAdapter):
             host_settings=self.config.host, databases=self.config.database
         )
 
-    @property
-    def _metadata(self) -> dict[str, list]:
+    @ttl_cache(ttl=CACHE_TTL)
+    def _get_metadata(self) -> dict[str, list]:
         with PostgreSQLRepository(
             ConnectionParams.from_config(self.config), self.config.schemas_filter
         ) as repo:
@@ -48,19 +52,19 @@ class Adapter(BaseAdapter):
 
     @property
     def _schemas(self) -> list[Schema]:
-        return self._metadata["schemas"]
+        return self._get_metadata()["schemas"]
 
     @property
     def _tables(self) -> list[Table]:
-        return self._metadata["tables"]
+        return self._get_metadata()["tables"]
 
     @property
     def _fk_constraints(self) -> list[ForeignKeyConstraint]:
-        return self._metadata["fk_constraints"]
+        return self._get_metadata()["fk_constraints"]
 
     @property
     def _unique_constraints(self) -> list[UniqueConstraint]:
-        return self._metadata["unique_constraints"]
+        return self._get_metadata()["unique_constraints"]
 
     @property
     def _table_entities(self) -> dict[str, DataEntity]:
