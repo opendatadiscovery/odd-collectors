@@ -67,6 +67,7 @@ Collector provides adapter for Amazon cloud services
 Supported data sources:
 - [Athena](odd-collector-aws/README.md)
 - [DynamoDB](odd-collector-aws/README.md)
+- [Database Migration Service \(DMS\)](odd-collector-aws/README.md)
 - [Glue](odd-collector-aws/README.md)
 - [Quicksight](odd-collector-aws/README.md)
 - [Kinesis](odd-collector-aws/README.md)
