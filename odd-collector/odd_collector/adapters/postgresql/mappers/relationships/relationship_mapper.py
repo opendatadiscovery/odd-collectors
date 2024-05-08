@@ -1,5 +1,3 @@
-from functools import cached_property
-
 from odd_collector.adapters.postgresql.mappers.relationships.cardinality_checker import (
     CardinalityChecker,
 )
@@ -51,7 +49,7 @@ class RelationshipMapper:
             data_relationship=self._build_relationship(),
         )
 
-    @cached_property
+    @property
     def _ref_fk_field_list(self):
         return [
             fl
@@ -59,17 +57,17 @@ class RelationshipMapper:
             if fl.name in self.fk_cons.referenced_foreign_key
         ]
 
-    @cached_property
+    @property
     def _fk_field_list(self):
         return [
             fl for fl in self._source_field_list if fl.name in self.fk_cons.foreign_key
         ]
 
-    @cached_property
+    @property
     def _target_field_list(self):
         return self.target.dataset.field_list
 
-    @cached_property
+    @property
     def _source_field_list(self):
         return self.source.dataset.field_list
 

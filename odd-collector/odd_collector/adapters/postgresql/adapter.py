@@ -1,6 +1,6 @@
 from collections import defaultdict
-from functools import cached_property
 
+from cachetools.func import ttl_cache
 from odd_collector.adapters.postgresql.models import (
     ForeignKeyConstraint,
     Schema,
@@ -25,18 +25,24 @@ from .utils import filter_views
 class Adapter(BaseAdapter):
     config: PostgreSQLPlugin
     generator: PostgresqlGenerator
+    # TODO: to connect CACHE_TTL with default_pulling_interval
+    #  (requires changes in odd-collector-sdk, might affect other adapters)
+    CACHE_TTL = 60  # in seconds, after this time cache of _get_metadata() clears
 
     def __init__(self, config: PostgreSQLPlugin) -> None:
         super().__init__(config)
         self.generator.set_oddrn_paths(databases=self.config.database)
-        self._metadata = self._get_database_metadata()
 
     def create_generator(self) -> PostgresqlGenerator:
         return PostgresqlGenerator(
             host_settings=self.config.host, databases=self.config.database
         )
 
-    def _get_database_metadata(self) -> dict[str, list]:
+    # We use temporary cache to avoid multiple (10) method executions (each produces a connection with queries
+    # invocations all the time). So in one collector run we use this method once, after ttl cache clears and the next
+    # scheduled run will rerun method with all querying to get the latest schemas updates.
+    @ttl_cache(ttl=CACHE_TTL)
+    def _get_metadata(self) -> dict[str, list]:
         with PostgreSQLRepository(
             ConnectionParams.from_config(self.config), self.config.schemas_filter
         ) as repo:
@@ -47,27 +53,27 @@ class Adapter(BaseAdapter):
                 "unique_constraints": repo.get_unique_constraints(),
             }
 
-    @cached_property
+    @property
     def _schemas(self) -> list[Schema]:
-        return self._metadata["schemas"]
+        return self._get_metadata()["schemas"]
 
-    @cached_property
+    @property
     def _tables(self) -> list[Table]:
-        return self._metadata["tables"]
+        return self._get_metadata()["tables"]
 
-    @cached_property
+    @property
     def _fk_constraints(self) -> list[ForeignKeyConstraint]:
-        return self._metadata["fk_constraints"]
+        return self._get_metadata()["fk_constraints"]
 
-    @cached_property
+    @property
     def _unique_constraints(self) -> list[UniqueConstraint]:
-        return self._metadata["unique_constraints"]
+        return self._get_metadata()["unique_constraints"]
 
-    @cached_property
+    @property
     def _table_entities(self) -> dict[str, DataEntity]:
         return map_tables(self.generator, self._tables)
 
-    @cached_property
+    @property
     def _schema_entities(self) -> list[DataEntity]:
         result = []
         table_entities_by_schema = self._group_table_entities_by_schema()
@@ -76,7 +82,7 @@ class Adapter(BaseAdapter):
             result.append(map_schema(self.generator, schema, table_entities))
         return result
 
-    @cached_property
+    @property
     def _relationship_entities(self) -> list[DataEntity]:
         return DataEntityRelationshipsMapper(
             oddrn_generator=self.generator,
@@ -84,7 +90,7 @@ class Adapter(BaseAdapter):
             datasets=self._table_entities,
         ).map(self._fk_constraints)
 
-    @cached_property
+    @property
     def _database_entity(self) -> DataEntity:
         return map_database(self.generator, self.config.database, self._schema_entities)
 
