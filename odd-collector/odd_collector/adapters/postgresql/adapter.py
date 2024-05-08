@@ -27,7 +27,7 @@ class Adapter(BaseAdapter):
     generator: PostgresqlGenerator
     # TODO: to connect CACHE_TTL with default_pulling_interval
     #  (requires changes in odd-collector-sdk, might affect other adapters)
-    CACHE_TTL = 300  # in seconds, after this time cache of _get_metadata() clears
+    CACHE_TTL = 60  # in seconds, after this time cache of _get_metadata() clears
 
     def __init__(self, config: PostgreSQLPlugin) -> None:
         super().__init__(config)
@@ -38,6 +38,9 @@ class Adapter(BaseAdapter):
             host_settings=self.config.host, databases=self.config.database
         )
 
+    # We use temporary cache to avoid multiple (10) method executions (each produces a connection with queries
+    # invocations all the time). So in one collector run we use this method once, after ttl cache clears and the next
+    # scheduled run will rerun method with all querying to get the latest schemas updates.
     @ttl_cache(ttl=CACHE_TTL)
     def _get_metadata(self) -> dict[str, list]:
         with PostgreSQLRepository(
