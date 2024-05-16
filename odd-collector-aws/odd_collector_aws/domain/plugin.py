@@ -4,7 +4,7 @@ from odd_collector_aws.domain.dataset_config import DatasetConfig
 from odd_collector_sdk.domain.filter import Filter
 from odd_collector_sdk.domain.plugin import Plugin
 from odd_collector_sdk.types import PluginFactory
-from pydantic import field_validator, BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class AwsPlugin(Plugin):
