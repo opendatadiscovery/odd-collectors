@@ -30,8 +30,8 @@ class DataAsset(BaseModel):
 
 class Artifact(BaseSagemakerEntity, ABC):
     artifact_type: str
-    media_type: Optional[str]
-    arn: Optional[str]
+    media_type: Optional[str] = None
+    arn: Optional[str] = None
     name: str
     uri: str
 

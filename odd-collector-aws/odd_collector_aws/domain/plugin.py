@@ -4,18 +4,18 @@ from odd_collector_aws.domain.dataset_config import DatasetConfig
 from odd_collector_sdk.domain.filter import Filter
 from odd_collector_sdk.domain.plugin import Plugin
 from odd_collector_sdk.types import PluginFactory
-from pydantic import BaseModel, Field, validator
+from pydantic import field_validator, BaseModel, Field
 
 
 class AwsPlugin(Plugin):
-    aws_secret_access_key: Optional[str]
-    aws_access_key_id: Optional[str]
-    aws_region: Optional[str]
-    aws_session_token: Optional[str]
-    aws_account_id: Optional[str]
-    profile_name: Optional[str]
-    aws_role_arn: Optional[str]
-    aws_role_session_name: Optional[str]
+    aws_secret_access_key: Optional[str] = None
+    aws_access_key_id: Optional[str] = None
+    aws_region: Optional[str] = None
+    aws_session_token: Optional[str] = None
+    aws_account_id: Optional[str] = None
+    profile_name: Optional[str] = None
+    aws_role_arn: Optional[str] = None
+    aws_role_session_name: Optional[str] = None
     endpoint_url: Optional[str] = None
 
 
@@ -76,7 +76,8 @@ class S3Plugin(AwsPlugin):
     dataset_config: DatasetConfig
     filename_filter: Optional[Filter] = Filter()
 
-    @validator("datasets", pre=True)
+    @field_validator("datasets", mode="before")
+    @classmethod
     def validate_datasets(cls, v):
         if v:
             raise ValueError("datasets field is deprecated, use dataset_config instead")

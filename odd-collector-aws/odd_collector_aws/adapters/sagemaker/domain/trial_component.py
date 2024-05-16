@@ -18,9 +18,9 @@ from oddrn_generator import SagemakerGenerator
 
 
 class UserInfo(BaseSagemakerEntity):
-    user_profile_arn: Optional[str]
-    user_profile_name: Optional[str]
-    domain_id: Optional[str]
+    user_profile_arn: Optional[str] = None
+    user_profile_name: Optional[str] = None
+    domain_id: Optional[str] = None
 
 
 class TrialComponentStatus(BaseSagemakerEntity):
@@ -36,8 +36,8 @@ class MetadataProperties(BaseSagemakerEntity):
 
 
 class Parameter(BaseSagemakerEntity):
-    number_value: Optional[float]
-    string_value: Optional[str]
+    number_value: Optional[float] = None
+    string_value: Optional[str] = None
 
     @property
     def value(self):
@@ -62,13 +62,13 @@ class TrialComponent(BaseSagemakerEntity):
     display_name: str
     source: Source
     status: TrialComponentStatus
-    start_time: Optional[datetime]
-    end_time: Optional[datetime]
+    start_time: Optional[datetime] = None
+    end_time: Optional[datetime] = None
     creation_time: datetime
     last_modified_time: datetime
     created_by: UserInfo
     last_modified_by: UserInfo
-    parameters: Optional[dict[str, Parameter]]
+    parameters: Optional[dict[str, Parameter]] = None
     input_artifacts: list[Any]
     output_artifacts: list[Any]
     metrics: list[Metric]
