@@ -268,6 +268,7 @@ class SnowflakeClient(SnowflakeClientBase):
 
         with DictCursor(self._conn) as cursor:
             tables: list[Table] = self._fetch_tables(cursor)
+            r = self.get_filtered_schema_names_str(cursor)
             columns: list[Column] = self._fetch_columns(cursor)
             primary_keys: dict[str, list] = self._fetch_primary_keys(cursor)
             clustering_keys: dict[str, list] = self._get_clustering_keys(tables)
@@ -321,17 +322,25 @@ class SnowflakeClient(SnowflakeClientBase):
                     res[table.table_name] = matches.group("cl_keys").split(", ")
         return res
 
-    @staticmethod
-    def _fetch_tables(cursor: DictCursor) -> list[Table]:
+    def _fetch_tables(self, cursor: DictCursor) -> list[Table]:
         result: list[Table] = []
 
         cursor.execute(TABLES_VIEWS_QUERY)
         for raw_object in cursor.fetchall():
+            check = self._config.schemas_filter.is_allowed(raw_object.get("TABLE_SCHEMA"))
+            if not self._config.schemas_filter.is_allowed(raw_object.get("TABLE_SCHEMA")):
+                continue
+
             if raw_object.get("TABLE_TYPE") == "BASE TABLE":
                 result.append(Table.model_validate(LowerKeyDict(raw_object)))
             elif raw_object.get("TABLE_TYPE") == "VIEW":
                 result.append(View.model_validate(LowerKeyDict(raw_object)))
         return result
+
+    def get_filtered_schema_names_str(self, cursor):
+        res = self._fetch_tables(cursor)
+        schemas = [table.table_schema for table in res]
+        return ", ".join([f"'{schema}'" for schema in schemas])
 
     def _fetch_columns(self, cursor: DictCursor) -> list[Column]:
         return self._base_fetch_entity_list(COLUMNS_QUERY, cursor, Column)
