@@ -34,7 +34,6 @@ class RedshiftRepository(AbstractRepository):
         logger.debug(f'Schemas for filter: {self.__schemas or "Were not set"}')
 
     def get_schemas(self) -> MetadataSchemas:
-        logger.info("get_schemas")
         return MetadataSchemas(
             self.__execute(self.metadata_schemas_base_query(self.__schemas)),
             self.__execute(self.metadata_schemas_redshift_query(self.__schemas)),
@@ -42,7 +41,6 @@ class RedshiftRepository(AbstractRepository):
         )
 
     def get_tables(self) -> MetadataTables:
-        logger.info("get_tables")
         return MetadataTables(
             self.__execute(self.metadata_tables_base_query(self.__schemas)),
             self.__execute(self.metadata_tables_all_query(self.__schemas)),
@@ -52,7 +50,6 @@ class RedshiftRepository(AbstractRepository):
         )
 
     def get_columns(self) -> MetadataColumns:
-        logger.info("get_columns")
         return MetadataColumns(
             self.__execute(self.metadata_columns_base_query(self.__schemas)),
             self.__execute(self.metadata_columns_redshift_query(self.__schemas)),
@@ -60,7 +57,6 @@ class RedshiftRepository(AbstractRepository):
         )
 
     def get_primary_keys(self) -> list[tuple]:
-        logger.info("get_primary_keys")
         return self.__execute(self.primary_keys_query)
 
     def __execute(self, query: Union[str, sql.Composed]) -> list[tuple]:

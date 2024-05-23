@@ -37,7 +37,6 @@ class Adapter(BaseAdapter):
             mtables: MetadataTables = self.repository.get_tables()
             mcolumns: MetadataColumns = self.repository.get_columns()
             primary_keys = self.repository.get_primary_keys()
-            logger.info("end adding")
 
             self.append_columns(mtables, mcolumns)
             self.append_primary_keys(mtables, primary_keys)
