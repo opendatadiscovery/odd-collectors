@@ -84,7 +84,9 @@ class RedshiftRepository(AbstractRepository):
         return sql.SQL(
             """
             select
-                database_name, schema_name, schema_owner, schema_type, schema_acl, source_database, schema_option
+                database_name, schema_name,
+                pg_get_userbyid(schema_owner) as schema_owner,
+                schema_type, schema_acl, source_database, schema_option
             from
                 pg_catalog.svv_all_schemas
             where schema_name {predicate} ( {schemas} )
@@ -98,17 +100,19 @@ class RedshiftRepository(AbstractRepository):
     def metadata_schemas_redshift_query(self, schemas: Optional[list[str]]) -> Composed:
         return sql.SQL(
             """
-            select
-                database_name, schema_name, schema_owner, schema_type, schema_acl, schema_option
-            from
-                pg_catalog.svv_redshift_schemas
-            where
-                schema_name {predicate} ( {schemas} )
-                and schema_name not like 'pg_temp_%'
-                and database_name = current_database()
-            order by
-                database_name, schema_name
-    """
+                select
+                    database_name, schema_name,
+                    pg_get_userbyid(schema_owner) as schema_owner,
+                    schema_type, schema_acl, schema_option
+                from
+                    pg_catalog.svv_redshift_schemas
+                where
+                    schema_name {predicate} ( {schemas} )
+                    and schema_name not like 'pg_temp_%'
+                    and database_name = current_database()
+                order by
+                    database_name, schema_name
+            """
         ).format(**self.filter_schemas_params(schemas))
 
     def metadata_schemas_external_query(self, schemas: Optional[list[str]]) -> Composed:
