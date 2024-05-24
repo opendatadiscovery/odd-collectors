@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "odd-collector"
-version = "0.1.58"
+version = "0.1.59"
 description = "ODD Collector"
 authors = ["Open Data Discovery <pypi@opendatadiscovery.org>"]
 keywords = [
