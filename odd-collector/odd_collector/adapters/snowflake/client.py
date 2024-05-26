@@ -149,21 +149,23 @@ COLUMNS_QUERY = """
 
 RAW_PIPES_QUERY = """
     SELECT PIPE_CATALOG, PIPE_SCHEMA, PIPE_NAME, DEFINITION
-    FROM INFORMATION_SCHEMA.PIPES;
+    FROM INFORMATION_SCHEMA.PIPES
+    WHERE PIPE_SCHEMA IN (%s);
 """
 
 RAW_STAGES_QUERY = """
     SELECT STAGE_NAME, STAGE_CATALOG, STAGE_SCHEMA, STAGE_URL, STAGE_TYPE
-    FROM INFORMATION_SCHEMA.STAGES;
+    FROM INFORMATION_SCHEMA.STAGES
+    WHERE STAGE_SCHEMA IN (%s);
 """
 
 PRIMARY_KEYS_QUERY = """
     SHOW PRIMARY KEYS IN DATABASE;
 """
 
-FOREIGN_KEY_CONSTRAINTS_QUERIES = (
-    """SHOW IMPORTED KEYS IN DATABASE;""",
-    """
+FOREIGN_KEY_CONSTRAINTS_QUERIES = {
+    "raw": """SHOW IMPORTED KEYS IN DATABASE;""",
+    "transformed": """
         SELECT
             "created_on",
             "fk_name" as constraint_name,
@@ -177,16 +179,17 @@ FOREIGN_KEY_CONSTRAINTS_QUERIES = (
             "pk_table_name" as referenced_table_name,
             ARRAY_AGG("pk_column_name") WITHIN GROUP (ORDER BY "key_sequence") AS "referenced_foreign_key"
         FROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))
+        WHERE SCHEMA_NAME IN (%s) AND REFERENCED_SCHEMA_NAME IN (%s)
         GROUP BY
             "created_on",
             "pk_database_name", "pk_schema_name", "pk_table_name", "pk_name",
             "fk_database_name", "fk_schema_name", "fk_table_name", "fk_name";
     """,
-)
+}
 
-UNIQUE_KEY_CONSTRAINTS_QUERIES = (
-    """SHOW UNIQUE KEYS IN DATABASE;""",
-    """
+UNIQUE_KEY_CONSTRAINTS_QUERIES = {
+    "raw": """SHOW UNIQUE KEYS IN DATABASE;""",
+    "transformed": """
         SELECT
             "created_on",
             "database_name",
@@ -195,11 +198,12 @@ UNIQUE_KEY_CONSTRAINTS_QUERIES = (
             ARRAY_AGG("column_name") WITHIN GROUP (ORDER BY "key_sequence") AS "column_names",
             "constraint_name"
         FROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))
+        WHERE "schema_name" IN (%s)
         GROUP BY
             "created_on",
             "database_name", "schema_name", "table_name", "constraint_name";
     """,
-)
+}
 
 
 class SnowflakeClientBase(ABC):
@@ -231,6 +235,7 @@ class SnowflakeClient(SnowflakeClientBase):
     def __init__(self, config):
         super().__init__(config)
         self._conn = None
+        self.filtered_schema_names = None
 
     def __enter__(self):
         try:
@@ -253,59 +258,45 @@ class SnowflakeClient(SnowflakeClientBase):
             logger.info("Snowflake connection has been closed.")
             self._conn.close()
 
-    def get_tables(self) -> list[Union[Table, View]]:
-        logger.info("Getting tables and views from Snowflake")
+    @staticmethod
+    def _base_fetch_entity_list(
+        query: str,
+        cursor: DictCursor,
+        entity_type: Any,
+    ) -> list[Any]:
+        cursor.execute(query)
+        return [
+            entity_type.model_validate(LowerKeyDict(raw_object))
+            for raw_object in cursor.fetchall()
+        ]
 
-        def is_belongs(table: Table) -> Callable[[Column], bool]:
-            def _(column: Column) -> bool:
-                return (
-                    table.table_catalog == column.table_catalog
-                    and table.table_schema == column.table_schema
-                    and table.table_name == column.table_name
-                )
+    def _fetch_tables(self, cursor: DictCursor) -> list[Table]:
+        result: list[Table] = []
 
-            return _
+        cursor.execute(TABLES_VIEWS_QUERY)
+        for raw_object in cursor.fetchall():
+            if not self._config.schemas_filter.is_allowed(
+                raw_object.get("TABLE_SCHEMA")
+            ):
+                continue
 
-        with DictCursor(self._conn) as cursor:
-            tables: list[Table] = self._fetch_tables(cursor)
-            r = self.get_filtered_schema_names_str(cursor)
-            columns: list[Column] = self._fetch_columns(cursor)
-            primary_keys: dict[str, list] = self._fetch_primary_keys(cursor)
-            clustering_keys: dict[str, list] = self._get_clustering_keys(tables)
+            if raw_object.get("TABLE_TYPE") == "BASE TABLE":
+                result.append(Table.model_validate(LowerKeyDict(raw_object)))
+            elif raw_object.get("TABLE_TYPE") == "VIEW":
+                result.append(View.model_validate(LowerKeyDict(raw_object)))
+        return result
 
-            for column in columns:
-                if column.column_name in primary_keys.get(column.table_name, []):
-                    column.is_primary_key = True
-                if column.column_name.lower() in clustering_keys.get(
-                    column.table_name, []
-                ):
-                    column.is_clustering_key = True
+    def _fetch_columns(self, cursor: DictCursor) -> list[Column]:
+        return self._base_fetch_entity_list(COLUMNS_QUERY, cursor, Column)
 
-            for table in tables:
-                belongs, not_belongs = lsplit(is_belongs(table), columns)
-                table.columns.extend(belongs)
-                columns = not_belongs
-            return tables
+    @staticmethod
+    def _fetch_primary_keys(cursor: DictCursor) -> dict[str, list]:
+        res = defaultdict(list)
 
-    def get_raw_pipes(self) -> list[RawPipe]:
-        logger.info("Getting pipes from Snowflake")
-        with DictCursor(self._conn) as cursor:
-            return self._base_fetch_entity_list(RAW_PIPES_QUERY, cursor, RawPipe)
-
-    def get_raw_stages(self) -> list[RawStage]:
-        logger.info("Getting stages from Snowflake")
-        with DictCursor(self._conn) as cursor:
-            return self._base_fetch_entity_list(RAW_STAGES_QUERY, cursor, RawStage)
-
-    def get_fk_constraints(self) -> list[ForeignKeyConstraint]:
-        logger.info("Getting foreign key constraints from Snowflake")
-        with DictCursor(self._conn) as cursor:
-            return self._fetch_fk_constraints(cursor)
-
-    def get_unique_constraints(self) -> list[UniqueConstraint]:
-        logger.info("Getting unique key constraints from Snowflake")
-        with DictCursor(self._conn) as cursor:
-            return self._fetch_unique_constraints(cursor)
+        cursor.execute(PRIMARY_KEYS_QUERY)
+        for pk in cursor.fetchall():
+            res[pk["table_name"]].append(pk["column_name"])
+        return res
 
     @staticmethod
     def _get_clustering_keys(tables: list[Table]) -> dict[str, list]:
@@ -322,54 +313,79 @@ class SnowflakeClient(SnowflakeClientBase):
                     res[table.table_name] = matches.group("cl_keys").split(", ")
         return res
 
-    def _fetch_tables(self, cursor: DictCursor) -> list[Table]:
-        result: list[Table] = []
-
-        cursor.execute(TABLES_VIEWS_QUERY)
-        for raw_object in cursor.fetchall():
-            check = self._config.schemas_filter.is_allowed(raw_object.get("TABLE_SCHEMA"))
-            if not self._config.schemas_filter.is_allowed(raw_object.get("TABLE_SCHEMA")):
-                continue
-
-            if raw_object.get("TABLE_TYPE") == "BASE TABLE":
-                result.append(Table.model_validate(LowerKeyDict(raw_object)))
-            elif raw_object.get("TABLE_TYPE") == "VIEW":
-                result.append(View.model_validate(LowerKeyDict(raw_object)))
-        return result
-
-    def get_filtered_schema_names_str(self, cursor):
-        res = self._fetch_tables(cursor)
-        schemas = [table.table_schema for table in res]
+    @staticmethod
+    def get_filtered_schema_names_str(tables: list[Union[Table, View]]) -> str:
+        schemas = {table.table_schema for table in tables}
         return ", ".join([f"'{schema}'" for schema in schemas])
 
-    def _fetch_columns(self, cursor: DictCursor) -> list[Column]:
-        return self._base_fetch_entity_list(COLUMNS_QUERY, cursor, Column)
+    def get_tables(self) -> list[Union[Table, View]]:
+        logger.info("Getting tables and views from Snowflake")
 
-    @staticmethod
-    def _fetch_primary_keys(cursor: DictCursor) -> dict[str, list]:
-        res = defaultdict(list)
+        def is_belongs(table: Table) -> Callable[[Column], bool]:
+            def _(column: Column) -> bool:
+                return (
+                    table.table_catalog == column.table_catalog
+                    and table.table_schema == column.table_schema
+                    and table.table_name == column.table_name
+                )
 
-        cursor.execute(PRIMARY_KEYS_QUERY)
-        for pk in cursor.fetchall():
-            res[pk["table_name"]].append(pk["column_name"])
-        return res
+            return _
 
-    @staticmethod
-    def _base_fetch_entity_list(
-        query: str,
-        cursor: DictCursor,
-        entity_type: Any,
-    ) -> list[Any]:
-        cursor.execute(query)
-        return [
-            entity_type.model_validate(LowerKeyDict(raw_object))
-            for raw_object in cursor.fetchall()
-        ]
+        with DictCursor(self._conn) as cursor:
+            tables: list[Table] = self._fetch_tables(cursor)
+            columns: list[Column] = self._fetch_columns(cursor)
+            primary_keys: dict[str, list] = self._fetch_primary_keys(cursor)
+            clustering_keys: dict[str, list] = self._get_clustering_keys(tables)
+
+            for column in columns:
+                if column.column_name in primary_keys.get(column.table_name, []):
+                    column.is_primary_key = True
+                if column.column_name.lower() in clustering_keys.get(
+                    column.table_name, []
+                ):
+                    column.is_clustering_key = True
+
+            for table in tables:
+                belongs, not_belongs = lsplit(is_belongs(table), columns)
+                table.columns.extend(belongs)
+                columns = not_belongs
+
+            self.filtered_schema_names = self.get_filtered_schema_names_str(tables)
+
+            return tables
+
+    def get_raw_pipes(self) -> list[RawPipe]:
+        logger.info("Getting pipes from Snowflake")
+        with DictCursor(self._conn) as cursor:
+            query = RAW_PIPES_QUERY % self.filtered_schema_names
+            return self._base_fetch_entity_list(query, cursor, RawPipe)
+
+    def get_raw_stages(self) -> list[RawStage]:
+        logger.info("Getting stages from Snowflake")
+        with DictCursor(self._conn) as cursor:
+            query = RAW_STAGES_QUERY % self.filtered_schema_names
+            return self._base_fetch_entity_list(query, cursor, RawStage)
+
+    def get_fk_constraints(self) -> list[ForeignKeyConstraint]:
+        logger.info("Getting foreign key constraints from Snowflake")
+        with DictCursor(self._conn) as cursor:
+            return self._fetch_fk_constraints(cursor)
+
+    def get_unique_constraints(self) -> list[UniqueConstraint]:
+        logger.info("Getting unique key constraints from Snowflake")
+        with DictCursor(self._conn) as cursor:
+            return self._fetch_unique_constraints(cursor)
 
     def _fetch_fk_constraints(self, cursor: DictCursor) -> list[ForeignKeyConstraint]:
         result: list[ForeignKeyConstraint] = []
 
-        for query in FOREIGN_KEY_CONSTRAINTS_QUERIES:
+        raw_query = FOREIGN_KEY_CONSTRAINTS_QUERIES["raw"]
+        transformed_query = FOREIGN_KEY_CONSTRAINTS_QUERIES["transformed"] % (
+            self.filtered_schema_names,
+            self.filtered_schema_names,
+        )
+
+        for query in (raw_query, transformed_query):
             cursor.execute(query)
 
         for raw_object in cursor.fetchall():
@@ -381,7 +397,10 @@ class SnowflakeClient(SnowflakeClientBase):
     def _fetch_unique_constraints(self, cursor: DictCursor) -> list[UniqueConstraint]:
         result: list[UniqueConstraint] = []
 
-        for query in UNIQUE_KEY_CONSTRAINTS_QUERIES:
+        raw_query = UNIQUE_KEY_CONSTRAINTS_QUERIES["raw"]
+        transformed_query = UNIQUE_KEY_CONSTRAINTS_QUERIES["transformed"] % self.filtered_schema_names
+
+        for query in (raw_query, transformed_query):
             cursor.execute(query)
 
         for raw_object in cursor.fetchall():

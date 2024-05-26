@@ -36,7 +36,7 @@ class Adapter(BaseAdapter):
             databases=self._database_name,
         )
 
-    # We use temporary cache to avoid multiple (10) method executions (each produces a connection with queries
+    # We use temporary cache to avoid multiple method executions (each produces a connection with queries
     # invocations all the time). So in one collector run we use this method once, after ttl cache clears and the next
     # scheduled run will rerun method with all querying to get the latest schemas updates.
     @ttl_cache(ttl=CACHE_TTL)
