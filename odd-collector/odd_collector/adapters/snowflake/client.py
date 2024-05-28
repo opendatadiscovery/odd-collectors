@@ -2,6 +2,7 @@ import re
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import Any, Callable, Union
+from functools import cached_property
 
 from funcy import lsplit
 from odd_collector.domain.plugin import SnowflakePlugin
@@ -20,6 +21,18 @@ from .domain import (
     View,
 )
 from .logger import logger
+
+SCHEMAS_QUERY = """
+    SELECT 
+        CATALOG_NAME, 
+        SCHEMA_NAME, 
+        SCHEMA_OWNER, 
+        CREATED, 
+        LAST_ALTERED 
+    FROM 
+        INFORMATION_SCHEMA.SCHEMATA
+    WHERE SCHEMA_NAME != 'INFORMATION_SCHEMA';
+"""
 
 TABLES_VIEWS_QUERY = """
     with upstream as (
@@ -108,7 +121,7 @@ TABLES_VIEWS_QUERY = """
         on d.node_database = t.table_catalog
         and d.node_schema = t.table_schema
         and d.node_name = t.table_name
-    where t.table_schema != 'INFORMATION_SCHEMA'
+    where t.table_schema in (%s)
     order by table_catalog, table_schema, table_name;
 """
 
@@ -139,7 +152,7 @@ COLUMNS_QUERY = """
         on c.table_catalog = t.table_catalog
         and c.table_schema = t.table_schema
         and c.table_name = t.table_name
-    where c.table_schema != 'INFORMATION_SCHEMA'
+    where c.table_schema in (%s)
     order by
         c.table_catalog,
         c.table_schema,
@@ -159,9 +172,14 @@ RAW_STAGES_QUERY = """
     WHERE STAGE_SCHEMA IN (%s);
 """
 
-PRIMARY_KEYS_QUERY = """
-    SHOW PRIMARY KEYS IN DATABASE;
-"""
+PRIMARY_KEYS_QUERIES = {
+    "raw": """SHOW PRIMARY KEYS IN DATABASE;""",
+    "transformed": """
+        SELECT *
+        FROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))
+        WHERE "schema_name" IN (%s);
+    """,
+}
 
 FOREIGN_KEY_CONSTRAINTS_QUERIES = {
     "raw": """SHOW IMPORTED KEYS IN DATABASE;""",
@@ -235,7 +253,6 @@ class SnowflakeClient(SnowflakeClientBase):
     def __init__(self, config):
         super().__init__(config)
         self._conn = None
-        self.filtered_schema_names = None
 
     def __enter__(self):
         try:
@@ -258,6 +275,19 @@ class SnowflakeClient(SnowflakeClientBase):
             logger.info("Snowflake connection has been closed.")
             self._conn.close()
 
+    @cached_property
+    def filtered_schema_names(self) -> str:
+        with DictCursor(self._conn) as cursor:
+            cursor.execute(SCHEMAS_QUERY)
+
+            filtered_schemas = []
+            for raw_object in cursor.fetchall():
+                schema_name = raw_object.get("SCHEMA_NAME")
+                if self._config.schemas_filter.is_allowed(schema_name):
+                    filtered_schemas.append(schema_name)
+
+        return ", ".join([f"'{schema}'" for schema in filtered_schemas])
+
     @staticmethod
     def _base_fetch_entity_list(
         query: str,
@@ -273,13 +303,9 @@ class SnowflakeClient(SnowflakeClientBase):
     def _fetch_tables(self, cursor: DictCursor) -> list[Table]:
         result: list[Table] = []
 
-        cursor.execute(TABLES_VIEWS_QUERY)
+        query = TABLES_VIEWS_QUERY % self.filtered_schema_names
+        cursor.execute(query)
         for raw_object in cursor.fetchall():
-            if not self._config.schemas_filter.is_allowed(
-                raw_object.get("TABLE_SCHEMA")
-            ):
-                continue
-
             if raw_object.get("TABLE_TYPE") == "BASE TABLE":
                 result.append(Table.model_validate(LowerKeyDict(raw_object)))
             elif raw_object.get("TABLE_TYPE") == "VIEW":
@@ -287,13 +313,17 @@ class SnowflakeClient(SnowflakeClientBase):
         return result
 
     def _fetch_columns(self, cursor: DictCursor) -> list[Column]:
-        return self._base_fetch_entity_list(COLUMNS_QUERY, cursor, Column)
+        query = COLUMNS_QUERY % self.filtered_schema_names
+        return self._base_fetch_entity_list(query, cursor, Column)
 
-    @staticmethod
-    def _fetch_primary_keys(cursor: DictCursor) -> dict[str, list]:
+    def _fetch_primary_keys(self, cursor: DictCursor) -> dict[str, list]:
         res = defaultdict(list)
 
-        cursor.execute(PRIMARY_KEYS_QUERY)
+        raw_query = PRIMARY_KEYS_QUERIES["raw"]
+        transformed_query = PRIMARY_KEYS_QUERIES["transformed"] % self.filtered_schema_names
+        for query in (raw_query, transformed_query):
+            cursor.execute(query)
+
         for pk in cursor.fetchall():
             res[pk["table_name"]].append(pk["column_name"])
         return res
@@ -312,11 +342,6 @@ class SnowflakeClient(SnowflakeClientBase):
                 if matches:
                     res[table.table_name] = matches.group("cl_keys").split(", ")
         return res
-
-    @staticmethod
-    def get_filtered_schema_names_str(tables: list[Union[Table, View]]) -> str:
-        schemas = {table.table_schema for table in tables}
-        return ", ".join([f"'{schema}'" for schema in schemas])
 
     def get_tables(self) -> list[Union[Table, View]]:
         logger.info("Getting tables and views from Snowflake")
@@ -349,8 +374,6 @@ class SnowflakeClient(SnowflakeClientBase):
                 belongs, not_belongs = lsplit(is_belongs(table), columns)
                 table.columns.extend(belongs)
                 columns = not_belongs
-
-            self.filtered_schema_names = self.get_filtered_schema_names_str(tables)
 
             return tables
 
