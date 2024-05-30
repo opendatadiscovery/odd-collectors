@@ -76,6 +76,8 @@ class RawStage(BaseModel):
 
 
 class Pipe(Connectable):
+    catalog: str
+    schema: str
     name: str
     definition: str
     stage_url: Optional[str] = None

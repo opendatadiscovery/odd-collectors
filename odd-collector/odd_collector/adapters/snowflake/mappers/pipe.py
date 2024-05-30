@@ -16,7 +16,7 @@ logger = logging.getLogger("Snowpipe")
 
 def map_pipe(pipe: Pipe, generator: SnowflakeGenerator) -> DataEntity:
     generator = deepcopy(generator)
-    generator.set_oddrn_paths(pipes=pipe.name)
+    generator.set_oddrn_paths(schemas=pipe.schema, pipes=pipe.name)
 
     return DataEntity(
         oddrn=generator.get_oddrn_by_path("pipes"),
