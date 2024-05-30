@@ -1,8 +1,8 @@
 import re
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import Any, Callable, Union
 from functools import cached_property
+from typing import Any, Callable, Union
 
 from funcy import lsplit
 from odd_collector.domain.plugin import SnowflakePlugin
@@ -320,7 +320,9 @@ class SnowflakeClient(SnowflakeClientBase):
         res = defaultdict(list)
 
         raw_query = PRIMARY_KEYS_QUERIES["raw"]
-        transformed_query = PRIMARY_KEYS_QUERIES["transformed"] % self.filtered_schema_names
+        transformed_query = (
+            PRIMARY_KEYS_QUERIES["transformed"] % self.filtered_schema_names
+        )
         for query in (raw_query, transformed_query):
             cursor.execute(query)
 
@@ -421,7 +423,9 @@ class SnowflakeClient(SnowflakeClientBase):
         result: list[UniqueConstraint] = []
 
         raw_query = UNIQUE_KEY_CONSTRAINTS_QUERIES["raw"]
-        transformed_query = UNIQUE_KEY_CONSTRAINTS_QUERIES["transformed"] % self.filtered_schema_names
+        transformed_query = (
+            UNIQUE_KEY_CONSTRAINTS_QUERIES["transformed"] % self.filtered_schema_names
+        )
 
         for query in (raw_query, transformed_query):
             cursor.execute(query)

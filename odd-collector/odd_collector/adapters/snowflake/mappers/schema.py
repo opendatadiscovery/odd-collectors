@@ -4,13 +4,13 @@ from copy import deepcopy
 from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
 from oddrn_generator import SnowflakeGenerator
 
-from ..domain import Table, Pipe
+from ..domain import Pipe, Table
 
 
 def map_schemas(
     tables_with_entities: list[tuple[Table, DataEntity]],
     pipe_entities: list[tuple[Pipe, DataEntity]],
-    generator: SnowflakeGenerator
+    generator: SnowflakeGenerator,
 ) -> list[DataEntity]:
     generator = deepcopy(generator)
 
