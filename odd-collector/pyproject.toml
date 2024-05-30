@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "odd-collector"
-version = "0.1.59"
+version = "0.1.60"
 description = "ODD Collector"
 authors = ["Open Data Discovery <pypi@opendatadiscovery.org>"]
 keywords = [
@@ -27,7 +27,7 @@ more-itertools = "^10.1.0"
 mysql-connector-python = "^8.0.32"
 neo4j = "^5.19.0"
 oracledb = "1.2.1"
-oddrn-generator = "^0.1.101"
+oddrn-generator = "^0.1.102"
 psycopg2-binary = "2.9.3"
 python = "^3.9"
 pyhumps = "3.0.2"

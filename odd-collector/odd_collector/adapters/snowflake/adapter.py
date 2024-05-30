@@ -36,7 +36,7 @@ class Adapter(BaseAdapter):
             databases=self._database_name,
         )
 
-    # We use temporary cache to avoid multiple (10) method executions (each produces a connection with queries
+    # We use temporary cache to avoid multiple method executions (each produces a connection with queries
     # invocations all the time). So in one collector run we use this method once, after ttl cache clears and the next
     # scheduled run will rerun method with all querying to get the latest schemas updates.
     @ttl_cache(ttl=CACHE_TTL)
@@ -71,11 +71,13 @@ class Adapter(BaseAdapter):
         return self._get_metadata()["unique_constraints"]
 
     @property
-    def _pipe_entities(self) -> list[DataEntity]:
+    def _pipe_entities(self) -> list[tuple[Pipe, DataEntity]]:
         pipes: list[Pipe] = []
         for raw_pipe in self._raw_pipes:
             pipes.extend(
                 Pipe(
+                    catalog=raw_pipe.pipe_catalog,
+                    schema=raw_pipe.pipe_schema,
                     name=raw_pipe.pipe_name,
                     definition=raw_pipe.definition,
                     stage_url=raw_stage.stage_url,
@@ -85,7 +87,7 @@ class Adapter(BaseAdapter):
                 for raw_stage in self._raw_stages
                 if raw_pipe.stage_full_name == raw_stage.stage_full_name
             )
-        return [map_pipe(pipe, self.generator) for pipe in pipes]
+        return [(pipe, map_pipe(pipe, self.generator)) for pipe in pipes]
 
     @property
     def _table_entities(self) -> list[tuple[Table, DataEntity]]:
@@ -108,7 +110,7 @@ class Adapter(BaseAdapter):
 
     @property
     def _schema_entities(self) -> list[DataEntity]:
-        return map_schemas(self._table_entities, self.generator)
+        return map_schemas(self._table_entities, self._pipe_entities, self.generator)
 
     @property
     def _database_entity(self) -> DataEntity:
@@ -122,7 +124,7 @@ class Adapter(BaseAdapter):
                     *[te[1] for te in self._table_entities],
                     *self._schema_entities,
                     self._database_entity,
-                    *self._pipe_entities,
+                    *[pe[1] for pe in self._pipe_entities],
                     *self._relationship_entities,
                 ],
             )

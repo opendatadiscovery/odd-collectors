@@ -94,6 +94,7 @@ class SnowflakePlugin(BasePlugin):
     warehouse: str
     user: str
     password: SecretStr
+    schemas_filter: Filter = Filter()
 
     @property
     def host(self) -> str:

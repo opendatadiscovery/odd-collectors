@@ -9,3 +9,7 @@ plugins:
     database: database
     account: account # my24396.eu-central-1
     warehouse: warehouse # i.e COMPUTE_WH
+    schemas_filter: # Optional, if not provided all schemas from the database will be fetched
+      include: [ patterns_to_include ] # Schema name patterns to include
+      exclude: [ patterns_to_exclude ] # Schema name patterns to exclude
+    # more about filters: https://blog.opendatadiscovery.org/filters-to-include-and-exclude-objects-from-ingest-9fceff77133a

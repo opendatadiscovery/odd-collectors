@@ -1,22 +1,26 @@
 from collections import defaultdict
 from copy import deepcopy
-from typing import Dict, List, Tuple
 
 from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
 from oddrn_generator import SnowflakeGenerator
 
-from ..domain import Table
+from ..domain import Pipe, Table
 
 
 def map_schemas(
-    tables_with_entities: List[Tuple[Table, DataEntity]], generator: SnowflakeGenerator
-) -> List[DataEntity]:
+    tables_with_entities: list[tuple[Table, DataEntity]],
+    pipe_entities: list[tuple[Pipe, DataEntity]],
+    generator: SnowflakeGenerator,
+) -> list[DataEntity]:
     generator = deepcopy(generator)
 
-    grouped: Dict[str, Dict[str, set]] = defaultdict(lambda: defaultdict(set))
+    grouped: dict[str, dict[str, set]] = defaultdict(lambda: defaultdict(set))
 
     for table, entity in tables_with_entities:
         grouped[table.table_catalog][table.table_schema].add(entity.oddrn)
+
+    for pipe, entity in pipe_entities:
+        grouped[pipe.catalog][pipe.schema].add(entity.oddrn)
 
     entities = []
     for catalog, schemas in grouped.items():
