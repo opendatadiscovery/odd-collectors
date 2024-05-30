@@ -104,6 +104,7 @@ The table below outlines key information about those Collectors along with Adapt
 | Collector           | Adapter                    | Filter Config Parameter   | Filter Description                    |
 |---------------------|----------------------------|---------------------------|---------------------------------------|
 | odd-collector       | PostgreSQL                 | schemas_filter            | Filter object by database schema name |
+| odd-collector       | Snowflake                  | schemas_filter            | Filter object by database schema name |
 | odd-collector-aws   | S3                         | filename_filter           | Filter by file name                   |
 | odd-collector-aws   | S3 Delta                   | filter                    | Filter by file name                   |
 | odd-collector-gcp   | BigQuery                   | datasets_filter           | Filter by data set name               |
