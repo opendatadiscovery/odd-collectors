@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, InitVar
 from typing import Any, Optional
 
 from odd_collector.models import Column, Table
@@ -12,4 +12,7 @@ class DatabricksColumn(Column):
 @dataclass()
 class DatabricksTable(Table):
     columns: Optional[list[DatabricksColumn]] = field(default_factory=list)
-    odd_metadata: Optional[dict[str, Any]] = field(default_factory=dict)
+    odd_metadata_init: InitVar[Optional[dict[str, Any]]] = None
+
+    def __post_init__(self, odd_metadata_init):
+        self.metadata = odd_metadata_init

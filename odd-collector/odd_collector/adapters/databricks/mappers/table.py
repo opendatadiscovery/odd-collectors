@@ -19,7 +19,7 @@ def get_table(raw: dict) -> DatabricksTable:
         type=raw.get("table_type"),
         create_time=datetime_from_milliseconds(raw.get("created_at")),
         update_time=datetime_from_milliseconds(raw.get("updated_at")),
-        odd_metadata=raw,
+        odd_metadata_init=raw,
         columns=[column for column in columns],
     )
     return table
