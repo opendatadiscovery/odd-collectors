@@ -61,5 +61,5 @@ jobs:
         with:
           context: ./${{ inputs.collector-name }}
           push: true
-          tags: ${{ env.TAG_VERSION }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_VERSION }}
           labels: ${{ steps.meta.outputs.labels }}
