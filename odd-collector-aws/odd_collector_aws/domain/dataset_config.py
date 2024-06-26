@@ -16,7 +16,7 @@ class FolderAsDataset(BaseModel):
 
 class DatasetConfig(BaseModel):
     bucket: str
-    prefix: Optional[str]
+    prefix: Optional[str] = None
     folder_as_dataset: Optional[FolderAsDataset] = None
 
     @property
