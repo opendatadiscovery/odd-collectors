@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "odd-collector-aws"
-version = "0.1.13"
+version = "0.1.15"
 description = "ODD Collector for AWS"
 license = "Apache-2.0"
 authors = ["Open Data Discovery <pypi@opendatadiscovery.org>"]
