@@ -52,9 +52,9 @@ jobs:
       - name: Extract only version part of a tag
         id: tag
         run: |
-          TAG_FULL=${{ steps.meta.outputs.tags }}
+          TAG_FULL="${{ steps.meta.outputs.tags }}"
           TAG_VERSION=$(echo $TAG_FULL | sed 's|.*-||')
-          echo "TAG_VERSION=TAG_VERSION" >> $GITHUB_ENV
+          echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
