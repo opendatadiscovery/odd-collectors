@@ -72,7 +72,7 @@ jobs:
         id: tag
         run: |
           TAG_FULL="${{ steps.meta.outputs.tags }}"
-          TAG_VERSION=$(echo "$TAG_FULL" | grep -o '${{ env.IMAGE_TYPE }}-[^ ]*' | sed 's/${{ env.IMAGE_TYPE }}-//')
+          TAG_VERSION=$(echo "$TAG_FULL" | grep -o '$IMAGE_TYPE-[^ ]*' | sed 's/$IMAGE_TYPE-//')
           echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
 
       - name: Check ENV variables
