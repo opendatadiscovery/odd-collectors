@@ -55,9 +55,12 @@ jobs:
           TAG_FULL="${{ steps.meta.outputs.tags }}"
           TAG_VERSION=$(echo $TAG_FULL | sed 's|.*-||')
           echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
+          echo $TAG_VERSION
           LABEL_FULL="${{ steps.meta.outputs.labels }}"
+          echo $LABEL_FULL
           LABEL_VERSION=$(echo $LABEL_FULL | sed 's|.*:||')
           echo "LABEL_VERSION=$LABEL_VERSION" >> $GITHUB_ENV
+          echo $LABEL_VERSION
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
