@@ -49,12 +49,15 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Extract only version part of a tag
+      - name: Extract only version part of a tag and label without prefix
         id: tag
         run: |
           TAG_FULL="${{ steps.meta.outputs.tags }}"
           TAG_VERSION=$(echo $TAG_FULL | sed 's|.*-||')
           echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
+          LABEL_FULL="${{ steps.meta.outputs.labels }}"
+          LABEL_VERSION=$(echo $LABEL_FULL | sed 's|.*:||')
+          echo "LABEL_VERSION=$LABEL_VERSION" >> $GITHUB_ENV
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -62,4 +65,4 @@ jobs:
           context: ./${{ inputs.collector-name }}
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_VERSION }}
-          labels: ${{ steps.meta.outputs.labels }}
+          labels: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LABEL_VERSION }}
