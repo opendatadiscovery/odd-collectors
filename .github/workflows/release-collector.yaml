@@ -19,6 +19,27 @@ env:
   IMAGE_NAME: ${{ github.repository_owner }}/${{ inputs.collector-name }}
 
 jobs:
+  construct_image_type:
+    runs-on: ubuntu-latest
+    name: Constructs image type based on input choice
+    outputs:
+      image_type: ${{ steps.set_image_type.outputs.IMAGE_TYPE }}
+    steps:
+      - name: Set IMAGE_TYPE
+        id: set_image_type
+        run: |
+          if [ "${{ inputs.collector-name }}" == "odd-collector" ]; then
+            echo "::set-output name=IMAGE_TYPE::generic"
+          else
+            IMAGE_TYPE=$(echo "${{ inputs.collector-name }}" | awk -F'-' '{print $NF}')
+            echo "::set-output name=IMAGE_TYPE::$IMAGE_TYPE"
+          fi
+
+      - name: Check ENV variables
+        run: |
+          echo ">>>>> IMAGE_NAME: $IMAGE_NAME"
+          echo ">>>>> IMAGE_TYPE: ${{ steps.set_image_type.outputs.IMAGE_TYPE }}"
+
   lint:
     runs-on: ubuntu-latest
     name: Run black as linter
@@ -29,8 +50,10 @@ jobs:
           options: "--check --verbose"
           src: ./${{ inputs.collector-name }}
           version: "22.3.0"
+
   build_and_push:
     runs-on: ubuntu-latest
+    needs: construct_image_type
     name: Build and push docker image to GHCR
     steps:
       - name: Checkout repository
@@ -53,13 +76,20 @@ jobs:
         id: tag
         run: |
           TAG_FULL="${{ steps.meta.outputs.tags }}"
-          TAG_VERSION=$(echo $TAG_FULL | sed 's|.*-||')
+          IMAGE_TYPE="${{ needs.construct_image_type.outputs.image_type }}"
+          TAG_VERSION=$(echo "$TAG_FULL" | grep -o "$IMAGE_TYPE-[^ ]*" | sed "s/$IMAGE_TYPE-//")
           echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
+
+      - name: Check ENV variables
+        run: |
+          echo ">>>>> TAG_VERSION = $TAG_VERSION"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: ./${{ inputs.collector-name }}
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_VERSION }}
+          tags: | 
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_VERSION }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
