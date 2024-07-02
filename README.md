@@ -239,3 +239,26 @@ services:
       - PLATFORM_HOST_URL=${PLATFORM_HOST_URL}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 ```
+
+## Collectors release process (for developers)
+Big part of this process is automated using GitHub Actions and named "ODD Collector release".
+Required steps to create a release:
+1. Merge all code changes to the `main` branch, including manual package version bump
+(this part is not automated, you need to update version in `./<odd_collector>/__version__.py`
+and `./pyproject.toml` files).
+2. Update locally `main` branch with the command: `git pull`.
+3. Create tag locally using command: `git tag <tag_name>`. Where `<tag_name>` should be named based on the
+collector you are releasing and it's version number: odd-collector - `generic/1.0.0`,
+odd-collector-aws - `aws/1.0.0`, odd-collector-azure - `azure/1.0.0`, odd-collector-gcp - `gcp/1.0.0`.
+4. Push locally created tag to the repository: `git push origin <tag_name>`.
+5. Go to the GitHub Actions and choose "ODD Collector release" action.
+6. On the right side click "Run workflow" and choose the appropriate tag (in "Use workflow from")
+and service you are releasing (in "Select service to build"). Example: you are releasing odd-collector,
+so tag should look like `generic/0.1.61` and service - `odd-collector`.
+7. Click "Run workflow" and wait untill the action completes. In the result the newer image will be
+published, you can check it here: https://github.com/orgs/opendatadiscovery/packages.
+8. Now go back to the odd-collectors repo - https://github.com/opendatadiscovery/odd-collectors, go
+to the "Releases" on the right side and edit the release draft (if needed) that was created for you. Naming
+convention is the following (depends on the service you have released): "Generic ODD Collector 1.0.0",
+"AWS ODD Collector 1.0.0", "Azure ODD Collector 1.0.0", "GCP ODD Collector 1.0.0".
+9. Save the release changes.
