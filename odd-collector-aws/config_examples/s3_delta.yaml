@@ -8,10 +8,10 @@ plugins:
     aws_access_key_id:
     aws_secret_access_key:
     aws_region:
-    # aws_session_token: # optional if you want to specify the aws session token
+    aws_session_token: <aws_session_token> # Optional. Required if using temporary credentials.
     delta_tables:
-      - bucket: bucket
-        prefix: delta_data # Prefix to DeltaTable or directory where delta tables are stored
+      bucket: bucket
+      prefix: delta_data # Prefix to DeltaTable or directory where delta tables are stored
 
 # S3 Delta Lake Adapter with Filter
 default_pulling_interval: 10
@@ -23,14 +23,13 @@ plugins:
     aws_access_key_id:
     aws_secret_access_key:
     aws_region:
-    # aws_session_token: # optional if you want to specify the aws session token
+    aws_session_token: <aws_session_token> # Optional. Required if using temporary credentials.
     delta_tables:
-      - bucket: bucket
-        prefix: delta_data
-        filter: # will include only tables with "events" and exclude all tables with "_pii" in the table prefix and name
-          exclude:
-            include: [ "events" ]
-            exclude: [ "_pii" ]
+      bucket: bucket
+      prefix: delta_data
+      filter: # will include only tables with "events" and exclude all tables with "_pii" in the table prefix and name
+        include: [ "events" ]
+        exclude: [ "_pii" ]
 
 
 
@@ -46,5 +45,5 @@ plugins:
     aws_access_key_id: minioadmin
     aws_secret_access_key: minioadmin
     delta_tables:
-      - bucket: bucket
-        prefix: delta_data
+      bucket: bucket
+      prefix: delta_data

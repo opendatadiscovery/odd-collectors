@@ -64,9 +64,9 @@ class DeltaTableConfig(BaseModel):
 
 class S3DeltaPlugin(AwsPlugin):
     type: Literal["s3_delta"]
-    endpoint_url: Optional[str]
+    endpoint_url: Optional[str] = None
     aws_storage_allow_http: Optional[bool] = False
-    delta_tables: list[DeltaTableConfig]
+    delta_tables: DeltaTableConfig
 
 
 class S3Plugin(AwsPlugin):

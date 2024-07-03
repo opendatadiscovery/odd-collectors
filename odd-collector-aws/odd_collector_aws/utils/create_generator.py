@@ -3,7 +3,7 @@ from typing import Type, TypeVar, cast
 
 from botocore.exceptions import ClientError
 from odd_collector_aws.aws.aws_client import Aws
-from odd_collector_aws.domain.plugin import AwsPlugin, S3Plugin
+from odd_collector_aws.domain.plugin import AwsPlugin, S3DeltaPlugin, S3Plugin
 from odd_collector_aws.errors import AccountIdError
 from oddrn_generator import Generator
 from oddrn_generator.generators import S3CustomGenerator, S3Generator
@@ -16,7 +16,12 @@ def create_generator(generator_cls: Type[T], aws_plugin: AwsPlugin) -> T:
 
     if generator_cls == S3Generator:
         config = cast(S3Plugin, aws_plugin)
-        bucket = config.dataset_config.bucket
+
+        # hotfix to manage different structure of S3Plugin and S3DeltaPlugin
+        if isinstance(config, S3DeltaPlugin):
+            bucket = config.delta_tables.bucket
+        else:
+            bucket = config.dataset_config.bucket
 
         if config.endpoint_url:
             return S3CustomGenerator(endpoint=config.endpoint_url, buckets=bucket)

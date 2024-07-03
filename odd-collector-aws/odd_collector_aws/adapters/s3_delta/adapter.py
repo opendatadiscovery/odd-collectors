@@ -1,6 +1,6 @@
 from typing import Union
 
-from funcy import lmap, mapcat, partial
+from funcy import lmap, partial
 from odd_collector_aws.domain.plugin import S3DeltaPlugin
 from odd_collector_aws.utils.create_generator import create_generator
 from odd_collector_sdk.domain.adapter import BaseAdapter
@@ -28,7 +28,7 @@ class Adapter(BaseAdapter):
     def get_data_entity_list(self) -> DataEntityList:
         logger.debug(f"Getting data entity list for {self.config.delta_tables}")
 
-        tables = mapcat(self.client.get_table, self.config.delta_tables)
+        tables = self.client.get_table(self.config.delta_tables)
         data_entities = lmap(partial(map_delta_table, self.generator), tables)
 
         return DataEntityList(
