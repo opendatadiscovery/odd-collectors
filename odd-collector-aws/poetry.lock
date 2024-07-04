@@ -1020,13 +1020,13 @@ sqlparse = ">=0.5.0,<0.6.0"
 
 [[package]]
 name = "oddrn-generator"
-version = "0.1.101"
+version = "0.1.102"
 description = "Open Data Discovery Resource Name Generator"
 optional = false
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "oddrn_generator-0.1.101-py3-none-any.whl", hash = "sha256:00a6de4ecc6b991a959ab7de4bb94f16690042159fbc1f51d64d19b9de506ae3"},
-    {file = "oddrn_generator-0.1.101.tar.gz", hash = "sha256:6af070a003f1ea8384c8cae5381137b7eebcd59f4081487a7bf6a2bfd0cc175f"},
+    {file = "oddrn_generator-0.1.102-py3-none-any.whl", hash = "sha256:35429c24396e72d8841bd61a700a33e60c0142df56867fb41aa35ca75648f334"},
+    {file = "oddrn_generator-0.1.102.tar.gz", hash = "sha256:ff4686cd39389aa561e5bd2c83139baf64e16001ba1df621f38f2e23dfa6aeb1"},
 ]
 
 [package.dependencies]
@@ -2012,4 +2012,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "88377c8a478a09688c503c50feeb94de32030bc70e68226ddfd6101aa67e0c98"
+content-hash = "702b9624a373328d4a6d9b65e0ac6e84721866e2475c7c4205d1cf909469d0a5"

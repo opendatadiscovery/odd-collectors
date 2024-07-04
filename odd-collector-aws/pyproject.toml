@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "odd-collector-aws"
-version = "0.1.15"
+version = "0.1.16"
 description = "ODD Collector for AWS"
 license = "Apache-2.0"
 authors = ["Open Data Discovery <pypi@opendatadiscovery.org>"]
@@ -9,7 +9,7 @@ repository = "https://github.com/opendatadiscovery/odd-collector-aws"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-oddrn-generator = "^0.1.101"
+oddrn-generator = "^0.1.102"
 python-dotenv = "^1.0.1"
 boto3 = "^1.34.106"
 pyhumps = "^3.8.0"
