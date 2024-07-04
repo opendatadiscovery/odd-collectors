@@ -1,3 +1,4 @@
+import copy
 from collections import defaultdict
 
 from cachetools.func import ttl_cache
@@ -102,12 +103,12 @@ class Adapter(BaseAdapter):
         return result
 
     def get_data_entity_list(self) -> DataEntityList:
-        create_lineage(self._tables, self._table_entities)
+        res_table_entities = create_lineage(self._tables, self._table_entities)
 
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
             items=[
-                *self._table_entities.values(),
+                *res_table_entities.values(),
                 *self._schema_entities,
                 *self._relationship_entities,
                 self._database_entity,
@@ -115,20 +116,25 @@ class Adapter(BaseAdapter):
         )
 
 
-def create_lineage(tables: list[Table], data_entities: dict[str, DataEntity]) -> None:
+def create_lineage(
+    tables: list[Table], data_entities: dict[str, DataEntity]
+) -> dict[str, DataEntity]:
+    res_entities = copy.deepcopy(data_entities)
+
     views = filter_views(tables)
 
     for view in views:
-        entity = data_entities.get(view.as_dependency.uid)
+        entity = res_entities.get(view.as_dependency.uid)
         if not entity or not entity.data_transformer:
             continue
 
         try:
             for dependency in view.dependencies:
-                dependency_entity = data_entities.get(dependency.uid)
+                dependency_entity = res_entities.get(dependency.uid)
                 if dependency_entity is None:
                     continue
                 if dependency_entity.oddrn not in entity.data_transformer.inputs:
                     entity.data_transformer.inputs.append(dependency_entity.oddrn)
         except Exception as e:
             logger.warning(f"Error creating lineage for {view.table_name} {e=}")
+    return res_entities
