@@ -30,7 +30,7 @@ jobs:
     - name: Install dependencies and need compilers
       working-directory: odd-collector
       run: |
-        apt-get update && apt-get install -y -q build-essential \
+        sudo apt-get update && apt-get install -y -q build-essential \
         python3-dev libpq-dev curl librdkafka-dev unixodbc \
         unixodbc-dev openssl libsasl2-dev
         poetry install
