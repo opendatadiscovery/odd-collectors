@@ -240,7 +240,9 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 ```
 
-## Collectors release process (for developers)
+## For developers
+
+### Collectors release process
 Big part of this process is automated using GitHub Actions and named "ODD Collector release".
 Required steps to create a release:
 1. Merge all code changes to the `main` branch, including manual package version bump
@@ -262,3 +264,15 @@ to the "Releases" on the right side and edit the release draft (if needed) that 
 convention is the following (depends on the service you have released): "Generic ODD Collector 1.0.0",
 "AWS ODD Collector 1.0.0", "Azure ODD Collector 1.0.0", "GCP ODD Collector 1.0.0".
 9. Save the release changes.
+
+### Testing
+1. To invoke tests you should go to the folder of needed collector type. For generic collector - 
+`cd odd-collector`.
+2. Activate poetry virtual environment with installed dependencies - `poetry shell`.
+3. Invoke tests - `pytest ./tests -v`. where `-v` is a not mandatory option, but it stands for
+__*verbose*__ and can give more detailed feedback on tests' results. Also if you want to run tests
+only for a particular adapter, you can just modify the relative path, like this - 
+`pytest ./tests/integration/test_postgres.py -v `. Also tests can be invoked with
+`poetry run pytest ./tests/integration/test_postgres.py -v`, for instance it can be helpful
+for making automation testing in github actions, where you can not directly activate venv with
+`poetry shell` in the created testing environment.
