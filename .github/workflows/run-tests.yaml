@@ -38,4 +38,4 @@ jobs:
     # for now only tests for PostgreSQL adapter, other need to be checked and updated for future use
     - name: Run tests
       working-directory: odd-collector
-      run: poetry run pytest tests/integration/test_postgres.py --v
+      run: poetry run pytest tests/integration/test_postgres.py -v
