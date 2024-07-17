@@ -1,5 +1,5 @@
 from collections import namedtuple
-from typing import Dict, List, NamedTuple
+from typing import Dict, NamedTuple
 
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import Neo4jGenerator
@@ -17,10 +17,10 @@ from .metadata import append_metadata_extension
 
 def map_nodes(
     oddrn_generator: Neo4jGenerator, nodes: list, relations: list
-) -> List[DataEntity]:
-    data_entities: List[DataEntity] = []
+) -> dict[str, DataEntity]:
+    data_entities: dict[str, DataEntity] = {}
 
-    nodes_map: Dict[str, List[NamedTuple]] = {}
+    nodes_map: Dict[str, list[NamedTuple]] = {}
 
     _group_by_labels(nodes_map, NodeMetadata, nodes)
 
@@ -56,13 +56,13 @@ def map_nodes(
                 map_field(meta, oddrn_generator, data_entity.owner)
             )
 
-        data_entities.append(data_entity)
+        data_entities[node_name] = data_entity
 
     return data_entities
 
 
 def _group_by_labels(
-    nodes_map: Dict[str, List[NamedTuple]], namedtuple_func: namedtuple, items: list
+    nodes_map: Dict[str, list[NamedTuple]], namedtuple_func: namedtuple, items: list
 ):
     for node in items:
         metadata: NamedTuple = namedtuple_func(*node)
