@@ -1,3 +1,7 @@
+from odd_collector.adapters.neo4j.mappers.utils import (
+    _get_node_name,
+    _group_relationships,
+)
 from odd_models.models import (
     DataEntity,
     DataEntityType,
@@ -6,8 +10,6 @@ from odd_models.models import (
     RelationshipType,
 )
 from oddrn_generator import Neo4jGenerator
-
-from odd_collector.adapters.neo4j.mappers.utils import _group_relationships, _get_node_name
 
 
 def map_relationships(
@@ -46,8 +48,7 @@ def map_relationships(
                     is_directed=True,
                     relationship_entity_name="GraphRelationship",
                     attributes={
-                        property_name: "UNKNOWN"
-                        for property_name in relationship[4]
+                        property_name: "UNKNOWN" for property_name in relationship[4]
                     },
                 ),
             ),

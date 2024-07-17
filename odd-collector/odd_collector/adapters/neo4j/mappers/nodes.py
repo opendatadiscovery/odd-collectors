@@ -1,5 +1,6 @@
 from typing import Dict, NamedTuple
 
+from odd_collector.adapters.neo4j.mappers.utils import _group_by_labels
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import Neo4jGenerator
 
@@ -12,7 +13,6 @@ from . import (
 )
 from .fields import map_field
 from .metadata import append_metadata_extension
-from odd_collector.adapters.neo4j.mappers.utils import _group_by_labels
 
 
 def map_nodes(
