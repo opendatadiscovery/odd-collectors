@@ -1,4 +1,3 @@
-from collections import namedtuple
 from typing import Dict, NamedTuple
 
 from odd_models.models import DataEntity, DataEntityType, DataSet
@@ -13,6 +12,7 @@ from . import (
 )
 from .fields import map_field
 from .metadata import append_metadata_extension
+from odd_collector.adapters.neo4j.mappers.utils import _group_by_labels
 
 
 def map_nodes(
@@ -59,25 +59,3 @@ def map_nodes(
         data_entities[node_name] = data_entity
 
     return data_entities
-
-
-def _group_by_labels(
-    nodes_map: Dict[str, list[NamedTuple]], namedtuple_func: namedtuple, items: list
-):
-    for node in items:
-        metadata: NamedTuple = namedtuple_func(*node)
-        node_name: str = _get_node_name(metadata.node_labels)
-        n = nodes_map.get(node_name)
-        if n:
-            n.append(metadata)
-        else:
-            nodes_map[node_name] = [metadata]
-
-
-def _get_node_name(node_labels):
-    _res = ""
-    for label in node_labels:
-        if _res != "":
-            _res += ":"
-        _res += label
-    return _res

@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 from odd_models.models import (
     DataEntity,
     DataEntityType,
@@ -8,6 +6,8 @@ from odd_models.models import (
     RelationshipType,
 )
 from oddrn_generator import Neo4jGenerator
+
+from odd_collector.adapters.neo4j.mappers.utils import _group_relationships, _get_node_name
 
 
 def map_relationships(
@@ -20,8 +20,8 @@ def map_relationships(
     grouped_relationships = _group_relationships(relationships)
 
     for relationship in grouped_relationships:
-        source_dataset_name = relationship[0][0]
-        target_dataset_name = relationship[2][0]
+        source_dataset_name = _get_node_name(relationship[0])
+        target_dataset_name = _get_node_name(relationship[2])
 
         source_dataset_oddrn = node_entities[source_dataset_name].oddrn
         target_dataset_oddrn = node_entities[target_dataset_name].oddrn
@@ -55,19 +55,3 @@ def map_relationships(
         data_entities.append(data_entity)
 
     return data_entities
-
-
-def _group_relationships(relationships: list) -> list:
-    # Group by (source_node, rel_type, target_node, sorted rel_properties)
-    grouped_data = defaultdict(lambda: [0, set()])
-
-    for row in relationships:
-        key = (tuple(row[0]), row[1], tuple(row[2]), frozenset(row[4]))
-        grouped_data[key][0] += row[3]
-        grouped_data[key][1].update(row[4])
-
-    result = [
-        [list(key[0]), key[1], list(key[2]), count, list(properties)]
-        for key, (count, properties) in grouped_data.items()
-    ]
-    return result
