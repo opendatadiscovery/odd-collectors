@@ -11,12 +11,12 @@ _data_set_metadata_excluded_keys: set = {"node_labels"}
 
 _node_metadata: str = "node_labels, nodes_count, properties"
 
-_relation_metadata: str = "node_labels, relation_type, relations_count"
+_relationship_metadata: str = "source_node_labels, relation_type, target_node_labels, relations_count, relation_properties"
 
 _field_metadata: str = "field_name, data_type"
 
 NodeMetadata = namedtuple("NodeMetadata", _node_metadata)
 
-RelationMetadata = namedtuple("RelationMetadata", _relation_metadata)
+RelationshipMetadata = namedtuple("RelationshipMetadata", _relationship_metadata)
 
 FieldMetadata = namedtuple("FieldMetadata", _field_metadata)
