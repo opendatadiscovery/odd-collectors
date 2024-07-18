@@ -14,10 +14,6 @@ _find_all_nodes: str = (
     "MATCH (n) return distinct labels(n) as labels, count(*), keys(n) order by labels"
 )
 
-_find_all_nodes_relations: str = (
-    "MATCH (n)-[r]-() RETURN distinct labels(n), type(r), count(*)"
-)
-
 _find_all_relationships: str = """
     MATCH (s)-[r]->(t)
     RETURN DISTINCT
@@ -66,19 +62,12 @@ class Adapter(BaseAdapter):
         with self.__connect() as connect:
             return {
                 "nodes": self.__execute(connect, _find_all_nodes),
-                "relations": self.__execute(connect, _find_all_nodes_relations),
-                # TODO: to remove "relations" duplication logic
                 "relationships": self.__execute(connect, _find_all_relationships),
             }
 
     @property
     def _nodes(self) -> list:
         return self._get_metadata()["nodes"]
-
-    # TODO: remove this as a duplication
-    @property
-    def _relations(self) -> list:
-        return self._get_metadata()["relations"]
 
     @property
     def _relationships(self) -> list:
@@ -87,8 +76,8 @@ class Adapter(BaseAdapter):
     @property
     def _node_entities(self) -> dict[str, DataEntity]:
         try:
-            nodes, relations = self._nodes, self._relations
-            return map_nodes(self.generator, nodes, relations)
+            nodes, relationships = self._nodes, self._relationships
+            return map_nodes(self.generator, nodes, relationships)
         except Exception as e:
             logging.error("Failed to load metadata for nodes")
             logging.exception(e)

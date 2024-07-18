@@ -1,6 +1,6 @@
 from odd_collector.adapters.neo4j.mappers.utils import (
+    _aggregate_relationships,
     _get_node_name,
-    _group_relationships,
 )
 from odd_models.models import (
     DataEntity,
@@ -19,9 +19,9 @@ def map_relationships(
 ) -> list[DataEntity]:
     data_entities = []
 
-    grouped_relationships = _group_relationships(relationships)
+    aggregated_relationships = _aggregate_relationships(relationships)
 
-    for relationship in grouped_relationships:
+    for relationship in aggregated_relationships:
         source_dataset_name = _get_node_name(relationship[0])
         target_dataset_name = _get_node_name(relationship[2])
 
@@ -47,7 +47,7 @@ def map_relationships(
                 details=GraphRelationship(
                     is_directed=True,
                     relationship_entity_name="GraphRelationship",
-                    attributes={
+                    attributes={  # we can not get type info from response w/o additional APOC library
                         property_name: "UNKNOWN" for property_name in relationship[4]
                     },
                 ),
