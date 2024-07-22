@@ -10,4 +10,4 @@ plugins:
     password: password
     host: host
     port: 0000
-    driver: "{ODBC Driver 17s for SQL Server}"
+    driver: "{ODBC Driver 17 for SQL Server}"
