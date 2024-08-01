@@ -27,7 +27,7 @@ class PlatformApi:
 
     async def register_datasource(self, data_source_list: DataSourceList):
         async with ClientSession(
-            connector=TCPConnector(verify_ssl=self.verify_ssl),
+            connector=TCPConnector(ssl=self.verify_ssl),
             timeout=self.timeout,
         ) as session:
             try:
@@ -45,7 +45,7 @@ class PlatformApi:
 
     async def ingest_data(self, data_entity_list: DataEntityList):
         async with ClientSession(
-            connector=TCPConnector(verify_ssl=self.verify_ssl),
+            connector=TCPConnector(ssl=self.verify_ssl),
             timeout=self.timeout,
         ) as session:
             try:
