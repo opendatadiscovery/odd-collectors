@@ -26,15 +26,13 @@ class PlatformApi:
         self.timeout = ClientTimeout(total=connection_timeout_seconds)
 
     async def register_datasource(self, data_source_list: DataSourceList):
-        async with ClientSession(
-            connector=TCPConnector(ssl=self.verify_ssl),
-            timeout=self.timeout,
-        ) as session:
+        async with ClientSession(timeout=self.timeout) as session:
             try:
                 response = await session.post(
                     url=f"{self.platform_url}/ingestion/datasources",
                     data=data_source_list.json(),
                     headers=self.headers,
+                    ssl=self.verify_ssl,
                 )
                 response.raise_for_status()
                 return response
@@ -44,10 +42,7 @@ class PlatformApi:
                 )
 
     async def ingest_data(self, data_entity_list: DataEntityList):
-        async with ClientSession(
-            connector=TCPConnector(ssl=self.verify_ssl),
-            timeout=self.timeout,
-        ) as session:
+        async with ClientSession(timeout=self.timeout) as session:
             try:
                 json_start = timer()
                 data = data_entity_list.json()
@@ -60,6 +55,7 @@ class PlatformApi:
                     url=f"{self.platform_url}/ingestion/entities",
                     data=data,
                     headers=self.headers,
+                    ssl=self.verify_ssl,
                 )
                 response.raise_for_status()
                 ingest_end = timer()
