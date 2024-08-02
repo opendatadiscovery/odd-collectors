@@ -10,7 +10,6 @@ from typing import List, Optional, Union
 import tzlocal
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from odd_collector_sdk.api.datasource_api import PlatformApi
-from odd_collector_sdk.api.http_client import HttpClient
 from odd_collector_sdk.domain.adapter import Adapter
 from odd_collector_sdk.domain.collector_config_loader import CollectorConfigLoader
 from odd_collector_sdk.errors import PlatformApiError
@@ -64,12 +63,10 @@ class Collector:
             f"{root_package}.{plugins_package}", self.config.plugins
         )
         self._api = PlatformApi(
-            http_client=HttpClient(
-                token=self.config.token,
-                connection_timeout_seconds=self.config.connection_timeout_seconds,
-                verify_ssl=self.config.verify_ssl,
-            ),
+            token=self.config.token,
             platform_url=self.config.platform_host_url,
+            connection_timeout_seconds=self.config.connection_timeout_seconds,
+            verify_ssl=self.config.verify_ssl,
         )
 
     def start_polling(self):
