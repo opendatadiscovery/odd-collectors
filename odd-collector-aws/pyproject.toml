@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "odd-collector-aws"
-version = "0.1.16"
+version = "0.1.17"
 description = "ODD Collector for AWS"
 license = "Apache-2.0"
 authors = ["Open Data Discovery <pypi@opendatadiscovery.org>"]
@@ -16,7 +16,7 @@ pyhumps = "^3.8.0"
 pyarrow = "15.0.0"
 humps = "^0.2.2"
 flatdict = "^4.0.1"
-odd-collector-sdk = "^0.3.58"
+odd-collector-sdk = "^0.3.59"
 lark-parser = "^0.12.0"
 deltalake = "^0.17.4"
 more-itertools = "^10.2.0"
