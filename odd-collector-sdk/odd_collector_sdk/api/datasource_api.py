@@ -3,7 +3,7 @@ import sys
 from datetime import timedelta
 from timeit import default_timer as timer
 
-from aiohttp import ClientSession, ClientTimeout, TCPConnector
+from aiohttp import ClientSession, ClientTimeout
 from odd_models.models import DataEntityList, DataSourceList
 
 from ..logger import logger

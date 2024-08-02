@@ -1,8 +1,7 @@
 import pytest
 from aioresponses import aioresponses
-from odd_models.models import DataEntityList, DataSourceList
-
 from odd_collector_sdk.api.datasource_api import PlatformApi
+from odd_models.models import DataEntityList, DataSourceList
 
 
 @pytest.fixture
@@ -22,7 +21,9 @@ def data_source_list():
 
 @pytest.fixture
 def data_entity_list():
-    return DataEntityList(data_source_oddrn="//test_datasource/host/localhost", items=[])
+    return DataEntityList(
+        data_source_oddrn="//test_datasource/host/localhost", items=[]
+    )
 
 
 @pytest.mark.asyncio
