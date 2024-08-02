@@ -2949,13 +2949,13 @@ files = [
 
 [[package]]
 name = "odd-collector-sdk"
-version = "0.3.58"
+version = "0.3.59"
 description = "ODD Collector"
 optional = false
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "odd_collector_sdk-0.3.58-py3-none-any.whl", hash = "sha256:bcc6a7e7bf9908e52e50f9fbc15498ef97bb1946f38f46dead5d656c3ae39ecc"},
-    {file = "odd_collector_sdk-0.3.58.tar.gz", hash = "sha256:b25272ca5d8291676d2bc7a423de5a4b7f416d744268d5ddbe8410c3cb1f945b"},
+    {file = "odd_collector_sdk-0.3.59-py3-none-any.whl", hash = "sha256:1893ef6866d300cc82b559a0a0843510c2030669c2badfb4ffca9fbf02e8f33d"},
+    {file = "odd_collector_sdk-0.3.59.tar.gz", hash = "sha256:1d126d9511451261b55318f8d4bc07335955872b52c2b1f6ce587072a19dfa37"},
 ]
 
 [package.dependencies]
@@ -5726,4 +5726,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "dac1547fcd95c0093a86fbe134249818e61a077af785ea2ded5b8364234837fc"
+content-hash = "f010b6341fd00d233b02fa2e88d8bed0fb9db4c16fb10107ebafde0f4f973675"
