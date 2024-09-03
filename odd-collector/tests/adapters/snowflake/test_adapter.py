@@ -1,17 +1,17 @@
 import datetime
 from typing import Optional
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
+from funcy import filter, first, lfilter
 from odd_collector.adapters.snowflake.adapter import Adapter
 from odd_collector.adapters.snowflake.domain import Column, Connection, Table, View
-from odd_collector.adapters.snowflake.domain.pipe import RawPipe, RawStage
 from odd_collector.adapters.snowflake.domain.fk_constraint import ForeignKeyConstraint
+from odd_collector.adapters.snowflake.domain.pipe import RawPipe, RawStage
 from odd_collector.adapters.snowflake.domain.unique_constraint import UniqueConstraint
 from odd_collector.domain.plugin import SnowflakePlugin
 from odd_models.models import DataEntity, DataEntityType
 from pydantic import SecretStr
-from funcy import filter, first, lfilter
-
 
 DATABASE_NAME = "TEST_DB"
 SCHEMA = "PUBLIC"
@@ -45,13 +45,13 @@ def raw_pipes() -> list[RawPipe]:
             pipe_catalog=DATABASE_NAME,
             pipe_schema=SCHEMA,
             pipe_name=FIRST_PIPE,
-            definition=f"COPY INTO {TABLE_NAME}\nFROM @my_internal_stage\nFILE_FORMAT = (TYPE = 'CSV')"
+            definition=f"COPY INTO {TABLE_NAME}\nFROM @my_internal_stage\nFILE_FORMAT = (TYPE = 'CSV')",
         ),
         RawPipe(
             pipe_catalog=DATABASE_NAME,
             pipe_schema=SCHEMA,
             pipe_name=SECOND_PIPE,
-            definition=f"COPY INTO {TABLE_NAME}\nFROM @my_internal_stage\nFILE_FORMAT = (TYPE = 'JSON')\nMATCH_BY_COLUMN_NAME = CASE_INSENSITIVE"
+            definition=f"COPY INTO {TABLE_NAME}\nFROM @my_internal_stage\nFILE_FORMAT = (TYPE = 'JSON')\nMATCH_BY_COLUMN_NAME = CASE_INSENSITIVE",
         ),
     ]
 
@@ -64,7 +64,7 @@ def raw_stages() -> list[RawStage]:
             stage_catalog=DATABASE_NAME,
             stage_schema=SCHEMA,
             stage_url=None,
-            stage_type="Internal Named"
+            stage_type="Internal Named",
         )
     ]
 
@@ -277,9 +277,7 @@ def _find_tables(seq: list[DataEntity]) -> list[DataEntity]:
 
 
 def _find_pipes(seq: list[DataEntity]) -> list[DataEntity]:
-    return lfilter(
-        lambda entity: entity.name in (FIRST_PIPE, SECOND_PIPE), seq
-    )
+    return lfilter(lambda entity: entity.name in (FIRST_PIPE, SECOND_PIPE), seq)
 
 
 @patch("odd_collector.adapters.snowflake.adapter.SnowflakeClient")
