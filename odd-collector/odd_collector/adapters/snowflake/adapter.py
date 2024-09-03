@@ -77,7 +77,7 @@ class Adapter(BaseAdapter):
             pipes.extend(
                 Pipe(
                     catalog=raw_pipe.pipe_catalog,
-                    schema=raw_pipe.pipe_schema,
+                    schema_name=raw_pipe.pipe_schema,
                     name=raw_pipe.pipe_name,
                     definition=raw_pipe.definition,
                     stage_url=raw_stage.stage_url,

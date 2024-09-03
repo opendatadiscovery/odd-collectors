@@ -20,7 +20,7 @@ def map_schemas(
         grouped[table.table_catalog][table.table_schema].add(entity.oddrn)
 
     for pipe, entity in pipe_entities:
-        grouped[pipe.catalog][pipe.schema].add(entity.oddrn)
+        grouped[pipe.catalog][pipe.schema_name].add(entity.oddrn)
 
     entities = []
     for catalog, schemas in grouped.items():
