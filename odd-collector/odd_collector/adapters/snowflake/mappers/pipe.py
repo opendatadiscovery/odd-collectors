@@ -1,20 +1,21 @@
-import logging
 from abc import abstractmethod
 from copy import deepcopy
 from typing import List
 
 import sqlparse
 from odd_collector.adapters.snowflake.domain import Pipe
+from odd_collector.adapters.snowflake.logger import logger
 from odd_models.models import DataEntity, DataEntityType, DataTransformer
 from oddrn_generator import SnowflakeGenerator
 from oddrn_generator.generators import S3Generator
 
 from .view import _map_connection
 
-logger = logging.getLogger("Snowpipe")
-
 
 def map_pipe(pipe: Pipe, generator: SnowflakeGenerator) -> DataEntity:
+    full_pipe_name = f"{pipe.schema_name}.{pipe.name}"
+    logger.debug(f"Mapping pipe: {full_pipe_name}")
+
     generator = deepcopy(generator)
     generator.set_oddrn_paths(schemas=pipe.schema_name, pipes=pipe.name)
 

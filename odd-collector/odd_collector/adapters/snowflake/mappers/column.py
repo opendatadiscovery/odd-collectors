@@ -2,6 +2,7 @@ from copy import deepcopy
 from typing import Dict, List
 
 from odd_collector.adapters.snowflake.domain import Column
+from odd_collector.adapters.snowflake.logger import logger
 from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import SnowflakeGenerator
 
@@ -52,6 +53,10 @@ def map_columns(
     result: List[DataSetField] = []
 
     for column in columns:
+        logger.debug(
+            f"Mapping column from table {column.table_schema}.{column.table_name}: {column.column_name}"
+        )
+
         column_oddrn_key = f"{parent_path.value}_columns"
         generator_params = {column_oddrn_key: column.column_name}
         generator.set_oddrn_paths(**generator_params)

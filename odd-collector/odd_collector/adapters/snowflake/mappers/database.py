@@ -2,6 +2,7 @@ from copy import deepcopy
 from typing import List
 
 from funcy import lpluck_attr
+from odd_collector.adapters.snowflake.logger import logger
 from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
 from oddrn_generator import SnowflakeGenerator
 
@@ -11,6 +12,8 @@ def map_database(
     schemas_entities: List[DataEntity],
     generator: SnowflakeGenerator,
 ) -> DataEntity:
+    logger.debug(f"Mapping database: {database_name}")
+
     generator = deepcopy(generator)
     oddrn = generator.get_oddrn_by_path("databases", database_name)
     return DataEntity(

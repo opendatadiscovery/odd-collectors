@@ -1,6 +1,7 @@
 from collections import defaultdict
 from copy import deepcopy
 
+from odd_collector.adapters.snowflake.logger import logger
 from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
 from oddrn_generator import SnowflakeGenerator
 
@@ -25,6 +26,8 @@ def map_schemas(
     entities = []
     for catalog, schemas in grouped.items():
         for schema, oddrns in schemas.items():
+            logger.debug(f"Mapping schema: {schema}")
+
             generator.set_oddrn_paths(databases=catalog, schemas=schema)
             oddrn = generator.get_oddrn_by_path("schemas")
             entity = DataEntity(

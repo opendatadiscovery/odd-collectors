@@ -15,6 +15,9 @@ from .metadata import map_metadata
 
 
 def map_view(view: View, generator: SnowflakeGenerator) -> DataEntity:
+    full_view_name = f"{view.table_schema}.{view.table_name}"
+    logger.debug(f"Mapping view: {full_view_name}")
+
     generator = deepcopy(generator)
     generator.set_oddrn_paths(schemas=view.table_schema, views=view.table_name)
 
@@ -22,7 +25,9 @@ def map_view(view: View, generator: SnowflakeGenerator) -> DataEntity:
     try:
         sql = sqlparse.format(view.view_definition)
     except Exception:
-        logger.warning(f"Couldn't parse view definition {view.view_definition}")
+        logger.warning(
+            f"Couldn't parse {full_view_name} view definition: {view.view_definition}"
+        )
 
     return DataEntity(
         oddrn=generator.get_oddrn_by_path("views"),
