@@ -70,14 +70,14 @@ class Adapter(BaseAdapter):
     def _unique_constraints(self) -> list[UniqueConstraint]:
         return self._get_metadata()["unique_constraints"]
 
-    @property
-    def _pipe_entities(self) -> list[tuple[Pipe, DataEntity]]:
+    @ttl_cache(ttl=CACHE_TTL)
+    def get_pipe_entities(self) -> list[tuple[Pipe, DataEntity]]:
         pipes: list[Pipe] = []
         for raw_pipe in self._raw_pipes:
             pipes.extend(
                 Pipe(
                     catalog=raw_pipe.pipe_catalog,
-                    schema=raw_pipe.pipe_schema,
+                    schema_name=raw_pipe.pipe_schema,
                     name=raw_pipe.pipe_name,
                     definition=raw_pipe.definition,
                     stage_url=raw_stage.stage_url,
@@ -89,8 +89,8 @@ class Adapter(BaseAdapter):
             )
         return [(pipe, map_pipe(pipe, self.generator)) for pipe in pipes]
 
-    @property
-    def _table_entities(self) -> list[tuple[Table, DataEntity]]:
+    @ttl_cache(ttl=CACHE_TTL)
+    def get_table_entities(self) -> list[tuple[Table, DataEntity]]:
         result = []
 
         for table in self._tables:
@@ -100,32 +100,36 @@ class Adapter(BaseAdapter):
                 result.append((table, map_table(table, self.generator)))
         return result
 
-    @property
-    def _relationship_entities(self) -> list[DataEntity]:
+    @ttl_cache(ttl=CACHE_TTL)
+    def get_relationship_entities(self) -> list[DataEntity]:
         return DataEntityRelationshipsMapper(
             oddrn_generator=self.generator,
             unique_constraints=self._unique_constraints,
-            table_entities_pair=self._table_entities,
+            table_entities_pair=self.get_table_entities(),
         ).map(self._fk_constraints)
 
-    @property
-    def _schema_entities(self) -> list[DataEntity]:
-        return map_schemas(self._table_entities, self._pipe_entities, self.generator)
+    @ttl_cache(ttl=CACHE_TTL)
+    def get_schema_entities(self) -> list[DataEntity]:
+        return map_schemas(
+            self.get_table_entities(), self.get_pipe_entities(), self.generator
+        )
 
-    @property
-    def _database_entity(self) -> DataEntity:
-        return map_database(self._database_name, self._schema_entities, self.generator)
+    @ttl_cache(ttl=CACHE_TTL)
+    def get_database_entity(self) -> DataEntity:
+        return map_database(
+            self._database_name, self.get_schema_entities(), self.generator
+        )
 
     def get_data_entity_list(self) -> DataEntityList:
         try:
             return DataEntityList(
                 data_source_oddrn=self.get_data_source_oddrn(),
                 items=[
-                    *[te[1] for te in self._table_entities],
-                    *self._schema_entities,
-                    self._database_entity,
-                    *[pe[1] for pe in self._pipe_entities],
-                    *self._relationship_entities,
+                    *[te[1] for te in self.get_table_entities()],
+                    *self.get_schema_entities(),
+                    self.get_database_entity(),
+                    *[pe[1] for pe in self.get_pipe_entities()],
+                    *self.get_relationship_entities(),
                 ],
             )
         except Exception as e:

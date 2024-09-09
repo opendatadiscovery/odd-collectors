@@ -3,6 +3,7 @@ from odd_collector.adapters.snowflake.domain import (
     Table,
     UniqueConstraint,
 )
+from odd_collector.adapters.snowflake.logger import logger
 from odd_collector.adapters.snowflake.mappers.relationships.relationship_mapper import (
     RelationshipMapper,
 )
@@ -34,6 +35,11 @@ class DataEntityRelationshipsMapper:
         table_name = fk_cons.table_name
         referenced_schema_name = fk_cons.referenced_schema_name
         referenced_table_name = fk_cons.referenced_table_name
+
+        logger.debug(
+            f"Mapping relationship referencing to the table {referenced_schema_name}.{referenced_table_name}: "
+            f"{fk_cons.constraint_name}"
+        )
 
         self.oddrn_generator.set_oddrn_paths(
             schemas=schema_name,

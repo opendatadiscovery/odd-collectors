@@ -1,6 +1,7 @@
 from copy import deepcopy
 
 from odd_collector.adapters.snowflake.domain import Table
+from odd_collector.adapters.snowflake.logger import logger
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import SnowflakeGenerator
 
@@ -11,6 +12,9 @@ from .metadata import map_metadata
 
 
 def map_table(table: Table, generator: SnowflakeGenerator) -> DataEntity:
+    full_table_name = f"{table.table_schema}.{table.table_name}"
+    logger.debug(f"Mapping table: {full_table_name}")
+
     generator = deepcopy(generator)
     generator.set_oddrn_paths(schemas=table.table_schema, tables=table.table_name)
 

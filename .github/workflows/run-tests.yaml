@@ -35,7 +35,10 @@ jobs:
         unixodbc-dev openssl libsasl2-dev
         poetry install
 
-    # for now, only tests for PostgreSQL adapter are being invoked, others need to be checked and updated for future use
+    # for now, only tests for PostgreSQL and Snowflake adapters are being invoked,
+    # others need to be checked and updated for future use
     - name: Run tests
       working-directory: odd-collector
-      run: poetry run pytest tests/integration/test_postgres.py -v
+      run: |
+        poetry run pytest tests/integration/test_postgres.py -v
+        poetry run pytest tests/adapters/snowflake -v
