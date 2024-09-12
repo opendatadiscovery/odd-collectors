@@ -73,7 +73,9 @@ def map_tables(
     data_entities: dict[str, tuple[MetadataTable, DataEntity]] = {}
 
     for table in tables:
-        logger.debug(f"Map table {table.table_name} {table.base.table_type}")
+        logger.debug(
+            f"Mapping table: {table.schema_name}.{table.table_name}, {table.base.table_type}"
+        )
 
         if table.base.table_type == "BASE TABLE":
             entity = map_table(generator, table)

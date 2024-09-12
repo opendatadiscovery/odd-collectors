@@ -8,6 +8,7 @@ from odd_collector.adapters.redshift.mappers.metadata import (
     MetadataSchemas,
     MetadataTables,
 )
+from odd_collector.adapters.redshift.mappers.utils import log_metadata_debug
 from odd_collector.domain.plugin import RedshiftPlugin
 from psycopg2 import sql
 from psycopg2.extensions import AsIs
@@ -57,7 +58,9 @@ class RedshiftRepository(AbstractRepository):
         )
 
     def get_primary_keys(self) -> list[tuple]:
-        return self.__execute(self.primary_keys_query)
+        result = {"primary_keys": self.__execute(self.primary_keys_query)}
+        log_metadata_debug(result)
+        return result["primary_keys"]
 
     def __execute(self, query: Union[str, sql.Composed]) -> list[tuple]:
         with self.__redshift_connector.connection() as cursor:

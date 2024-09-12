@@ -1,6 +1,7 @@
 from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import RedshiftGenerator
 
+from ..logger import logger
 from . import (
     _data_set_field_metadata_excluded_keys_redshift,
     _data_set_field_metadata_schema_url_redshift,
@@ -17,6 +18,10 @@ def map_column(
     is_primary: bool = False,
 ) -> DataSetField:
     name: str = mcolumn.base.column_name
+
+    logger.debug(
+        f"Mapping column: {mcolumn.schema_name}.{name}, {mcolumn.base.data_type}"
+    )
 
     dsf: DataSetField = DataSetField(
         oddrn=oddrn_generator.get_oddrn_by_path(f"{parent_oddrn_path}_columns", name),
