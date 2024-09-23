@@ -26,13 +26,26 @@ class Columns(UserList):
 
 TABLES_QUERY: str = """
 SELECT
-       table_catalog,
-       table_schema,
-       table_name,
-       table_type
-FROM information_schema.tables
-WHERE table_type != 'VIEW'
-ORDER BY table_catalog, table_schema, table_name;"""
+    t.table_catalog,
+    t.table_schema,
+    t.table_name,
+    t.table_type,
+    SUM(p.rows) AS table_rows
+FROM information_schema.tables t
+JOIN sys.schemas s ON t.table_schema = s.name
+JOIN sys.objects o ON t.table_name = o.name AND o.schema_id = s.schema_id
+JOIN sys.partitions p ON o.object_id = p.object_id
+WHERE t.table_type = 'BASE TABLE' AND p.index_id IN (0, 1) 
+GROUP BY 
+    t.table_catalog,
+    t.table_schema,
+    t.table_name,
+    t.table_type
+ORDER BY 
+    t.table_catalog, 
+    t.table_schema, 
+    t.table_name;
+"""
 
 COLUMNS_QUERY: str = """
 WITH primary_keys as (
@@ -41,6 +54,12 @@ WITH primary_keys as (
     INNER JOIN information_schema.key_column_usage AS KU
     ON TC.constraint_name = KU.constraint_name
     AND TC.constraint_type  = 'PRIMARY KEY'
+),
+foreign_keys AS (
+    SELECT CU.table_catalog, CU.table_schema, CU.table_name, CU.column_name
+    FROM information_schema.referential_constraints AS RC
+    INNER JOIN information_schema.constraint_column_usage AS CU
+    ON RC.constraint_name = CU.constraint_name
 )
 SELECT
     C.table_catalog,
@@ -54,6 +73,10 @@ SELECT
         WHEN PK.column_name IS NOT NULL THEN 1
     ELSE 0
     END AS is_primary_key,
+    CASE
+        WHEN FK.column_name IS NOT NULL THEN 1
+        ELSE 0
+    END AS is_foreign_key,
     C.data_type,
     C.character_maximum_length,
     C.character_octet_length,
@@ -76,6 +99,11 @@ ON  C.table_catalog = PK.table_catalog
 AND C.table_schema = PK.table_schema
 AND C.table_name = PK.table_name
 AND C.column_name = PK.column_name
+LEFT JOIN foreign_keys AS FK
+    ON C.table_catalog = FK.table_catalog
+    AND C.table_schema = FK.table_schema
+    AND C.table_name = FK.table_name
+    AND C.column_name = FK.column_name
 ORDER BY C.table_catalog, C.table_schema, C.table_name, C.ordinal_position
 """
 

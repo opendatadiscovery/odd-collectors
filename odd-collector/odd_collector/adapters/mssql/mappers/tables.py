@@ -18,7 +18,9 @@ def map_table(table: Table, generator: MssqlGenerator):
     oddrn = generator.get_oddrn_by_path("tables")
 
     map_col = partial(map_column, oddrn_generator=generator, parent_oddrn_path="tables")
-    dataset = DataSet(field_list=lmap(map_col, table.columns))
+    dataset = DataSet(
+        rows_number=table.table_rows, field_list=lmap(map_col, table.columns)
+    )
 
     return DataEntity(
         oddrn=oddrn,

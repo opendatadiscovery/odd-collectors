@@ -1,4 +1,5 @@
 from dataclasses import asdict, dataclass, field
+from typing import Optional
 
 from funcy import omit
 from odd_collector.adapters.mssql.models.column import Column
@@ -11,6 +12,7 @@ class Table:
     table_schema: str
     table_name: str
     table_type: str
+    table_rows: Optional[int] = None
     columns: list[Column] = field(default_factory=list)
 
     @property

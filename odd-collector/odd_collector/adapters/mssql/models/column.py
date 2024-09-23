@@ -14,6 +14,7 @@ class Column:
     column_default: str
     is_nullable: bool
     is_primary_key: bool
+    is_foreign_key: bool
     data_type: str
     character_maximum_length: int
     character_octet_length: int
@@ -37,3 +38,4 @@ class Column:
 
     def __post_init__(self):
         self.is_primary_key = bool(self.is_primary_key)
+        self.is_foreign_key = bool(self.is_foreign_key)
