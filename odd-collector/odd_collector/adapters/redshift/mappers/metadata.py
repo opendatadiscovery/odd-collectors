@@ -15,6 +15,7 @@ from odd_collector.adapters.redshift.mappers.models import (
     MetadataTableRedshift,
     RedshiftAdapterMetadata,
 )
+from odd_collector.adapters.redshift.mappers.utils import log_metadata_debug
 from odd_collector_sdk.utils.metadata import HasMetadata
 from odd_models.models import MetadataExtension
 from sqllineage.runner import LineageRunner
@@ -131,6 +132,13 @@ class MetadataSchemas:
         redshift_index: int = 0
         external_index: int = 0
 
+        schemas_debug_dict = {
+            "schemas_base": schemas_base,
+            "schemas_redshift": schemas_redshift,
+            "schemas_external": schemas_external,
+        }
+        log_metadata_debug(schemas_debug_dict)
+
         for schema in schemas_base:
             m: MetadataSchema = MetadataSchema()
             ms.append(m)
@@ -179,6 +187,15 @@ class MetadataTables:
         redshift_index: int = 0
         external_index: int = 0
         info_index: int = 0
+
+        tables_debug_dict = {
+            "tables_base": tables_base,
+            "tables_all": tables_all,
+            "tables_redshift": tables_redshift,
+            "tables_external": tables_external,
+            "tables_info": tables_info,
+        }
+        log_metadata_debug(tables_debug_dict)
 
         for table in tables_base:
             m: MetadataTable = MetadataTable()
@@ -247,6 +264,13 @@ class MetadataColumns:
         ms: list[MetadataColumn] = []
         redshift_index: int = 0
         external_index: int = 0
+
+        columns_debug_dict = {
+            "columns": columns,
+            "columns_redshift": columns_redshift,
+            "columns_external": columns_external,
+        }
+        log_metadata_debug(columns_debug_dict)
 
         for column in columns:
             m: MetadataColumn = MetadataColumn()
