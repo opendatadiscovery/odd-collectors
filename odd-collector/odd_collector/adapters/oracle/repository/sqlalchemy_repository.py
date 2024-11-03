@@ -3,9 +3,7 @@ from typing import Any, Dict, Iterable, List
 
 import oracledb
 import sqlalchemy as db
-from funcy import lmap
 from odd_collector.domain.plugin import OraclePlugin
-from sqlalchemy.util import FacadeDict
 
 from ..domain import Column, Dependency, DependencyType, Table, View
 from .base_repository import Repository
@@ -19,8 +17,9 @@ def create_column(data: Dict[str, Any]) -> Column:
         name=data.get("name"),
         type=data["type"],
         is_literal=data.get("is_literal"),
-        primary_key=data.get("primary_key"),
-        nullable=data.get("nullable"),
+        is_primary_key=data.get("primary_key", False),
+        is_foreign_key=data.get("foreign_key", False),
+        is_nullable=data.get("nullable", False),
         default=data.get("default"),
         index=data.get("index"),
         unique=data.get("unique"),
@@ -99,7 +98,24 @@ class SqlAlchemyRepository(Repository):
         return self._inspector.get_table_comment(table_name).get("text")
 
     def _get_columns(self, table_name: str) -> List[Column]:
-        return lmap(create_column, self._inspector.get_columns(table_name))
+        primary_keys = set(
+            self._inspector.get_pk_constraint(table_name).get("constrained_columns", [])
+        )
+        foreign_keys_map = {
+            fk["constrained_columns"][0]
+            for fk in self._inspector.get_foreign_keys(table_name)
+        }
+
+        return [
+            create_column(
+                {
+                    **col_data,
+                    "primary_key": col_data["name"] in primary_keys,
+                    "foreign_key": col_data["name"] in foreign_keys_map,
+                }
+            )
+            for col_data in self._inspector.get_columns(table_name)
+        ]
 
     def _create_engine(self) -> db.engine.Engine:
         config = self._config
