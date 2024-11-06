@@ -37,9 +37,8 @@ class PlatformApi:
                 response.raise_for_status()
                 return response
             except Exception as e:
-                raise Exception(
-                    f"Platform response: {self._get_platform_response_content(response)}.\n Exception message: {str(e)}"
-                )
+                response = response if "response" in locals() else None
+                raise Exception(self._get_exception_message(e, response))
 
     async def ingest_data(self, data_entity_list: DataEntityList):
         async with ClientSession(timeout=self.timeout) as session:
@@ -65,10 +64,17 @@ class PlatformApi:
                 )
                 return response
             except Exception as e:
-                raise Exception(
-                    f"Platform response: {self._get_platform_response_content(response)}.\n Exception message: {str(e)}"
-                )
+                response = response if "response" in locals() else None
+                raise Exception(self._get_exception_message(e, response))
 
     @staticmethod
-    def _get_platform_response_content(response):
-        return json.loads(str(response.content._buffer[0].decode("utf-8")))
+    def _get_exception_message(e, response):
+        if response:
+            platform_response = json.loads(str(response.content._buffer[0].decode("utf-8")))
+            error_msg = f"Platform response: {platform_response}.\n Exception message: {str(e)}"
+            return error_msg
+        error_msg = (
+            "No response from platform has been sent. "
+            "Possible reasons: platform is not running, incorrect <platform_host_url> configuration."
+        )
+        return error_msg
