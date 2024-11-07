@@ -5,6 +5,7 @@ from oddrn_generator import OracleGenerator
 
 from ..domain import Dependency, DependencyType, View
 from .column import map_column
+from .metadata import dataset_metadata
 
 
 def map_view(generator: OracleGenerator, view: View) -> DataEntity:
@@ -15,6 +16,7 @@ def map_view(generator: OracleGenerator, view: View) -> DataEntity:
         name=view.name,
         type=DataEntityType.VIEW,
         description=view.description,
+        metadata=[dataset_metadata(entity=view)],
         dataset=DataSet(
             field_list=[
                 map_column(generator, "views_columns", column)

@@ -21,3 +21,7 @@ class View:
         return {
             "view_definition": sql_format(self.view_definition),
         }
+
+    @property
+    def odd_metadata(self) -> dict[str, str]:
+        return {}
