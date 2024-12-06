@@ -30,7 +30,7 @@ class PlatformApi:
             try:
                 response = await session.post(
                     url=f"{self.platform_url}/ingestion/datasources",
-                    data=data_source_list.json(),
+                    data=data_source_list.model_dump_json(),
                     headers=self.headers,
                     ssl=self.verify_ssl,
                 )
@@ -44,7 +44,7 @@ class PlatformApi:
         async with ClientSession(timeout=self.timeout) as session:
             try:
                 json_start = timer()
-                data = data_entity_list.json()
+                data = data_entity_list.model_dump_json()
                 logger.debug(
                     f"Encoded size: {sys.getsizeof(data)/(1024*1024):.3f} MB, took: {timedelta(seconds=timer() - json_start)}"
                 )
