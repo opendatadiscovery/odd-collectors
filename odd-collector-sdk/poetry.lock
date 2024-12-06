@@ -823,13 +823,13 @@ test = ["pytest (>=7.2)", "pytest-cov (>=4.0)"]
 
 [[package]]
 name = "odd-models"
-version = "2.0.47"
+version = "2.0.51"
 description = "Open Data Discovery Models"
 optional = false
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "odd_models-2.0.47-py3-none-any.whl", hash = "sha256:fe93cfc1ddd99b9f6307040df5b9f1af862bde643efa43a6146e6f65cba11f5d"},
-    {file = "odd_models-2.0.47.tar.gz", hash = "sha256:c22ebaa216e9591e1cd1b1bb0f9d701f5dc36088b97f537cfef50a4853ae6060"},
+    {file = "odd_models-2.0.51-py3-none-any.whl", hash = "sha256:ac9c036ef16deae8d80bba4ae754bd527b4110589d9bdd087e1224098663a960"},
+    {file = "odd_models-2.0.51.tar.gz", hash = "sha256:c2829f7e94c59c853cde1d4796785ae863a35a194606c8d6f67c0bff955e236d"},
 ]
 
 [package.dependencies]
@@ -1710,4 +1710,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "eeff220e5d4011ee22bd4f58e1919d9cfc852c909311c582ed59c06bfd7207a5"
+content-hash = "5c099ab1270136540ecd0fd9284964d52d518c2699af0f60db87d34a6be99d44"
