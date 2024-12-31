@@ -5,6 +5,8 @@ from odd_models.models import DataEntityType
 
 from .logger import logger
 
+SSL_PORT = '443'
+
 
 class AirbyteApi:
     """
@@ -12,7 +14,8 @@ class AirbyteApi:
     """
 
     def __init__(self, host: str, port: str, user: str, password: str) -> None:
-        self.__base_url = f"http://{host}:{port}"
+        protocol = 'https' if port == SSL_PORT else 'http'
+        self.__base_url = f"{protocol}://{host}:{port}"
         self.__auth = aiohttp.BasicAuth(login=user, password=password)
 
     async def get_workspaces(self) -> List[str]:
