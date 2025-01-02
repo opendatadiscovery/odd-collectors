@@ -65,14 +65,16 @@ class OddPlatformApi:
     Class intended to retrieve data from ODD Platform API
     """
 
-    def __init__(self, host_url: str) -> None:
+    def __init__(self, host_url: str, api_auth_key: str = None) -> None:
         self.__base_url = host_url
+        self.__api_auth_key = api_auth_key
 
     async def get_data_entities_oddrns(self, deg_oddrn: str) -> List[Optional[str]]:
         url = "/ingestion/entities/degs/children"
         params = {"oddrn": deg_oddrn}
+        auth_headers = None if self.__api_auth_key is None else {"X-API-Key": self.__api_auth_key}
         entities = []
-        async with aiohttp.ClientSession(self.__base_url) as session:
+        async with aiohttp.ClientSession(self.__base_url, headers=auth_headers) as session:
             try:
                 async with session.get(url, params=params) as resp:
                     result = await resp.json()
