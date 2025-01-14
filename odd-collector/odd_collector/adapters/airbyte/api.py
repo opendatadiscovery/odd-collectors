@@ -5,7 +5,7 @@ from odd_models.models import DataEntityType
 
 from .logger import logger
 
-SSL_PORT = '443'
+SSL_PORT = "443"
 
 
 class AirbyteApi:
@@ -14,7 +14,7 @@ class AirbyteApi:
     """
 
     def __init__(self, host: str, port: str, user: str, password: str) -> None:
-        protocol = 'https' if port == SSL_PORT else 'http'
+        protocol = "https" if port == SSL_PORT else "http"
         self.__base_url = f"{protocol}://{host}:{port}"
         self.__auth = aiohttp.BasicAuth(login=user, password=password)
 
@@ -72,9 +72,13 @@ class OddPlatformApi:
     async def get_data_entities_oddrns(self, deg_oddrn: str) -> List[Optional[str]]:
         url = "/ingestion/entities/degs/children"
         params = {"oddrn": deg_oddrn}
-        auth_headers = None if self.__api_auth_key is None else {"X-API-Key": self.__api_auth_key}
+        auth_headers = (
+            None if self.__api_auth_key is None else {"X-API-Key": self.__api_auth_key}
+        )
         entities = []
-        async with aiohttp.ClientSession(self.__base_url, headers=auth_headers) as session:
+        async with aiohttp.ClientSession(
+            self.__base_url, headers=auth_headers
+        ) as session:
             try:
                 async with session.get(url, params=params) as resp:
                     result = await resp.json()
