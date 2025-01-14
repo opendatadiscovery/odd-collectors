@@ -13,6 +13,7 @@ def get_dataset_generator(
         "postgres": oddrn_generator.PostgresqlGenerator,
         "mysql": oddrn_generator.MysqlGenerator,
         "mssql": oddrn_generator.MssqlGenerator,
+        "microsoft sql server (mssql)": oddrn_generator.MssqlGenerator,
         "clickhouse": oddrn_generator.ClickHouseGenerator,
         "redshift": oddrn_generator.RedshiftGenerator,
         "mongodb": oddrn_generator.MongoGenerator,
@@ -45,10 +46,11 @@ def generate_dataset_oddrn(is_source: bool, dataset_meta: dict) -> Optional[str]
 
     if "host" in conn_conf.keys():
         host_settings = conn_conf.get("host")
-    elif "host" in conn_conf.get("instance_type").keys():
+    elif "host" in conn_conf.get("instance_type", {}).keys():
         host_settings = conn_conf.get("instance_type").get("host")
     else:
-        logger.warning("Couldn't find host setting in the connection metadata")
+        logger.warning("Couldn't find host setting in the connection metadata, setting to empty string")
+        host_settings = ""
 
     database = conn_conf.get("database")
     database = database.upper() if name == "snowflake" else database
