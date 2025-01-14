@@ -257,7 +257,7 @@ odd-collector-aws - `aws/1.0.0`, odd-collector-azure - `azure/1.0.0`, odd-collec
 6. On the right side click "Run workflow" and choose the appropriate tag (in "Use workflow from")
 and service you are releasing (in "Select service to build"). Example: you are releasing odd-collector,
 so tag should look like `generic/0.1.61` and service - `odd-collector`.
-7. Click "Run workflow" and wait untill the action completes. In the result the newer image will be
+7. Click "Run workflow" and wait until the action completes. In the result the newer image will be
 published, you can check it here: https://github.com/orgs/opendatadiscovery/packages.
 8. Now go back to the odd-collectors repo - https://github.com/opendatadiscovery/odd-collectors, go
 to the "Releases" on the right side and edit the release draft (if needed) that was created for you. Naming
