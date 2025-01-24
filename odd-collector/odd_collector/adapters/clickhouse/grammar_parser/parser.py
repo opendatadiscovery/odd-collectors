@@ -48,9 +48,7 @@ def traverse_tree(node) -> Union[ParseType, str, Field, None]:
         if node.data == "datetime64":
             # Check if there is a timezone (it is optional, so can be None)
             time_zone = node.children[2].value if len(node.children) > 2 else None
-            return DateTime64(
-                "DateTime64", node.children[0].value, time_zone
-            )
+            return DateTime64("DateTime64", node.children[0].value, time_zone)
         if node.data == "array":
             if len(node.children) != 1:
                 raise StructureError(

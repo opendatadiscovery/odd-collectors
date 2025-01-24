@@ -70,8 +70,12 @@ class PlatformApi:
     @staticmethod
     def _get_exception_message(e, response):
         if response:
-            platform_response = json.loads(str(response.content._buffer[0].decode("utf-8")))
-            error_msg = f"Platform response: {platform_response}.\n Exception message: {str(e)}"
+            platform_response = json.loads(
+                str(response.content._buffer[0].decode("utf-8"))
+            )
+            error_msg = (
+                f"Platform response: {platform_response}.\n Exception message: {str(e)}"
+            )
             return error_msg
         error_msg = (
             "No response from platform has been sent. "
