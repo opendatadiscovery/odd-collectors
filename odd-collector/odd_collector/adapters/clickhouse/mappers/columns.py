@@ -16,6 +16,7 @@ from ..grammar_parser.column_type import (
     Nested,
     ParseType,
     Tuple,
+    Nullable,
 )
 from ..grammar_parser.parser import parser, traverse_tree
 from ..logger import logger
@@ -124,6 +125,7 @@ def build_dataset_fields(
                 logger.debug(
                     f"Column {column_name} has ODD type {odd_type} and logical type {column_type.to_clickhouse_type()}"
                 )
+                is_nullable = True if isinstance(column_type, Nullable) else False
                 generated_dataset_fields.append(
                     DataSetField(
                         oddrn=oddrn,
@@ -131,7 +133,7 @@ def build_dataset_fields(
                         type=DataSetFieldType(
                             type=odd_type,
                             logical_type=column_type.to_clickhouse_type(),
-                            is_nullable=False,
+                            is_nullable=is_nullable,
                         ),
                         owner=None,
                         parent_field_oddrn=parent_oddrn,
@@ -165,5 +167,7 @@ def type_to_oddrn_type(column_type: ParseType) -> Type:
         return Type.TYPE_STRUCT
     elif isinstance(column_type, NamedTuple):
         return Type.TYPE_STRUCT
+    # TODO: to handle type for Nullable.
+    #  Instead of Type.TYPE_UNKNOWN choose it basing on column_type.type_name.type_name
     else:
         return Type.TYPE_UNKNOWN

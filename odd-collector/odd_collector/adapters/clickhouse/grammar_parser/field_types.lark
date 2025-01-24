@@ -1,0 +1,62 @@
+?start: type
+
+?type: nested
+     | aggregate
+     | array
+     | named_tuple
+     | tuple
+     | map
+     | low_cardinality
+     | nullable
+     | date
+     | date32
+     | datetime
+     | datetime64
+     | BASIC_TYPE
+
+BASIC_TYPE: "UInt64"
+          | "UInt32"
+          | "UInt8"
+          | "Int64"
+          | "UInt128"
+          | "UInt256"
+          | "String"
+          | "Float32"
+          | "Float64"
+          | "UUID"
+          | "Enum"
+          | "Bool"
+
+array: "Array" "(" type ")"
+
+nullable: "Nullable" "(" type ")"
+
+aggregate: "AggregateFunction" "(" WORD ("," WORD)* ")"
+
+low_cardinality: "LowCardinality" "(" type ")"
+
+tuple: "Tuple" "(" (field | type) ("," (field | type))* ")"
+
+named_tuple: "Tuple" "(" field ("," field)* ")"
+
+nested: "Nested" "(" field ("," field)* ")"
+
+map: "Map" "(" type "," type ")"
+
+field: FIELD_NAME type
+
+date: "Date"
+date32: "Date32"
+
+datetime: "DateTime" "(" TIMEZONE ")"
+datetime64: "DateTime64" "(" NUMBER ("," TIMEZONE)? ")"
+
+FIELD_NAME: (LETTER | "_") (LETTER | "_" | DIGIT | "-")*
+TIMEZONE: "'" WORD "/" WORD "'"
+
+%import common.WORD
+%import common.NUMBER
+%import common.LETTER
+%import common.DIGIT
+%import common.WS
+%ignore WS
