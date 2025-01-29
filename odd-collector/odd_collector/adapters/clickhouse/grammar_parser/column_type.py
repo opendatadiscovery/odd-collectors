@@ -53,13 +53,15 @@ class DateTime(ParseType):
 
 
 class DateTime64(ParseType):
-    def __init__(self, type_name: str, digit, time_zone: str):
+    def __init__(self, type_name: str, digit: int, time_zone: str = None):
         self.type_name = type_name
         self.digit = digit
         self.time_zone = time_zone
 
     def to_clickhouse_type(self) -> str:
-        return f"{self.type_name}({self.digit}, {self.time_zone})"
+        if self.time_zone:
+            return f"{self.type_name}({self.digit}, {self.time_zone})"
+        return f"{self.type_name}({self.digit})"
 
 
 class Array(ParseType):
@@ -131,3 +133,14 @@ class Field:
     def __init__(self, name: str, value: ParseType):
         self.name = name
         self.value = value
+
+
+class Nullable(ParseType):
+    def __init__(self, type_name: ParseType):
+        self.type_name = type_name
+
+    def to_clickhouse_type(self) -> str:
+        return f"Nullable({self.type_name.to_clickhouse_type()})"
+
+    def __repr__(self) -> str:
+        return f"Nullable({self.type_name})"

@@ -16,18 +16,19 @@ from .column_type import (
     Nested,
     ParseType,
     Tuple,
+    Nullable,
 )
 from .exceptions import *
 
 """
 This parser uses earley type instead of larl type. We need to support different types of Tuple in Clickhouse
-named Tuples as example Tuple(a String, b Boolean), and we need to supplort classic Tuples as example
+named Tuples as example Tuple(a String, b Boolean), and we need to support classic Tuples as example
 Tuple(String, Boolean).
 
-LARL does not support the different types of Tuples presented in filed_types.lark
+LARL does not support the different types of Tuples presented in field_types.lark
 """
 
-parser = Lark.open("filed_types.lark", rel_to=__file__, parser="earley", start="type")
+parser = Lark.open("field_types.lark", rel_to=__file__, parser="earley", start="type")
 
 
 def traverse_tree(node) -> Union[ParseType, str, Field, None]:
@@ -45,9 +46,9 @@ def traverse_tree(node) -> Union[ParseType, str, Field, None]:
         if node.data == "datetime":
             return DateTime("DateTime", node.children[0].value)
         if node.data == "datetime64":
-            return DateTime64(
-                "DateTime64", node.children[0].value, node.children[2].value
-            )
+            # Check if there is a timezone (it is optional, so can be None)
+            time_zone = node.children[2].value if len(node.children) > 2 else None
+            return DateTime64("DateTime64", node.children[0].value, time_zone)
         if node.data == "array":
             if len(node.children) != 1:
                 raise StructureError(
@@ -58,6 +59,17 @@ def traverse_tree(node) -> Union[ParseType, str, Field, None]:
             if not isinstance(child_value, ParseType):
                 raise NonTypeObjectError(f"Array got a non-type object: {child}")
             return Array(child_value)
+
+        if node.data == "nullable":
+            if len(node.children) != 1:
+                raise StructureError(
+                    f"Invalid nullable structure: expected 1 child, got: {len(node.children)}"
+                )
+            child = node.children[0]
+            child_value = traverse_tree(child)
+            if not isinstance(child_value, ParseType):
+                raise NonTypeObjectError(f"Nullable got a non-type object: {child}")
+            return Nullable(child_value)
 
         elif node.data == "tuple":
             logger.debug(f"Get tuple node {node}")
