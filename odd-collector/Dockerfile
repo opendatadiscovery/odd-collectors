@@ -31,6 +31,8 @@ COPY poetry.lock pyproject.toml ./
 RUN poetry lock --no-update
 RUN poetry install --no-interaction --no-ansi --no-dev -vvv
 
+# removes the package.json with critical vulnerability
+RUN rm -f /usr/local/lib/python3.9/site-packages/feast/ui/package.json
 
 FROM base as runtime
 
