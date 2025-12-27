@@ -3,6 +3,7 @@ from oddrn_generator import OracleGenerator
 
 from ..domain import Table
 from .column import map_column
+from .metadata import dataset_metadata
 
 
 def map_table(generator: OracleGenerator, table: Table) -> DataEntity:
@@ -13,6 +14,7 @@ def map_table(generator: OracleGenerator, table: Table) -> DataEntity:
         name=table.name,
         type=DataEntityType.TABLE,
         description=table.description,
+        metadata=[dataset_metadata(entity=table)],
         dataset=DataSet(
             field_list=[
                 map_column(generator, "tables_columns", column)
