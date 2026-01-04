@@ -2,7 +2,7 @@ FROM python:3.9.16-slim-bullseye as base
 
 ENV POETRY_HOME=/etc/poetry \
     POETRY_VERSION=1.3.1
-ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+ENV PATH="$POETRY_HOME/bin:$PATH"
 
 FROM base AS build
 
@@ -45,8 +45,7 @@ RUN apt-get update -y && apt-get install -y gnupg2 \
     && apt-key add microsoft.asc && rm microsoft.asc \
     && mv mssql-release.list /etc/apt/sources.list.d/mssql-release.list \
     && apt-get update -y \
-    && apt-get install -y g++ unixodbc-dev \
-    && apt-get install -y unixodbc-bin \
+    && apt-get install -y g++ unixodbc-dev unixodbc \
     && apt-get install -y msodbcsql17 libgssapi-krb5-2 libpq-dev \
     && apt-get install -y libaio1 wget unzip
 
