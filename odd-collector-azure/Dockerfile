@@ -1,7 +1,7 @@
 FROM python:3.9-slim-bullseye as base
 ENV POETRY_HOME=/etc/poetry \
     POETRY_VERSION=1.3.1
-ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+ENV PATH="$POETRY_HOME/bin:$PATH"
 
 FROM base AS build
 

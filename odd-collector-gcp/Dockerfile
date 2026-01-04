@@ -1,7 +1,7 @@
 FROM python:3.9.16-slim-buster as base
 ENV POETRY_PATH=/etc/poetry \
     POETRY_VERSION=1.3.2
-ENV PATH="$POETRY_PATH/bin:$VENV_PATH/bin:$PATH"
+ENV PATH="$POETRY_PATH/bin:$PATH"
 
 FROM base AS build
 
