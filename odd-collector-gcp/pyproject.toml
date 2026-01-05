@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "odd-collector-gcp"
-version = "0.1.6"
+version = "0.1.7"
 description = "ODD Collector for GCP"
 license = "Apache-2.0"
 authors = ["Open Data Discovery <pypi@opendatadiscovery.org>"]
