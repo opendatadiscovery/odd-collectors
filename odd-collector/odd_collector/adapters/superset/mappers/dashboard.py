@@ -9,7 +9,7 @@ def map_dashboard(
     dashboard: Dashboard,
 ) -> DataEntity:
     name = dashboard.dashboard_title
-    generator.set_oddrn_paths(dashboards=dashboard.id)
+    generator.set_oddrn_paths(dashboards=str(dashboard.id))
     oddrn = generator.get_oddrn_by_path("dashboards")
 
     return DataEntity(
