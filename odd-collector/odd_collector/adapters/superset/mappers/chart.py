@@ -9,7 +9,7 @@ def map_chart(
     chart: Chart,
 ) -> DataEntity:
     name = chart.slice_name
-    generator.set_oddrn_paths(charts=chart.id)
+    generator.set_oddrn_paths(charts=str(chart.id))
     oddrn = generator.get_oddrn_by_path("charts")
 
     return DataEntity(
